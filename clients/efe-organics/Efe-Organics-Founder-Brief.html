@@ -1,0 +1,404 @@
+﻿<!doctype html>
+<html lang="en-GH">
+<head>
+<meta charset="utf-8">
+<title>Efe Organics — Technical Brief & Infrastructure Guide for Founder</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 15mm;
+  }
+
+  :root {
+    --forest: #14432c;
+    --forest-deep: #0d2c1d;
+    --gold: #9a7d2e;
+    --gold-light: #f2d99a;
+    --ink: #16191a;
+    --ink-soft: #3f453f;
+    --muted: #6b706a;
+    --rule: #d9d5c9;
+    --rule-soft: #ece8dd;
+    --wash: #f5f3ec;
+    --olive: #607a1b;
+
+    --display: "Segoe UI Variable Display", "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    --body: Georgia, "Times New Roman", serif;
+    --data: "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 10pt;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  h1, h2, h3, th, .label, .chip, .brand-eyebrow { font-family: var(--display); }
+
+  h1 {
+    font-size: 20pt;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--forest-deep);
+    margin: 3mm 0 2mm;
+  }
+
+  h2 {
+    font-size: 12pt;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+    color: var(--forest);
+    margin: 6mm 0 2.5mm;
+    padding-bottom: 1.5mm;
+    border-bottom: 1pt solid var(--forest);
+  }
+
+  h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 3mm 0 1.5mm;
+  }
+
+  p { margin: 0 0 2.5mm; max-width: 65em; }
+  p:last-child { margin-bottom: 0; }
+  strong { font-weight: 700; }
+
+  .header-band {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 4mm;
+    border-bottom: 2pt solid var(--forest);
+  }
+
+  .brand-eyebrow {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3mm 5mm;
+    margin: 4mm 0 5mm;
+    padding: 3mm 4mm;
+    background: var(--wash);
+    border-radius: 1.5mm;
+    font-family: var(--display);
+    font-size: 8.5pt;
+  }
+
+  .meta-item dt {
+    font-size: 6.5pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .meta-item dd {
+    margin: 0.5mm 0 0;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .callout {
+    background: var(--wash);
+    border-left: 2.5pt solid var(--forest);
+    padding: 3mm 4mm;
+    margin: 3.5mm 0;
+    font-size: 9pt;
+  }
+
+  .callout-gold {
+    background: #fffbf0;
+    border-left: 2.5pt solid var(--gold);
+    padding: 3mm 4mm;
+    margin: 3.5mm 0;
+    font-size: 9pt;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--display);
+    font-size: 8.5pt;
+    margin: 3mm 0 4mm;
+  }
+
+  th {
+    text-align: left;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1pt solid var(--forest);
+    padding: 1.5mm 3mm 1.5mm 0;
+  }
+
+  td {
+    padding: 2mm 3mm 2mm 0;
+    border-bottom: 0.5pt solid var(--rule-soft);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child { font-weight: 600; color: var(--ink); }
+
+  .step-box {
+    border: 0.5pt solid var(--rule);
+    border-left: 2pt solid var(--forest);
+    border-radius: 1.5mm;
+    padding: 3mm 4mm;
+    margin-bottom: 3mm;
+    background: #fff;
+  }
+
+  .step-num {
+    font-family: var(--display);
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1mm;
+  }
+
+  .q-box {
+    border: 0.5pt solid var(--rule);
+    border-radius: 1.5mm;
+    padding: 3mm 4mm;
+    margin-bottom: 2.5mm;
+    background: #faf9f6;
+  }
+
+  .q-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 9pt;
+    color: var(--forest);
+    margin-bottom: 1mm;
+  }
+
+  .q-desc { font-size: 8.5pt; color: var(--ink-soft); margin: 0; }
+
+  .page-break { break-before: page; }
+  .avoid-break { break-inside: avoid; }
+
+  footer.doc-foot {
+    margin-top: 6mm;
+    padding-top: 2.5mm;
+    border-top: 0.5pt solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--display);
+    font-size: 7pt;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== PAGE 1 ===================== -->
+<header class="header-band">
+  <div>
+    <div class="brand-eyebrow">EFE ORGANICS™ · CLIENT HANDOVER & ACTION GUIDE</div>
+    <h1>Digital Platform Brief & Hostinger Infrastructure Guide</h1>
+  </div>
+  <div style="text-align: right; font-family: var(--display); font-size: 8pt; color: var(--muted);">
+    <strong>Aksen Labs</strong><br>
+    Engineering & Architecture
+  </div>
+</header>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <dt>Prepared For</dt>
+    <dd>Alberta (Founder, Efe Organics)</dd>
+  </div>
+  <div class="meta-item">
+    <dt>Project</dt>
+    <dd>Storefront & Commerce Engine</dd>
+  </div>
+  <div class="meta-item">
+    <dt>Target Domain</dt>
+    <dd>efeorganics.com</dd>
+  </div>
+  <div class="meta-item">
+    <dt>Date</dt>
+    <dd>September 2026</dd>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>Executive Overview:</strong> Efe Organics has reached an exciting milestone. Your custom, direct-to-consumer digital storefront is built and live on global edge infrastructure. This document provides a plain-English summary of what has been built, how your recent <strong>Hostinger</strong> purchase fits into the architecture (specifically solving your business email needs), the exact actions needed on your part, and clarifying operational questions to prepare for your full commercial launch.
+</div>
+
+<h2>1. What We Have Built & Delivered So Far</h2>
+<p>
+  Over the past weeks, we completed Stage 1 of the digital transformation. We transitioned Efe Organics from a captive third-party reseller presence (ColoursBay) into an owned, high-performance brand platform:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Area</th>
+      <th style="width: 40%;">What Was Done</th>
+      <th style="width: 35%;">Business Benefit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Independent Storefront</td>
+      <td>Engineered a custom Next.js 16 web application with instant page transitions and mobile-first design.</td>
+      <td>Efe Organics owns its brand, customer relationships, and margins without reseller lock-in.</td>
+    </tr>
+    <tr>
+      <td>Product & Size Architecture</td>
+      <td>Restructured 42 flat imported SKUs into 28 intuitive product families with size selectors (e.g. Lemon Blast 350ml, 500ml, 1L).</td>
+      <td>Customers see an uncluttered shelf and pick their preferred bottle size on one page.</td>
+    </tr>
+    <tr>
+      <td>Wholesale Segregation</td>
+      <td>Created separate rules for industrial trade bulk items like the <strong>250kg African Black Soap Crumble (GH₵13,750.00)</strong>.</td>
+      <td>Protects everyday consumer shopping while supporting your commercial trade buyers.</td>
+    </tr>
+    <tr>
+      <td>Rebuilt Brand Palette</td>
+      <td>Extracted colors directly from your authentic 2026 circular gold packaging monogram (Obsidian black, metallic gold, olive leaf).</td>
+      <td>A unified, luxury aesthetic consistent with your physical product packaging.</td>
+    </tr>
+    <tr>
+      <td>Financial & Stock Ledger</td>
+      <td>Implemented an atomic PostgreSQL database where stock movements are tracked and prices use integer pesewas (GH₵).</td>
+      <td>Guarantees zero rounding errors and prevents two customers from buying the same final bottle.</td>
+    </tr>
+    <tr>
+      <td>Ghana MoMo Ready</td>
+      <td>Integrated Paystack checkout architecture supporting MTN Mobile Money, Telecel Cash, and bank cards.</td>
+      <td>Permits instant, frictionless payment on mobile phones across Ghana.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>2. How Your Hostinger Hosting Fits Into the Picture</h2>
+<p>
+  You recently purchased <strong>Hostinger hosting</strong>, which is great news. Because modern e-commerce storefronts require specialized cloud infrastructure to handle traffic spikes during Mobile Money promotions, the most effective, reliable setup combines Hostinger with your live cloud engine:
+</p>
+
+<div class="callout-gold">
+  <strong>The Hybrid Best-Practice Approach:</strong>
+  <ul>
+    <li><strong>Vercel Edge Network</strong>: Runs your storefront engine. It provides zero-downtime scalability, instant loading on 3G/4G mobile networks, and automatic SSL security.</li>
+    <li><strong>Hostinger</strong>: Serves as your <strong>Corporate Business Email Headquarters</strong> (providing professional mailboxes like <code>hello@efeorganics.com</code> and <code>orders@efeorganics.com</code>) and your <strong>DNS Control Center</strong>.</li>
+  </ul>
+</div>
+
+<footer class="doc-foot">
+  <span>Efe Organics™ · Digital Transformation Handover Brief</span>
+  <span>Page 1 of 2</span>
+</footer>
+
+<!-- ===================== PAGE 2 ===================== -->
+<div class="page-break"></div>
+
+<header class="header-band">
+  <div>
+    <div class="brand-eyebrow">ACTION GUIDE & LAUNCH READINESS</div>
+    <h1 style="font-size: 16pt;">Hostinger Action Guide & Clarifying Questions</h1>
+  </div>
+  <div style="text-align: right; font-family: var(--display); font-size: 8pt; color: var(--muted);">
+    <strong>September 2026</strong>
+  </div>
+</header>
+
+<h2>3. What Is Needed on Your Part on Hostinger (Step-by-Step)</h2>
+<p>
+  To link your Hostinger account with your live domain and activate professional email, please complete the following steps (or grant us access as described below):
+</p>
+
+<div class="step-box avoid-break">
+  <div class="step-num">Step 1 · Choose Your Preferred Method</div>
+  <p><strong>Option A (Fastest & Recommended)</strong>: Add our team as an <em>Authorized Collaborator</em> in your Hostinger account so our engineers can configure the DNS and mail settings directly for you.</p>
+  <p style="font-size: 8.5pt; color: var(--muted); margin: 0;">
+    <em>How to do this: Log into Hostinger &rarr; Click your profile icon at top right &rarr; Account Sharing &rarr; Invite Collaborator &rarr; Enter our agency email with "Manage Services & Domains" permission.</em>
+  </p>
+</div>
+
+<div class="step-box avoid-break">
+  <div class="step-num">Step 2 · If You Prefer to Do It Manually</div>
+  <ol style="margin: 0; padding-left: 4mm; font-size: 8.5pt;">
+    <li>Log into your <strong>Hostinger hPanel</strong>.</li>
+    <li>Navigate to <strong>Emails</strong> &rarr; Select <code>efeorganics.com</code> &rarr; Create your desired corporate mailboxes (e.g. <code>hello@efeorganics.com</code>, <code>orders@efeorganics.com</code>).</li>
+    <li>Go to <strong>Websites &rarr; DNS / Nameservers</strong>. Ensure the zone is active and provide our team with the MX records Hostinger generates.</li>
+  </ol>
+</div>
+
+<div class="step-box avoid-break">
+  <div class="step-num">Step 3 · Settle the Pending Avehost Domain Invoice</div>
+  <p style="font-size: 8.5pt; margin: 0;">
+    In your Avehost client portal (where <code>efeorganics.com</code> was purchased), there is a yellow banner indicating an unpaid annual renewal invoice (GH₵200.00). Please log into Avehost and settle this via Mobile Money to prevent the registrar from placing a hold on the domain.
+  </p>
+</div>
+
+<h2>4. Clarifying Questions for Alberta (Launch Alignment)</h2>
+<p>
+  To finalize the commerce experience and prepare for taking live customer orders, please share your thoughts on the following:
+</p>
+
+<div class="q-box avoid-break">
+  <div class="q-title">1. Hostinger Hosting Plan Type</div>
+  <p class="q-desc">Which Hostinger plan did you purchase (e.g., Premium Web Hosting, Business Cloud, or a VPS)? If you prefer our team to configure the server, simply share collaborator access.</p>
+</div>
+
+<div class="q-box avoid-break">
+  <div class="q-title">2. Business Email Addresses Needed</div>
+  <p class="q-desc">Which mailboxes should be set up on Hostinger? We recommend <code>hello@efeorganics.com</code> for general inquiries, <code>orders@efeorganics.com</code> for receipts, and a personal box (e.g., <code>alberta@efeorganics.com</code>).</p>
+</div>
+
+<div class="q-box avoid-break">
+  <div class="q-title">3. Physical Shelf Stock Verification</div>
+  <p class="q-desc">We have populated opening stock with a safe placeholder of 25 units per variant. Do you have an updated physical count of how many units of each soap bath, oil, and gel are ready in your workshop?</p>
+</div>
+
+<div class="q-box avoid-break">
+  <div class="q-title">4. Retail Selling Price Confirmation</div>
+  <p class="q-desc">The prices currently shown (e.g., Lemon Blast 350ml at GH₵70.00) reflect the reseller’s listing on ColoursBay. Are these your intended direct-to-consumer retail prices, or do you have updated price sheets?</p>
+</div>
+
+<div class="q-box avoid-break">
+  <div class="q-title">5. Paystack Ghana Merchant Account</div>
+  <p class="q-desc">Does Efe Organics have its registered business Paystack Ghana merchant account active and verified for Mobile Money payouts, or would you like assistance with merchant setup?</p>
+</div>
+
+<h2>5. What Happens Next</h2>
+<p>
+  Once these items are clarified:
+</p>
+<ol style="margin: 0; padding-left: 4mm; font-size: 8.5pt;">
+  <li>We will complete the domain and email link so <code>hello@efeorganics.com</code> is operational.</li>
+  <li>We will connect your live Paystack keys and conduct an end-to-end test checkout using a real MTN MoMo wallet.</li>
+  <li>We will hand over your private Admin Studio credentials where you can view live orders, update product stock, and monitor sales.</li>
+</ol>
+
+<footer class="doc-foot">
+  <span>Efe Organics™ · Digital Transformation Handover Brief</span>
+  <span>Page 2 of 2</span>
+</footer>
+
+</body>
+</html>
