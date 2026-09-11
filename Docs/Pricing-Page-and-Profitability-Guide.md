@@ -1,6 +1,6 @@
 # Pricing page and profitability guide
 
-Recorded 2026-09-10. Two parts: a review of the four services as things the site can render and sell, and an operating guide for turning the published pricing into a profitable business. Figures come from the September 4 launch strategy, the Services & Pricing Guide and the decision ledger. Nothing here is a validated market price or a commitment to a client.
+Recorded 2026-09-10. Two parts: a review of the four services as things the site can render and sell, and an operating guide for turning the published pricing into a profitable business. Historical figures come from the September 4 launch strategy, the Services & Pricing Guide and the decision ledger. The September 10 website revision below supersedes earlier public-pricing recommendations; financial scenarios remain illustrative. Nothing here is a validated market price or a commitment to a client.
 
 ## Part 1 — Do the four services make sense to render?
 
@@ -55,8 +55,8 @@ At a 50% target: a build estimated at 36 hours costs GHS 4,320 plus incidentals,
 
 ### The five disciplines that decide whether this is profitable
 
-1. **Never quote before the assessment.** The assessment is the margin protection mechanism. If a prospect refuses to pay GHS 2,500 to have their problem defined, they will also refuse to accept a scope boundary later.
-2. **Two review rounds per stage, then change control in writing.** Already stated on `/pricing`. It only works if enforced on the third request.
+1. **Scope before quoting.** Use a separate paid assessment when the workflow is unclear or complex. A clear, straightforward brief can proceed directly to a quotation. Declining an assessment is not evidence that a prospect will reject scope boundaries.
+2. **Agree review limits before starting.** The proposal specifies review rounds and the written change process; the website does not promise a universal number.
 3. **Separate third-party usage from your fee.** Model, WhatsApp, voice, storage and hosting costs must sit outside the price or inside an approved allowance with cost alerts. Otherwise a usage spike silently converts a profitable project into a loss.
 4. **Log every delivery hour from the first project.** Without this, the GHS 120/hour figure never becomes real and every quote stays a guess.
 5. **Decline work below the floor.** Reduce scope instead of price. A GHS 6,500 campaign site delivered as a GHS 18,000 business website is the most common way a small agency fails while looking busy.
@@ -92,7 +92,17 @@ The published `/pricing` figures sit inside these bands. These are vendor offers
 ### Before this page goes public
 
 - [ ] Replace contact placeholders and confirm the Aksen Labs name, domain and registry position (D-001 is still `Testing`).
-- [ ] Confirm the founder accepts each published figure, especially the GHS 2,500 assessment and the GHS 900/mo entry care plan.
-- [ ] Decide whether GHS 3,000/mo or the doc's GHS 4,000/mo is the managed-operations floor. `/pricing` currently shows GHS 3,000–18,000/mo, following the launch-strategy test price.
-- [ ] Add tax treatment wording if VAT/levies apply to these figures.
+- [x] September 10 implementation uses GHS 4,000–18,000/month as the public managed-operations range. The GHS 3,000 figures above remain historical modelling assumptions, not current public pricing.
+- [x] Website states fees exclude applicable taxes; quotations must itemise the actual treatment without assuming a tax rate.
 - [ ] Do not use The Frame Shop as public proof; acceptance and delivery remain unconfirmed.
+
+
+## Website revision — 10 September 2026
+
+Implemented following the request to resolve the pricing review. Existing service ranges are indicative planning budgets; final commercial terms belong in the written quotation. Managed operations now starts at GHS 4,000/month, replacing the historical test floor of GHS 3,000/month.
+
+Assessment: GHS 2,500 for one agreed process, separately commissioned and additional to the build. No automatic credit; any negotiated credit is explicit in the proposal. Clients may stop after assessment. Clear straightforward briefs can be quoted without a paid assessment.
+
+Payment milestones, review rounds, acceptance criteria and defect-support periods are proposal-specific. Care proposals define hours/tasks, support channels, coverage hours, response targets, rollover and extra-work rates. No unlimited development or implied 24/7 coverage. Delivery ranges begin at agreed kickoff with sign-off, required content/access/data and agreed initial payment in place; dependency delays and scope changes can move dates.
+
+The pricing page now has its own quotation-inspired hero, collapsible service groups, individual package and care-plan enquiry links, and a compact FAQ. The server validates the package against the pricing catalogue and saves its name and indicative price in the enquiry summary; arbitrary URL or payload labels are not accepted as catalogue selections. Visitors can remove the selection before submitting. No subscription pricing is implied for Folio or Workspace.

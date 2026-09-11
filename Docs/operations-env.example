@@ -1,0 +1,5 @@
+# Agency operations integration variables (copy into your local environment; never commit real secrets)
+ADMIN_EMAILS=
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+RESEND_REPLY_TO=bishoptewogbade@gmail.com

@@ -7,3 +7,9 @@ Aksen Labs is a full digital transformation agency with an African business pros
 Supporting research: [Positioning and Market Strategy](../research/positioning-2026-09-07/output/pdf/Aksen-Labs-Positioning-and-Market-Strategy.pdf).
 
 The existing blueprint, services guide and proposal template predate this positioning update. Treat any conflicting workflow-only identity, geographic restriction or product availability statement as historical until revised. Commercial terms must come from the relevant current agreement or proposal, not from this messaging update.
+
+Operating resources added 10 September 2026:
+- [Operations readiness and setup](Agency-Operations-Readiness-2026-09-10.md)
+- [Lead-to-retention automation blueprint](Lead-to-Retention-Blueprint-2026-09-10.md)
+- [Editable operating templates](Operating-Templates/README.md)
+- [OpenRouter routing and use-case configuration](OpenRouter-AI-Setup-2026-09-10.md)
