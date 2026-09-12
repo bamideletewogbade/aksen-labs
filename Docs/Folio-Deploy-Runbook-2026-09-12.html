@@ -1,0 +1,347 @@
+<title>Folio Deploy Runbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+  :root {
+    --ground: #FBFCF9;
+    --panel: #FFFFFF;
+    --ink: #0F211A;
+    --body: #46554C;
+    --muted: #6B7C71;
+    --accent: #4E6644;
+    --accent-soft: #EAF1E3;
+    --line: #DDE7D4;
+    --edge: #C7D4C0;
+    --caution: #8A5A2E;
+    --caution-soft: #FAF3EA;
+    --danger: #8A3B2E;
+    --danger-soft: #FBF1EF;
+    --term-ground: #13241D;
+    --term-ink: #D8E6D6;
+    --term-dim: #7E9585;
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0C1712;
+      --panel: #12211A;
+      --ink: #E6EFE7;
+      --body: #B3C4B7;
+      --muted: #86998C;
+      --accent: #9CBF8C;
+      --accent-soft: #1B2E23;
+      --line: #22382C;
+      --edge: #2C4638;
+      --caution: #D6A472;
+      --caution-soft: #251C12;
+      --danger: #E09184;
+      --danger-soft: #2A1714;
+      --term-ground: #081410;
+      --term-ink: #CFE2CD;
+      --term-dim: #6E8578;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0C1712;
+    --panel: #12211A;
+    --ink: #E6EFE7;
+    --body: #B3C4B7;
+    --muted: #86998C;
+    --accent: #9CBF8C;
+    --accent-soft: #1B2E23;
+    --line: #22382C;
+    --edge: #2C4638;
+    --caution: #D6A472;
+    --caution-soft: #251C12;
+    --danger: #E09184;
+    --danger-soft: #2A1714;
+    --term-ground: #081410;
+    --term-ink: #CFE2CD;
+    --term-dim: #6E8578;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--body);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 820px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1, h2, h3 { color: var(--ink); text-wrap: balance; margin: 0; font-weight: 600; }
+  h1 { font-size: 2.1rem; line-height: 1.15; letter-spacing: -0.015em; }
+  h2 { font-size: 1.22rem; letter-spacing: -0.005em; }
+  h3 { font-size: 1rem; }
+  p { margin: 0; max-width: 68ch; }
+  a { color: var(--accent); }
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--accent-soft);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.73rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Header */
+  header.masthead { display: grid; gap: 14px; padding-bottom: 26px; border-bottom: 1px solid var(--line); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 8px; }
+  .fact { background: var(--panel); padding: 12px 14px; display: grid; gap: 3px; }
+  .fact dt { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .fact dd { margin: 0; font-family: var(--mono); font-size: 0.82rem; color: var(--ink); overflow-wrap: anywhere; }
+
+  /* Status banner */
+  .status { display: flex; gap: 12px; align-items: flex-start; border-left: 3px solid var(--caution); background: var(--caution-soft); padding: 14px 16px; border-radius: 0 8px 8px 0; margin-top: 24px; }
+  .status strong { color: var(--ink); }
+  .status p { font-size: 0.92rem; }
+
+  section { margin-top: 46px; display: grid; gap: 18px; }
+  .section-head { display: grid; gap: 5px; }
+
+  /* Pre-flight */
+  .preflight { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .preflight li { list-style: none; display: flex; gap: 11px; align-items: baseline; padding: 11px 15px; background: var(--panel); font-size: 0.92rem; }
+  .preflight li + li { border-top: 1px solid var(--line); }
+  .preflight b { color: var(--ink); font-weight: 500; }
+  .tick { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; flex: none; }
+
+  /* Steps: the rail carries the sequence, because order is load-bearing here */
+  ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 30px; counter-reset: step; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 44px 1fr; gap: 18px; }
+  ol.steps > li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
+    color: var(--accent); padding-top: 2px;
+    border-top: 2px solid var(--accent);
+    height: 0; line-height: 2.4;
+  }
+  .step-body { display: grid; gap: 11px; min-width: 0; }
+  .step-why { font-size: 0.9rem; color: var(--muted); }
+
+  /* Command block */
+  .cmd { position: relative; background: var(--term-ground); border-radius: 8px; overflow: hidden; }
+  .cmd pre { margin: 0; padding: 14px 60px 14px 16px; overflow-x: auto; }
+  .cmd code { font-family: var(--mono); font-size: 0.81rem; line-height: 1.6; color: var(--term-ink); background: none; padding: 0; white-space: pre; }
+  .cmd .prompt { color: var(--term-dim); user-select: none; }
+  .copy {
+    position: absolute; top: 8px; right: 8px;
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+    background: transparent; color: var(--term-dim);
+    border: 1px solid rgb(255 255 255 / 0.16); border-radius: 5px;
+    padding: 4px 9px; cursor: pointer;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .copy:hover, .copy:focus-visible { color: var(--term-ink); border-color: rgb(255 255 255 / 0.38); }
+  .copy[data-done="1"] { color: #9CBF8C; border-color: #9CBF8C; }
+
+  .expect { display: flex; gap: 9px; font-size: 0.88rem; align-items: baseline; }
+  .expect .lbl { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); flex: none; padding-top: 2px; }
+
+  /* Troubleshooting */
+  .scroller { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; background: var(--panel); }
+  th, td { text-align: left; padding: 12px 15px; vertical-align: top; font-size: 0.89rem; border-bottom: 1px solid var(--line); }
+  thead th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--ground); }
+  tbody tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--ink); font-family: var(--mono); font-size: 0.8rem; }
+
+  /* Rollback: the one place that gets danger weight */
+  .rollback { border-left: 3px solid var(--danger); background: var(--danger-soft); border-radius: 0 8px 8px 0; padding: 18px 20px; display: grid; gap: 12px; }
+  .rollback h2 { font-size: 1.05rem; }
+  .rollback p { font-size: 0.92rem; }
+
+  footer { margin-top: 54px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.82rem; color: var(--muted); display: grid; gap: 6px; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 560px) {
+    .page { padding: 36px 16px 72px; }
+    h1 { font-size: 1.7rem; }
+    ol.steps > li { grid-template-columns: 30px 1fr; gap: 12px; }
+  }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <p class="eyebrow">Aksen Labs / Runbook</p>
+    <h1>Deploying Folio to Cloudflare</h1>
+    <p>How to build, ship and verify the Aksen platform Worker, and how to get back if a deploy goes wrong. Every command runs from the platform directory.</p>
+    <dl class="facts">
+      <div class="fact"><dt>Worker</dt><dd>sites-project</dd></div>
+      <div class="fact"><dt>Account</dt><dd>86fe5ad8…59cbf</dd></div>
+      <div class="fact"><dt>Live at</dt><dd>sites-project.bishoptewogbade.workers.dev</dd></div>
+      <div class="fact"><dt>Database</dt><dd>Neon, production branch</dd></div>
+    </dl>
+  </header>
+
+  <div class="status">
+    <span class="eyebrow" style="padding-top:3px;flex:none">Pending</span>
+    <p><strong>The UI rebuild is committed but not deployed.</strong> Commit <code>98d9c26</code> replaced the Folio page with the single console. The live Worker is still serving version <code>3f28d04d</code>, which has the old stacked layout. Run steps 02 and 03 to ship it.</p>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Before you start</h2>
+      <p class="step-why">Four things that are already true. Check them only if something behaves oddly.</p>
+    </div>
+    <ul class="preflight">
+      <li><span class="tick">OK</span><span><b>Secrets are set and persist across deploys.</b> <code>DATABASE_URL</code>, <code>OPENROUTER_API_KEY</code>, <code>RESEND_API_KEY</code>, <code>RESEND_FROM_EMAIL</code>. You never re-push these when deploying.</span></li>
+      <li><span class="tick">OK</span><span><b>The database migration is applied.</b> <code>folio_users</code>, <code>folio_sessions</code>, <code>folio_login_tokens</code>, <code>folio_cvs</code> all exist. Only re-run <code>scripts/migrate-folio.mjs</code> if the schema changes.</span></li>
+      <li><span class="tick">OK</span><span><b>Call binaries through node.</b> <code>node_modules/.bin</code> has no shims in this checkout, so <code>npx wrangler</code> and <code>pnpm run dev</code> both fail. Every command below calls <code>node</code> directly on purpose.</span></li>
+      <li><span class="tick">—</span><span><b>The admin area is deliberately locked.</b> <code>ADMIN_PASSWORD_HASH</code>, <code>ADMIN_EMAILS</code> and <code>ADMIN_OWNER_ID</code> are unset, so <code>/admin</code> redirects for everyone. Push them when you want in.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Deploy</h2>
+      <p class="step-why">In order. Building after deploying ships the previous bundle against new code.</p>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          <h3>Confirm the account</h3>
+          <div class="cmd"><pre><code><span class="prompt">$ </span>node node_modules/wrangler/bin/wrangler.js whoami</code></pre></div>
+          <p class="expect"><span class="lbl">Expect</span><span>bishoptewogbade@gmail.com, and <code>workers (write)</code> in the scope list. If it says logged out, run the same command with <code>login</code> instead.</span></p>
+        </div>
+      </li>
+
+      <li>
+        <div class="step-body">
+          <h3>Build</h3>
+          <div class="cmd"><pre><code><span class="prompt">$ </span>node node_modules/vinext/dist/cli.js build</code></pre></div>
+          <p class="expect"><span class="lbl">Expect</span><span><code>Build complete</code> after roughly a minute. The route list it prints should include the seven <code>/api/folio/*</code> entries.</span></p>
+          <p class="step-why">Stop here if it errors. Deploying on a failed build serves the last good assets against the new server code, which fails in ways that look unrelated.</p>
+        </div>
+      </li>
+
+      <li>
+        <div class="step-body">
+          <h3>Deploy</h3>
+          <div class="cmd"><pre><code><span class="prompt">$ </span>node node_modules/wrangler/bin/wrangler.js deploy --config dist/server/wrangler.json</code></pre></div>
+          <p class="expect"><span class="lbl">Expect</span><span><code>Deployed sites-project triggers</code> and a <code>Current Version ID</code>. <strong style="color:var(--ink)">Copy that version ID.</strong> It is the only thing that makes step 05 quick.</span></p>
+        </div>
+      </li>
+
+      <li>
+        <div class="step-body">
+          <h3>Verify against the live Worker</h3>
+          <div class="cmd"><pre><code><span class="prompt">$ </span>node .tools/folio-e2e.mjs</code></pre></div>
+          <p class="expect"><span class="lbl">Expect</span><span><code>38 passed, 0 failed</code>.</span></p>
+          <p class="step-why">Covers the free review, all four gated routes returning 401, a real magic link, single-use token enforcement, an interview through to a generated CV, PDF, Word and text downloads, save and reload, and a cross-account check that one signed-in user cannot read another's saved CV. It creates a throwaway account and deletes it afterwards.</p>
+        </div>
+      </li>
+
+      <li>
+        <div class="step-body">
+          <h3>Watch it, if anything looks wrong</h3>
+          <div class="cmd"><pre><code><span class="prompt">$ </span>node node_modules/wrangler/bin/wrangler.js tail --config dist/server/wrangler.json --format pretty</code></pre></div>
+          <p class="step-why">Leave it running in one terminal and use the site in a browser. Every request logs live with its error code. Do not pass <code>--status error</code>; it filters out the <code>console.error</code> lines that carry the actual reason.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>When it breaks</h2>
+      <p class="step-why">Every row here is something that actually happened during the port, with the symptom you will see first.</p>
+    </div>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>provider_http_401 in the tail</td>
+            <td>The OpenRouter key in the Worker is wrong. A missing key throws a different error, so the key is set but rejected.</td>
+            <td>Re-push it from <code>.env</code> by piping, never by pasting into the masked prompt. That masking is how it went wrong the first time.</td>
+          </tr>
+          <tr>
+            <td>Every request fails in 0 ms, all DB writes log persistence_failed</td>
+            <td><code>neon()</code> threw on construction. The connection string is malformed, usually a stray <code>DATABASE_URL=</code> prefix or surrounding quotes.</td>
+            <td>Value should start <code>postgresql://</code>, end <code>sslmode=require</code>, contain <code>-pooler.</code>, and be 147 characters.</td>
+          </tr>
+          <tr>
+            <td>Sign-in returns 502 but a token row appears in the database</td>
+            <td>The row is written before the email is sent, so Resend rejected the send. Almost always the <code>from</code> address.</td>
+            <td>HTTP 422 means <code>RESEND_FROM_EMAIL</code> is not email-shaped. Set it to <code>onboarding@resend.dev</code>.</td>
+          </tr>
+          <tr>
+            <td>Sign-in reports success but no email arrives</td>
+            <td><code>onboarding@resend.dev</code> only delivers to the Resend account owner. Everyone else gets a 200 and silence.</td>
+            <td>Verify a domain in Resend and switch the sender. This is the blocker for anyone but you using Folio.</td>
+          </tr>
+          <tr>
+            <td>Sign-in silently stops working for one address</td>
+            <td>Five magic links per email per hour. Over the limit it reports success and sends nothing, so the limit cannot be used to probe who has an account.</td>
+            <td>Wait an hour, or clear unused rows with <code>.tools/folio-cleanup.mjs</code>.</td>
+          </tr>
+          <tr>
+            <td>fatal: Unable to create index.lock</td>
+            <td>Two AI tools share this repo. Usually an orphaned lock, not a live process.</td>
+            <td>Check <code>Get-Process git</code> first. If nothing is running, delete <code>.git/index.lock</code>.</td>
+          </tr>
+          <tr>
+            <td>Another vinext dev server is already running</td>
+            <td>vinext allows one instance per machine and ignores the port you asked for.</td>
+            <td>Use the server on :3000, or stop the existing PID. Do not start a second one expecting a different port.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="rollback">
+      <h2>Getting back</h2>
+      <p>Returns the Worker to a previous version. It prompts for which one, which is why step 03 says to keep the ID.</p>
+      <div class="cmd"><pre><code><span class="prompt">$ </span>node node_modules/wrangler/bin/wrangler.js rollback --config dist/server/wrangler.json</code></pre></div>
+      <p>A rollback reverts <em>code only</em>. Secrets and the database are untouched, so anything that changed the schema needs undoing separately. Folio's migration is additive, with no drops, so rolling back code over it is safe.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Last verified 12 September 2026: 38 of 38 live checks passed, including a magic link delivered, clicked and redeemed.</p>
+    <p>Working directory: <code>C:\Users\HP\Desktop\Side Hustle\Aksen-Labs\platform</code></p>
+  </footer>
+</div>
+
+<script>
+  // Copy buttons: the one thing anyone actually does with a runbook.
+  for (const block of document.querySelectorAll('.cmd')) {
+    const button = document.createElement('button');
+    button.className = 'copy';
+    button.type = 'button';
+    button.textContent = 'Copy';
+    button.addEventListener('click', async () => {
+      const text = block.querySelector('code').textContent.replace(/^\$\s/, '');
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = 'Copied';
+        button.dataset.done = '1';
+      } catch {
+        button.textContent = 'Select it';
+      }
+      setTimeout(() => {
+        button.textContent = 'Copy';
+        delete button.dataset.done;
+      }, 1800);
+    });
+    block.appendChild(button);
+  }
+</script>

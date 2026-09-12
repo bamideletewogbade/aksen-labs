@@ -13,3 +13,6 @@ Operating resources added 10 September 2026:
 - [Lead-to-retention automation blueprint](Lead-to-Retention-Blueprint-2026-09-10.md)
 - [Editable operating templates](Operating-Templates/README.md)
 - [OpenRouter routing and use-case configuration](OpenRouter-AI-Setup-2026-09-10.md)
+
+Product operations added 12 September 2026:
+- [Folio deploy runbook](Folio-Deploy-Runbook-2026-09-12.md) covers building, shipping, verifying and rolling back the platform Worker on Cloudflare, with the faults met during the CV Forge port and how each one presents. A formatted version sits alongside it as [HTML](Folio-Deploy-Runbook-2026-09-12.html).
