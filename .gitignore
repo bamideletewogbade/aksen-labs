@@ -1,0 +1,8 @@
+# Site snapshots taken before risky changes. Large binaries that would sit in
+# git history permanently; keep them locally, not in the repository.
+backups/
+
+# Local environment and build noise
+.env*
+__pycache__/
+*.pyc
