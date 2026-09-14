@@ -3,11 +3,16 @@
 // Run from the platform directory:  node scripts/configure-automation.mjs
 //
 // It generates a new random secret, writes it to .env for local runs, uploads
-// it to the deployed Worker, and prints it once so it can be pasted into the
-// GitHub repository secret the workflow reads. Nothing else ever needs to know
-// it, and nothing prints it again: to rotate, run this and repeat the paste.
+// it to the deployed Worker, and writes the values GitHub needs to a local
+// file. To rotate, run it again and repeat the paste.
 //
-// Two things this exists to get right, both learned the hard way on the admin
+// The secret is never printed to the terminal. The first version of this script
+// did print it, and the value then ended up in an assistant's context the next
+// time anyone read the terminal to check whether the upload worked. A file you
+// open yourself has no such audience. It is named with a .env prefix so the
+// existing .env* rule in .gitignore already covers it.
+//
+// Three things this exists to get right, two learned the hard way on the admin
 // secrets:
 //
 // 1. .env wraps values in quotes and dotenv strips them. wrangler does not, so
@@ -46,23 +51,46 @@ console.log(`Wrote ${KEY} to .env`);
 const file = path.join(os.tmpdir(), `automation-secret-${Date.now()}.json`);
 fs.writeFileSync(file, JSON.stringify({ [KEY]: secret }));
 try {
-  execFileSync('npx', ['wrangler', 'secret', 'bulk', file, '--name', WORKER], {
-    stdio: 'inherit',
-    shell: process.platform === 'win32',
-  });
+  // The wrangler entry file, run directly. `npx wrangler` triggers a package
+  // resolution that has already once emptied node_modules/.bin mid-task, and
+  // no shell means no quoting rules to get wrong on Windows.
+  execFileSync(
+    process.execPath,
+    [
+      'node_modules/wrangler/bin/wrangler.js',
+      'secret',
+      'bulk',
+      file,
+      '--name',
+      WORKER,
+    ],
+    { stdio: 'inherit' },
+  );
 } finally {
   fs.rmSync(file, { force: true });
 }
 
+const TICK_URL =
+  'https://sites-project.bishoptewogbade.workers.dev/api/automation/tick';
+const handoff = '.env.automation-github-secrets';
+
+fs.writeFileSync(
+  handoff,
+  `Paste these two into the repository secrets, then delete this file.
+https://github.com/bamideletewogbade/aksen-labs/settings/secrets/actions
+
+AUTOMATION_SECRET
+${secret}
+
+AUTOMATION_TICK_URL
+${TICK_URL}
+`,
+);
+
 console.log(`
 Uploaded ${KEY} to the ${WORKER} Worker.
 
-Two repository secrets finish the wiring, at
-https://github.com/bamideletewogbade/aksen-labs/settings/secrets/actions
-
-  AUTOMATION_SECRET      ${secret}
-  AUTOMATION_TICK_URL    https://sites-project.bishoptewogbade.workers.dev/api/automation/tick
-
-That value is printed once. Run this script again to rotate it, and paste the
-new one into the same place.
+The two values GitHub needs are in ${handoff}, deliberately not on screen.
+Open it, paste both at the link inside, then delete it. Run this script again
+to rotate, which replaces the Worker secret and this file together.
 `);
