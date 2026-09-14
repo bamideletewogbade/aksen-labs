@@ -1,6 +1,7 @@
 import { agencyDescription, services, approach } from './agency-content';
 import { stages, carePlans, pricingGroups, pricingFaqs } from './pricing';
 import { freeTools, products } from './product-catalog';
+import { whatsappDisplay } from './contact-channels';
 
 export type SupportArticle = {
   id: string;
@@ -88,9 +89,9 @@ export function supportArticles(): SupportArticle[] {
       title: 'Talk to the team',
       href: '/agent-mapper',
       keywords:
-        'human person contact support help broken login issue complaint refund urgent invoice order status existing project email',
+        'human person contact support help broken login issue complaint refund urgent invoice order status existing project email whatsapp message phone number call',
       content:
-        'Use the business enquiry form to give the team your goal and a reply address. This public assistant cannot view private accounts, invoices, orders or projects, book meetings, issue refunds, send emails, accept payments or make commitments. Do not ask for passwords, card details or credentials. An escalation note can be recorded for the team, but it does not guarantee a reply or a booked appointment. Existing clients should use their agreed project support channel. No public response SLA is established.',
+        `Two ways to reach the team. The business enquiry form takes your goal and a reply address. Or message ${whatsappDisplay} on WhatsApp, which is a real number answered by a person and is not one of the fictional demonstrations on this site. This public assistant cannot view private accounts, invoices, orders or projects, book meetings, issue refunds, send emails or WhatsApp messages, accept payments or make commitments. Do not ask for passwords, card details or credentials. An escalation note can be recorded for the team, but it does not guarantee a reply or a booked appointment. Existing clients should use their agreed project support channel. No public response SLA is established, on either channel.`,
     },
     {
       id: 'demos',

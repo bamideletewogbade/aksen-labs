@@ -72,6 +72,14 @@ export default function PrivacyPage() {
               <strong>OpenRouter</strong> runs the AI models behind the agents
               and the assistant.
             </li>
+            <li>
+              <strong>WhatsApp, owned by Meta</strong>, carries the conversation
+              if you choose to message us there. Tapping our WhatsApp link tells
+              Meta you contacted us, and shows us your WhatsApp number and
+              profile name. We do not control that, and it happens before you
+              send anything, so use the enquiry form instead if you would rather
+              it did not.
+            </li>
           </ul>
           <p>
             To limit abuse of the free tools we count requests against a one-way

@@ -3,6 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { Reveal } from '@/components/agency-motion';
 import type { Metadata } from 'next';
 import { StandaloneMapper } from '@/components/standalone-mapper';
+import { WhatsAppLink } from '@/components/whatsapp-link';
 import { SiteFooter, SiteNav } from '@/components/site-chrome';
 export const metadata: Metadata = {
   title: 'Discuss Your Business | Aksen Labs',
@@ -46,6 +47,15 @@ export default async function OpportunityPage({
                 the scope and next steps. Sending an enquiry does not commit
                 you to a paid assessment or project.
               </p>
+            </div>
+            <div className="agency-contact-note">
+              <strong>Would you rather just message us?</strong>
+              <p>
+                WhatsApp reaches us directly, and a person answers. This is not
+                one of the demonstrations on this site: those use fictional
+                businesses. Email still works if you prefer a written trail.
+              </p>
+              <WhatsAppLink showNumber />
             </div>
             <div className="contact-opening-signoff">
               <ArrowUpRight strokeWidth={0.8} />

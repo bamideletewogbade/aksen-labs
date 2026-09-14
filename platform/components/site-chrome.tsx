@@ -4,6 +4,7 @@ import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AksenGuide } from '@/components/aksen-guide';
+import { WhatsAppLink } from '@/components/whatsapp-link';
 import { Reveal } from './agency-motion';
 const navItems = [
   { href: '/solutions', label: 'Services' },
@@ -215,7 +216,10 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           </div>
         </Reveal>
         <div className="refresh-footer-bottom">
-          <span>© {new Date().getFullYear()} Aksen Labs · Based in Ghana</span>
+          <span>
+            © {new Date().getFullYear()} Aksen Labs · Based in Ghana
+            <WhatsAppLink className="is-footer" label="WhatsApp" showNumber />
+          </span>
           <nav aria-label="Footer navigation">
             {navItems.map((item) => (
               <Link href={item.href} key={item.href}>

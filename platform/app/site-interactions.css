@@ -94,3 +94,74 @@
 .agency-nav-links a:focus-visible::after {
   transform: scaleX(1);
 }
+
+/* A real conversation with the team, not one of the fictional demonstrations.
+   WhatsApp's own green is used deliberately: it is the one cue that tells
+   someone at a glance which of the two this is. */
+.agency-site .whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 1px solid #25d36640;
+  border-radius: 999px;
+  color: #0f2a18;
+  background: #25d3661a;
+  font-size: 0.88rem;
+  font-weight: 640;
+  text-decoration: none;
+  transition:
+    background-color 170ms ease,
+    border-color 170ms ease,
+    transform 170ms ease;
+}
+.agency-site .whatsapp-link svg {
+  color: #128c4a;
+  flex-shrink: 0;
+}
+.agency-site .whatsapp-link small {
+  color: #3c5a47;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+.agency-site .whatsapp-link:is(:hover, :focus-visible) {
+  border-color: #25d36680;
+  background: #25d3662e;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .agency-site .whatsapp-link:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* The footer sits on a dark ground, so the same link needs the inverse
+
+   treatment rather than a second component. */
+.agency-site .whatsapp-link.is-footer {
+  min-height: 0;
+  margin: 0 0 0 14px;
+  padding: 5px 12px;
+  color: #d7f0e0;
+  background: #25d3661f;
+  border-color: #25d36638;
+  font-size: 0.78rem;
+}
+.agency-site .whatsapp-link.is-footer svg {
+  width: 14px;
+  height: 14px;
+  color: #4fe08a;
+}
+.agency-site .whatsapp-link.is-footer small {
+  color: #9ec2ab;
+}
+@media (max-width: 620px) {
+  .agency-site .whatsapp-link.is-footer {
+    margin: 10px 0 0;
+  }
+  .agency-site .whatsapp-link small {
+    display: none;
+  }
+}
