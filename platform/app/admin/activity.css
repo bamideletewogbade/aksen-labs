@@ -1,0 +1,231 @@
+/* AI activity: routing configuration and the run log.
+ *
+ * The page grew by appending, so everything had equal weight and the list ran
+ * on for ever. Two ideas fix that. Reference material is a click away rather
+ * than always on screen, and the log is paged so the page has an end.
+ */
+
+/* ---------- routing configuration ---------- */
+
+.admin-refresh .ai-routing-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px 28px;
+  margin: 4px 0 0;
+}
+.admin-refresh .ai-routing-facts dt {
+  color: #8ba392;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.admin-refresh .ai-routing-facts dd {
+  margin: 5px 0 0;
+  color: #e6efe7;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+/* Model names are identifiers, compared character by character rather than
+   read, so they are set in monospace and allowed to break anywhere. */
+.admin-refresh .ai-routing-facts code,
+.admin-refresh .ai-routing-chain code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.82rem;
+  padding: 3px 7px;
+  border-radius: 6px;
+  color: #dcecdd;
+  background: #ffffff0d;
+  overflow-wrap: anywhere;
+}
+.admin-refresh .ai-routing-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.admin-refresh .ai-routing-chain > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* The arrow is ornament between two names; it carries no meaning a screen
+   reader needs, and is already aria-hidden in the markup. */
+.admin-refresh .ai-routing-chain i {
+  color: #6f8676;
+  font-style: normal;
+}
+
+.admin-refresh .ai-routing-more {
+  margin-top: 18px;
+  border-top: 1px solid #2f4736;
+  padding-top: 14px;
+}
+.admin-refresh .ai-routing-more > summary {
+  cursor: pointer;
+  color: #bde997;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 6px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 150ms ease;
+}
+.admin-refresh .ai-routing-more > summary::-webkit-details-marker {
+  display: none;
+}
+/* A triangle that turns, so the control says which way it is about to go
+   rather than only what it currently is. */
+.admin-refresh .ai-routing-more > summary::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 180ms ease;
+}
+.admin-refresh .ai-routing-more[open] > summary::before {
+  transform: rotate(90deg);
+}
+.admin-refresh .ai-routing-more > summary:hover {
+  color: #d6f5bb;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .admin-refresh .ai-routing-more[open] > *:not(summary) {
+    animation: arrive-in 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+.admin-refresh .ai-profile-table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+.admin-refresh .ai-profile-table th,
+.admin-refresh .ai-profile-table td {
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 1px solid #24382b;
+}
+.admin-refresh .ai-profile-table thead th {
+  color: #8ba392;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.admin-refresh .ai-profile-table tbody th {
+  color: #e6efe7;
+  font-weight: 600;
+}
+.admin-refresh .ai-profile-table .num {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: #c3d3c6;
+}
+/* Tier is ordinal, so it reads as a rising scale rather than three labels. */
+.admin-refresh .tier-mark {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.admin-refresh .tier-mark[data-tier='low'] {
+  color: #9fe08a;
+  background: #9fe08a1c;
+}
+.admin-refresh .tier-mark[data-tier='medium'] {
+  color: #e7c46a;
+  background: #e7c46a1c;
+}
+.admin-refresh .tier-mark[data-tier='high'] {
+  color: #e58b7b;
+  background: #e58b7b1c;
+}
+
+/* ---------- run log ---------- */
+
+.admin-refresh .run-range {
+  margin: 4px 0 0;
+  color: #8ba392;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-refresh .run-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #2f4736;
+}
+.admin-refresh .run-pager a,
+.admin-refresh .run-pager > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #3d5443;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+.admin-refresh .run-pager a {
+  color: #d7ead9;
+}
+.admin-refresh .run-pager a:is(:hover, :focus-visible) {
+  color: #0d1f14;
+  border-color: #bde997;
+  background: #bde997;
+}
+/* The end of the range is text, not a disabled link: a link that goes nowhere
+   still takes focus and still announces itself as a link. */
+.admin-refresh .run-pager > span {
+  color: #5d7163;
+  border-color: #24382b;
+  cursor: default;
+}
+.admin-refresh .run-pager small {
+  color: #8ba392;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .admin-refresh .run-pager a:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* The list arrives rather than appearing, which distinguishes a page that has
+   just changed from one that was always there. Each row is readable at every
+   frame; only opacity and a few pixels of travel are animated. */
+@media (prefers-reduced-motion: no-preference) {
+  .admin-refresh .run-list > article {
+    animation: arrive-in 320ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .admin-refresh .run-list > article:nth-child(1) { animation-delay: 0ms; }
+  .admin-refresh .run-list > article:nth-child(2) { animation-delay: 24ms; }
+  .admin-refresh .run-list > article:nth-child(3) { animation-delay: 48ms; }
+  .admin-refresh .run-list > article:nth-child(4) { animation-delay: 72ms; }
+  .admin-refresh .run-list > article:nth-child(5) { animation-delay: 96ms; }
+  .admin-refresh .run-list > article:nth-child(6) { animation-delay: 120ms; }
+  /* Capped deliberately: past the sixth row the delay would outlast the wait
+     for the next page, and the list would feel slower rather than livelier. */
+  .admin-refresh .run-list > article:nth-child(n + 7) {
+    animation-delay: 140ms;
+  }
+}

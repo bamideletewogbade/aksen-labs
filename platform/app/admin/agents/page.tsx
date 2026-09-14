@@ -1,7 +1,14 @@
 import { routingConfig, AI_PROFILES } from '@/lib/ai-routing';
 import { AiConnectionCheck } from '@/components/ai-connection-check';
 import { desc, sql } from 'drizzle-orm';
-import { Bot, CheckCircle2, XCircle } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Bot,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  XCircle,
+} from 'lucide-react';
 import { getDb } from '@/db';
 import { agentRuns } from '@/db/schema';
 
@@ -84,28 +91,56 @@ function timeAgo(date: Date): string {
 
 export const metadata = { title: 'AI activity | Aksen Workspace' };
 
-export default async function AdminAgentsPage() {
+/** Twenty fills a screen without the page becoming a scroll to nowhere. */
+const RUNS_PER_PAGE = 20;
+
+export default async function AdminAgentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const config = routingConfig();
   let runs: RunView[] = [];
   let totalMicros = 0;
+  let totalRuns = 0;
   let loadFailed = false;
+
+  // Paged through the URL rather than held in component state, so a page
+  // survives a reload, can be linked to, and works with the browser's own back
+  // button. The page number is clamped after the count is known, so a hand-typed
+  // ?page=900 lands on the last page instead of on an empty list.
+  const requested = Math.max(1, Number((await searchParams).page) || 1);
+
   try {
     const db = getDb();
-    // Neon's HTTP driver costs a round trip per query, so independent reads go
-    // together rather than one after the other.
-    const [runRows, [totals]] = await Promise.all([
-      db.select().from(agentRuns).orderBy(desc(agentRuns.createdAt)).limit(30),
-      db
-        .select({
-          spend: sql<number>`coalesce(sum(${agentRuns.costMicros}), 0)`,
-        })
-        .from(agentRuns),
-    ]);
-    runs = runRows;
+    // The count has to come back before the page query, because the offset
+    // depends on it: a hand-typed ?page=900 must land on the last page rather
+    // than fetch an empty window. Cost and count share one round trip, which
+    // matters on Neon's HTTP driver where every query is its own request.
+    const [totals] = await db
+      .select({
+        spend: sql<number>`coalesce(sum(${agentRuns.costMicros}), 0)`,
+        runs: sql<number>`count(*)`,
+      })
+      .from(agentRuns);
     totalMicros = Number(totals?.spend ?? 0);
+    totalRuns = Number(totals?.runs ?? 0);
+    const lastPage = Math.max(1, Math.ceil(totalRuns / RUNS_PER_PAGE));
+    const page = Math.min(requested, lastPage);
+    runs = await db
+      .select()
+      .from(agentRuns)
+      .orderBy(desc(agentRuns.createdAt))
+      .limit(RUNS_PER_PAGE)
+      .offset((page - 1) * RUNS_PER_PAGE);
   } catch {
     loadFailed = true;
   }
+
+  const lastPage = Math.max(1, Math.ceil(totalRuns / RUNS_PER_PAGE));
+  const page = Math.min(requested, lastPage);
+  const firstShown = totalRuns === 0 ? 0 : (page - 1) * RUNS_PER_PAGE + 1;
+  const lastShown = Math.min(page * RUNS_PER_PAGE, totalRuns);
 
   return (
     <section className="admin-main" id="agents">
@@ -133,56 +168,109 @@ export default async function AdminAgentsPage() {
             {process.env.OPENROUTER_API_KEY ? 'Key configured' : 'Key missing'}
           </span>
         </div>
+        {/* Two facts answer almost every visit to this panel: which model runs
+            by default, and what it falls back to. They are shown; everything
+            else is reference and is a click away. Model identifiers are set in
+            monospace because they are identifiers to be compared character by
+            character, not prose to be read. */}
         <dl className="ai-routing-facts">
           <div>
             <dt>Default model</dt>
-            <dd>{config.defaultModel}</dd>
-          </div>
-          <div>
-            <dt>Request order</dt>
-            <dd>{config.models.join(' → ')}</dd>
-          </div>
-          <div>
-            <dt>Auto-router candidates</dt>
             <dd>
-              {config.allowedModels.length
-                ? config.allowedModels.join(', ')
-                : 'OpenRouter candidates, subject to account settings'}
+              <code>{config.defaultModel}</code>
             </dd>
           </div>
           <div>
-            <dt>Output limits</dt>
-            <dd>Up to 4,000 tokens per request; task-specific timeouts</dd>
+            <dt>Request order</dt>
+            <dd className="ai-routing-chain">
+              {config.models.map((model, index) => (
+                <span key={model}>
+                  {index > 0 && <i aria-hidden="true">→</i>}
+                  <code>{model}</code>
+                </span>
+              ))}
+            </dd>
           </div>
         </dl>
-        <div className="ai-profile-list">
-          {Object.entries(AI_PROFILES).map(([id, profile]) => (
-            <p key={id}>
-              <strong>{profile.label}</strong>
-              <span>
-                {routingConfig(id as keyof typeof AI_PROFILES).costTier} cost
-                tier · {profile.maxTokens} profile output tokens
-              </span>
-            </p>
-          ))}
-        </div>
-        <p>
-          A minimum 1,024-token completion allowance accommodates reasoning
-          models; short-answer prompts still request concise answers. Cost tiers
-          guide selection; they are not a spending cap. Set hard budget limits
-          in OpenRouter. Image and video generation keep their separate media
-          models.
-        </p>
+
+        <details className="ai-routing-more">
+          <summary>How a model gets chosen, and what it may cost</summary>
+          <dl className="ai-routing-facts">
+            <div>
+              <dt>Auto-router candidates</dt>
+              <dd>
+                {config.allowedModels.length
+                  ? config.allowedModels.join(', ')
+                  : 'OpenRouter candidates, subject to account settings'}
+              </dd>
+            </div>
+            <div>
+              <dt>Output limits</dt>
+              <dd>Up to 4,000 tokens per request; task-specific timeouts</dd>
+            </div>
+          </dl>
+          <table className="ai-profile-table">
+            <caption className="sr-only">
+              Cost tier and output allowance for each kind of task
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Task</th>
+                <th scope="col">Cost tier</th>
+                <th scope="col">Output tokens</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(AI_PROFILES).map(([id, profile]) => {
+                const tier = routingConfig(
+                  id as keyof typeof AI_PROFILES,
+                ).costTier;
+                return (
+                  <tr key={id}>
+                    <th scope="row">{profile.label}</th>
+                    <td>
+                      <span className="tier-mark" data-tier={tier}>
+                        {tier}
+                      </span>
+                    </td>
+                    <td className="num">{profile.maxTokens}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p>
+            A minimum 1,024-token completion allowance accommodates reasoning
+            models; short-answer prompts still request concise answers. Cost
+            tiers guide selection; <strong>they are not a spending cap</strong>.
+            Set hard budget limits in OpenRouter. Image and video generation
+            keep their separate media models.
+          </p>
+        </details>
+
         <AiConnectionCheck />
       </section>
       <div className="admin-layout">
         <section className="admin-panel activity-panel">
           <div className="panel-head">
             <div>
-              <small>LATEST 30 RUNS</small>
+              {/* "LATEST 30 RUNS" above "30 logged" said the same thing twice
+                  and neither was the total: it was the page size wearing the
+                  count's clothes. The heading is now the real number of runs
+                  ever recorded, and the range being viewed sits under it. */}
+              <small>ACTIVITY</small>
               <h2>
-                {loadFailed ? 'Records unavailable' : `${runs.length} logged`}
+                {loadFailed
+                  ? 'Records unavailable'
+                  : `${totalRuns.toLocaleString()} ${totalRuns === 1 ? 'run' : 'runs'} logged`}
               </h2>
+              {!loadFailed && totalRuns > 0 && (
+                <p className="run-range">
+                  Showing {firstShown.toLocaleString()}–
+                  {lastShown.toLocaleString()}
+                  {lastPage > 1 ? ` · page ${page} of ${lastPage}` : ''}
+                </p>
+              )}
             </div>
             <span className="live-label">
               {loadFailed
@@ -229,6 +317,36 @@ export default async function AdminAgentsPage() {
                   </small>
                 </article>
               ))}
+              {lastPage > 1 && (
+                // Plain links, so paging works before hydration, opens in a new
+                // tab on a middle click, and leaves a real history entry. The
+                // ends are rendered as text rather than as disabled links,
+                // because a link that goes nowhere is still focusable and still
+                // announces itself as a link.
+                <nav className="run-pager" aria-label="Activity pages">
+                  {page > 1 ? (
+                    <Link href={`/admin/agents?page=${page - 1}`} rel="prev">
+                      <ChevronLeft size={15} /> Newer
+                    </Link>
+                  ) : (
+                    <span>
+                      <ChevronLeft size={15} /> Newer
+                    </span>
+                  )}
+                  <small>
+                    Page {page} of {lastPage}
+                  </small>
+                  {page < lastPage ? (
+                    <Link href={`/admin/agents?page=${page + 1}`} rel="next">
+                      Older <ChevronRight size={15} />
+                    </Link>
+                  ) : (
+                    <span>
+                      Older <ChevronRight size={15} />
+                    </span>
+                  )}
+                </nav>
+              )}
             </div>
           ) : (
             <div className="empty-admin">
