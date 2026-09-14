@@ -17,8 +17,19 @@ export type FounderActivityPoint = {
 };
 
 export function FounderActivityChart({ data }: { data: FounderActivityPoint[] }) {
+  const hasActivity = data.some((point) => point.leads > 0 || point.aiRuns > 0);
+
+  if (!hasActivity) {
+    return (
+      <div className="founder-chart founder-chart-empty">
+        <strong>No new activity in the last 14 days.</strong>
+        <span>New leads and completed AI runs will appear here.</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="founder-chart" role="img" aria-label="Fourteen-day lead and AI activity chart">
+    <div className="founder-chart" aria-label="Fourteen-day lead and AI activity chart">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 12, right: 10, bottom: 0, left: -26 }}>
           <defs>

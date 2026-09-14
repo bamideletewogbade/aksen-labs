@@ -1106,6 +1106,22 @@
     height: 220px;
     padding: 12px 14px 10px;
   }
+  .admin-refresh .founder-chart-empty {
+    height: 126px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    padding: 22px 20px;
+    color: var(--muted);
+  }
+  .admin-refresh .founder-chart-empty strong {
+    color: var(--bright);
+    font-size: 15px;
+  }
+  .admin-refresh .founder-chart-empty span {
+    font-size: 13px;
+  }
   .admin-refresh .founder-card {
     min-width: 0;
     border: 1px solid var(--line);
