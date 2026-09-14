@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   ClipboardList,
   Search,
+  SlidersHorizontal,
   Image,
   MonitorPlay,
   Mail,
@@ -71,6 +72,7 @@ const groups = [
         label: 'Support knowledge',
         icon: BookOpen,
       },
+      { href: '/admin/settings', label: 'Settings', icon: SlidersHorizontal },
     ],
   },
 ];

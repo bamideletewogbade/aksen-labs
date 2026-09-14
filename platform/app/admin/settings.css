@@ -1,0 +1,133 @@
+/* Settings: a short form, then a read-only account of the deployment. */
+
+.admin-refresh .settings-form {
+  display: grid;
+  gap: 18px;
+  max-width: 520px;
+  margin-top: 4px;
+}
+.admin-refresh .settings-form label {
+  display: grid;
+  gap: 6px;
+  color: #c3d3c6;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.admin-refresh .settings-form input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 1px solid #78947e;
+  border-radius: 9px;
+  color: #edf5ee;
+  background: #0c1a12;
+  font: inherit;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.admin-refresh .settings-form input:focus-visible {
+  outline: none;
+  border-color: #bde997;
+  box-shadow: 0 0 0 3px rgba(189, 233, 151, 0.16);
+}
+/* A disabled field that looks like an enabled one invites people to try, so it
+   is visibly inert and the caption says where it is actually changed. */
+.admin-refresh .settings-form input:disabled {
+  color: #9bb0a1;
+  background: #0a150f;
+  border-color: #2f4736;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.admin-refresh .settings-form small {
+  color: #8ba392;
+  font-size: 0.76rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.admin-refresh .settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.admin-refresh .settings-intro {
+  max-width: 60ch;
+  color: #a9bdae;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.admin-refresh .settings-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+}
+.admin-refresh .settings-status > div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid #2f4736;
+  border-left-width: 3px;
+  border-radius: 10px;
+  background: #0f2117;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+/* Configured and not configured are different states, not different opinions,
+   so the edge says which without a second reading. */
+.admin-refresh .settings-status > div[data-ok='true'] {
+  border-left-color: #7fbf6a;
+}
+.admin-refresh .settings-status > div[data-ok='false'] {
+  border-left-color: #e58b7b;
+}
+.admin-refresh .settings-status dt {
+  color: #8ba392;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.admin-refresh .settings-status dd {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+.admin-refresh .settings-status dd strong {
+  color: #e6efe7;
+  font-size: 0.94rem;
+}
+.admin-refresh .settings-status dd small {
+  color: #7d9184;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .admin-refresh .settings-status > div {
+    animation: arrive-in 320ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .admin-refresh .settings-status > div:nth-child(2) { animation-delay: 40ms; }
+  .admin-refresh .settings-status > div:nth-child(3) { animation-delay: 80ms; }
+  .admin-refresh .settings-status > div:nth-child(4) { animation-delay: 120ms; }
+  .admin-refresh .settings-status > div:nth-child(5) { animation-delay: 160ms; }
+}
+
+/* The sidebar now shows a name and a way to change it, where it previously
+   showed an email address styled as though it were a name. */
+.admin-refresh .admin-profile span a {
+  color: #8ba392;
+  font-size: 0.74rem;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.admin-refresh .admin-profile span a:is(:hover, :focus-visible) {
+  color: #bde997;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

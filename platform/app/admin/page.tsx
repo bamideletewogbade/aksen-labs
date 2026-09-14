@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { sql } from 'drizzle-orm';
+import { greetingName, workspaceProfile } from '@/lib/workspace-settings';
 import {
   ArrowRight,
   Bot,
@@ -216,10 +217,15 @@ export default async function AdminPage() {
     databaseReady = false;
   }
 
-  const firstName =
-    user?.fullName?.split(' ')[0] ||
-    user?.displayName.split('@')[0] ||
-    'Adeyinka';
+  // Was hardcoded to a name, in two files, so the dashboard greeted the wrong
+  // person on every visit and correcting it meant a deploy. It now comes from
+  // the profile, which is editable in Settings.
+  const profile = await workspaceProfile(owner);
+  const firstName = greetingName(
+    profile,
+    user?.fullName ?? null,
+    user?.displayName ?? '',
+  );
   const totalPipeline = pipeline.reduce((sum, item) => sum + item.count, 0);
   const pipelineMap = new Map(pipeline.map((item) => [item.stage, item.count]));
   const cashPosition = overdueByCurrency.length

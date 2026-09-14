@@ -26,11 +26,16 @@ export async function adminSessionUser(cookie: string | null) {
       sql`SELECT owner_id,email FROM admin_sessions WHERE token_hash=${await digestToken(token)} AND expires_at>now() AND config_version=${await sessionVersion()}`,
     );
     if (!result.rows.length) return null;
+    // The name was written in here as a literal, so every page addressed the
+    // same person regardless of who signed in. The session knows the email and
+    // nothing more; the name belongs to the profile, which Settings can change
+    // without a deploy. Callers resolve it through greetingName.
+    const email = String(result.rows[0].email);
     return {
       userId: String(result.rows[0].owner_id),
-      email: String(result.rows[0].email),
-      displayName: 'Adeyinka',
-      fullName: 'Adeyinka',
+      email,
+      displayName: email,
+      fullName: null,
     };
   } catch {
     return null;
