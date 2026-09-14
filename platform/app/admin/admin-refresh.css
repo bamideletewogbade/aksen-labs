@@ -1766,3 +1766,104 @@
     padding: 14px;
   }
 }
+
+/* ---- article list filters ---- */
+/* Thirty rows with no way to narrow them is fine at three articles and
+   unusable at thirty. Counts come from the same list the rows come from. */
+.admin-refresh .content-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #253a2a;
+}
+.admin-refresh .content-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.admin-refresh .content-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid #2b4130;
+  border-radius: 999px;
+  background: #0f1d15;
+  color: #b0c3a7;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.admin-refresh .content-view:hover {
+  border-color: #70935b;
+  color: #e2f5d2;
+}
+.admin-refresh .content-view > span {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: #8fa985;
+}
+.admin-refresh .content-view[aria-pressed='true'] {
+  background: #bde997;
+  border-color: #bde997;
+  color: #14261a;
+  font-weight: 600;
+}
+.admin-refresh .content-view[aria-pressed='true'] > span {
+  color: #2c4a30;
+}
+.admin-refresh .content-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+  max-width: 320px;
+  padding: 0 12px;
+  border: 1px solid #2b4130;
+  border-radius: 9px;
+  background: #0c1a12;
+  color: #8fa985;
+}
+.admin-refresh .content-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: #e4ede4;
+  font: inherit;
+  font-size: 13px;
+}
+.admin-refresh .content-search input:focus {
+  outline: none;
+}
+.admin-refresh .content-search:focus-within {
+  border-color: #70935b;
+}
+.admin-refresh .content-none {
+  margin: 0;
+  padding: 26px 18px;
+  color: #8fa985;
+  font-size: 13px;
+}
+/* ConfirmAction replaced a native confirm() here, and it arms in place, so the
+   row needs to survive the label growing from "Delete" to "Delete for good". */
+.admin-refresh .content-actions .content-delete {
+  flex-shrink: 0;
+}
+@media (max-width: 620px) {
+  .admin-refresh .content-filters {
+    padding: 13px 14px;
+  }
+  .admin-refresh .content-search {
+    max-width: none;
+  }
+}

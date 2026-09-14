@@ -71,7 +71,7 @@ export default async function AdminContentPage() {
           is empty by design should not occupy space by default, which is the
           argument for it not being in the sidebar either. */}
       {decisions.length > 0 && (
-        <section className="admin-panel decision-panel arrive">
+        <section className="admin-panel decision-panel arrive" id="waiting">
           <div className="panel-head">
             <div>
               <small>WAITING FOR YOU</small>
