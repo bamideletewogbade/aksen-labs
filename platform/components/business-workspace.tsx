@@ -1,6 +1,7 @@
 'use client';
 
 import {ResponseText} from '@/components/response-text';
+import { SkeletonRows } from '@/components/ui/activity';
 import { useEffect, useRef, useState } from 'react';
 import { FileText, FolderOpen, Plus, FilePenLine, Wallet, ArrowRight, Download } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -61,7 +62,7 @@ export function BusinessWorkspace() {
       <div className="ws-toolbar"><label>Business<select value={businessId} onChange={e => setBusinessId(e.target.value)} disabled={busy || loading}><option value="">Choose a business</option>{businesses.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></label><button onClick={() => setCreate(!create)} disabled={busy}><Plus size={17} /> New business</button><button onClick={() => run(async () => { await loadBusinesses(); if (businessId) await reload(); })} disabled={busy}>Refresh</button></div>
       {error && <p className="ws-alert" role="alert">{error}</p>}{message && <p className="ws-success" role="status">{message}</p>}
       {create && <form className="ws-card ws-form" onSubmit={e => { e.preventDefault(); const form = e.currentTarget; const fields = new FormData(form); void run(async () => { const result = await request({ action: 'createBusiness', name: fields.get('name'), currency: fields.get('currency'), context: fields.get('context') }); await loadBusinesses(); setBusinessId(String(result.id)); setCreate(false); }); }}><h2>Open a business file</h2><label>Business or working name<input name="name" required maxLength={160} /></label><label>Default currency<select name="currency" defaultValue="GHS">{currencies.map(c => <option key={c}>{c}</option>)}</select></label><label>Context and open questions<textarea name="context" rows={3} placeholder="Relationship, current stage and what still needs confirming" maxLength={4000} /></label><p className="ws-note">Starts as a prospect. A business file does not imply a signed client or confirmed legal identity.</p><button disabled={busy}>Create workspace</button></form>}
-      {loading && <p role="status">Loading your records…</p>}
+      {loading && <SkeletonRows rows={4} label="Loading your records" />}
       {!loading && !businessId && !create && <div className="ws-empty"><FolderOpen size={32} /><h2>Start with a business, even before a project exists.</h2><p>Keep research and discovery here. Add proposals and billing when the scope is ready.</p><button onClick={() => setCreate(true)}>Open the first business file</button></div>}
       {data && <>
         <div className="ws-context"><div><span className="ws-badge">{data.business.stage}</span><h2>{data.business.name}</h2><details><summary>Context and open questions</summary><p>{data.business.context || 'Add background as a source note. Keep assumptions visible until confirmed.'}</p></details></div><div className="ws-counts"><span><strong>{data.documents.length}</strong> documents</span><span><strong>{data.financials.filter(f => f.kind === 'invoice').length}</strong> invoices</span><span><strong>{data.business.currency}</strong> default currency</span></div></div>

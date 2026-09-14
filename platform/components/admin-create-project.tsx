@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowRight, BriefcaseBusiness, Check } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness } from 'lucide-react';
 import { useState } from 'react';
+import { PendingButton } from '@/components/ui/activity';
 
 export function AdminCreateProject() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
@@ -60,21 +61,15 @@ export function AdminCreateProject() {
             placeholder="What must improve, for whom, and how will we know?"
           />
         </label>
-        <button
+        <PendingButton
           className="create-submit"
-          disabled={status === 'saving' || status === 'saved'}
+          pending={status === 'saving'}
+          done={status === 'saved'}
+          pendingLabel="Creating"
+          doneLabel="Saved"
         >
-          {status === 'saved' ? (
-            <>
-              <Check /> Saved
-            </>
-          ) : (
-            <>
-              {status === 'saving' ? 'Saving...' : 'Create project'}{' '}
-              <ArrowRight />
-            </>
-          )}
-        </button>
+          Create project <ArrowRight />
+        </PendingButton>
         {status === 'error' && (
           <p className="form-error">
             This could not be saved. Confirm the Neon database and your admin

@@ -13,6 +13,7 @@ import './immersive-hero.css';
 import './response-text.css';
 import './agent-workbench.css';
 import './site-interactions.css';
+import './motion-system.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

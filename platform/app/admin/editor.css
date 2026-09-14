@@ -1,0 +1,180 @@
+/* Markdown editor. Scoped to the admin shell, which is the only place it is
+   used, so it cannot reach the public pages. */
+
+.admin-refresh .md-editor {
+  margin-top: 8px;
+  border: 1px solid #78947e;
+  border-radius: 10px;
+  background: #0c1a12;
+  overflow: hidden;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.admin-refresh .md-editor:focus-within {
+  border-color: #bde997;
+  box-shadow: 0 0 0 3px rgba(189, 233, 151, 0.16);
+}
+
+.admin-refresh .md-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  padding: 7px 8px;
+  border-bottom: 1px solid #2f4736;
+  background: #0f2117;
+}
+.admin-refresh .md-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* 34px rather than the 44px used for primary actions: these sit in a dense
+     row, are all keyboard reachable, and each has a labelled equivalent. */
+  min-height: 34px;
+  min-width: 34px;
+  justify-content: center;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #b6c8ba;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease;
+}
+.admin-refresh .md-toolbar button:hover:not(:disabled) {
+  color: #eaf5ea;
+  background: rgba(189, 233, 151, 0.1);
+}
+.admin-refresh .md-toolbar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.admin-refresh .md-toolbar button[aria-pressed='true'] {
+  color: #0d1f14;
+  background: #bde997;
+  border-color: #bde997;
+}
+.admin-refresh .md-toolbar-spacer {
+  flex: 1 1 auto;
+}
+.admin-refresh .md-preview-toggle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0 11px;
+}
+.admin-refresh .md-count {
+  color: #8ba392;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  padding-right: 6px;
+}
+.admin-refresh .md-count.is-near {
+  color: #e7c46a;
+}
+
+.admin-refresh .md-input {
+  display: block;
+  width: 100%;
+  border: 0;
+  outline: none;
+  padding: 16px;
+  color: #edf5ee;
+  background: transparent;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  tab-size: 2;
+  resize: vertical;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.admin-refresh .md-input::placeholder {
+  color: #6f8676;
+}
+
+/* The preview is set in the reading face, because its job is to show what the
+   published text will look like rather than to echo the markup. */
+.admin-refresh .md-preview {
+  padding: 18px 20px;
+  min-height: 160px;
+  color: #e4ede4;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+.admin-refresh .md-preview > :first-child {
+  margin-top: 0;
+}
+.admin-refresh .md-preview > :last-child {
+  margin-bottom: 0;
+}
+.admin-refresh .md-preview h2,
+.admin-refresh .md-preview h3,
+.admin-refresh .md-preview h4 {
+  margin: 22px 0 8px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.admin-refresh .md-preview h2 {
+  font-size: 1.35rem;
+}
+.admin-refresh .md-preview h3 {
+  font-size: 1.12rem;
+}
+.admin-refresh .md-preview h4 {
+  font-size: 1rem;
+}
+.admin-refresh .md-preview p {
+  margin: 0 0 14px;
+}
+.admin-refresh .md-preview ul,
+.admin-refresh .md-preview ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+.admin-refresh .md-preview li {
+  margin: 5px 0;
+}
+.admin-refresh .md-preview blockquote {
+  margin: 0 0 14px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid #bde997;
+  color: #b9c9bc;
+}
+.admin-refresh .md-preview code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(189, 233, 151, 0.1);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.86em;
+}
+.admin-refresh .md-preview a {
+  color: #bde997;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.admin-refresh .md-preview hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #2f4736;
+}
+.admin-refresh .md-preview-empty {
+  color: #7d9184;
+  font-style: italic;
+}
+
+/* The editor replaces a <textarea> that sat inside a <label>. A label cannot
+   wrap a toolbar of buttons without capturing their clicks, so the caption is
+   a sibling and matches the surrounding form labels. */
+.admin-refresh .md-field-label {
+  display: block;
+  margin-top: 14px;
+  color: #c3d3c6;
+  font-size: 0.86rem;
+  font-weight: 600;
+}

@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowRight, Check, UserPlus } from 'lucide-react';
+import { ArrowRight, UserPlus } from 'lucide-react';
 import { useState } from 'react';
+import { PendingButton } from '@/components/ui/activity';
 
 export function AdminAddLead() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
@@ -86,21 +87,15 @@ export function AdminAddLead() {
           Follow up on <small>optional</small>
           <input name="followUpAt" type="date" />
         </label>
-        <button
+        <PendingButton
           className="create-submit"
-          disabled={status === 'saving' || status === 'saved'}
+          pending={status === 'saving'}
+          done={status === 'saved'}
+          pendingLabel="Adding"
+          doneLabel="Added"
         >
-          {status === 'saved' ? (
-            <>
-              <Check /> Added
-            </>
-          ) : (
-            <>
-              {status === 'saving' ? 'Saving...' : 'Add to pipeline'}{' '}
-              <ArrowRight />
-            </>
-          )}
-        </button>
+          Add to pipeline <ArrowRight />
+        </PendingButton>
         {status === 'error' && (
           <p className="form-error">
             {message ||

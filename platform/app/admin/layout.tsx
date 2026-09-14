@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { requireAdminUser, chatGPTSignOutPath } from '@/app/chatgpt-auth';
 import { AdminNav } from '@/components/admin-nav';
+import { RouteTransition } from '@/components/route-transition';
 import './admin-refresh.css';
+import './editor.css';
 export const metadata = {
   title: 'Aksen Workspace',
   robots: { index: false, follow: false },
@@ -38,7 +40,7 @@ export default async function AdminLayout({
         </div>
       </aside>
       <main id="admin-content" className="admin-content">
-        {children}
+        <RouteTransition>{children}</RouteTransition>
       </main>
     </div>
   );

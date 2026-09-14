@@ -78,6 +78,25 @@
 .admin-refresh .scout-counter.is-near {
   color: #e7c46a;
 }
+/* A run takes about a minute, so the wait needs something that is visibly
+   still working rather than a line of text that could equally be stuck. */
+.admin-refresh .scout-working {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(189, 233, 151, 0.22);
+  border-radius: 9px;
+  background: rgba(189, 233, 151, 0.05);
+  color: #cfe0d2;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.admin-refresh .scout-working .aksen-spinner {
+  margin-top: 2px;
+  color: #bde997;
+}
 .admin-refresh .scout-actions {
   display: flex;
   flex-wrap: wrap;

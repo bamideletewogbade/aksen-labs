@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { SkeletonRows, Spinner } from '@/components/ui/activity';
 import type { Prospect } from '@/lib/prospect-evidence';
 type Lead = {
   id: string;
@@ -354,13 +355,16 @@ export function LeadScout() {
           searches; recurring execution requires the connected scheduler.
         </p>
         {busy && (
-          <output aria-live="polite">
-            {pending.startsWith('enrich')
-              ? 'Enriching the selected business…'
-              : pending === 'discover'
-                ? 'Researching businesses…'
-                : 'Saving or refreshing…'}{' '}
-            Research can take about a minute.
+          <output aria-live="polite" className="scout-working">
+            <Spinner size={15} />
+            <span>
+              {pending.startsWith('enrich')
+                ? 'Enriching the selected business…'
+                : pending === 'discover'
+                  ? 'Researching businesses…'
+                  : 'Saving or refreshing…'}{' '}
+              Research can take about a minute.
+            </span>
           </output>
         )}
         {message && <output aria-live="polite">{message}</output>}
@@ -485,7 +489,7 @@ export function LeadScout() {
             ),
           )}
         </fieldset>
-        {!data && !error && <p>Loading saved leads…</p>}
+        {!data && !error && <SkeletonRows rows={5} label="Loading saved leads" />}
         {data && !visible.length && (
           <p>No leads in this view. Run a search or choose another status.</p>
         )}
