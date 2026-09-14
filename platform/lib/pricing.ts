@@ -35,7 +35,7 @@ export const stages: PricingStage[] = [
   {
     number: '01',
     title: 'Assess',
-    price: { kind: 'exact', from: 1500 },
+    price: { kind: 'exact', from: 1500, set: { NGN: { from: 180000 } } },
     cadence: 'fixed',
     text: 'One process examined properly before anyone builds anything. If the assessment shows the work is not worth doing, we say so.',
     includes: [
@@ -47,7 +47,7 @@ export const stages: PricingStage[] = [
   {
     number: '02',
     title: 'Build',
-    price: { kind: 'from', from: 3000 },
+    price: { kind: 'from', from: 3000, set: { NGN: { from: 350000 } } },
     cadence: 'per project',
     text: 'A defined piece of work with agreed deliverables, acceptance criteria and a named owner on both sides.',
     includes: [
@@ -59,7 +59,7 @@ export const stages: PricingStage[] = [
   {
     number: '03',
     title: 'Operate',
-    price: { kind: 'from', from: 900 },
+    price: { kind: 'from', from: 900, set: { NGN: { from: 110000 } } },
     cadence: 'per month',
     text: 'Someone responsible for the system after launch: monitoring, corrections and a monthly review of whether it still earns its place.',
     includes: [
@@ -76,35 +76,35 @@ const packagesByService: Record<string, PricingPackage[]> = {
     // starting figure no listed package matches.
     {
       name: 'Single page',
-      price: { kind: 'range', from: 3000, to: 6000 },
+      price: { kind: 'range', from: 3000, to: 6000, set: { NGN: { from: 350000, to: 700000 } } },
       scope:
         'One page with an enquiry form that reaches a named person with the details already complete, plus analytics and launch. The smallest thing we will build properly.',
       timing: '1–2 weeks',
     },
     {
       name: 'Campaign site',
-      price: { kind: 'range', from: 6500, to: 10000 },
+      price: { kind: 'range', from: 6500, to: 10000, set: { NGN: { from: 750000, to: 1200000 } } },
       scope:
         'One focused conversion journey, responsive build, enquiry form, analytics and launch.',
       timing: '2–3 weeks',
     },
     {
       name: 'Business website',
-      price: { kind: 'range', from: 10000, to: 18000 },
+      price: { kind: 'range', from: 10000, to: 18000, set: { NGN: { from: 1200000, to: 2200000 } } },
       scope:
         'Core pages, services, proof, editable content structure, forms and basic search visibility.',
       timing: '3–5 weeks',
     },
     {
       name: 'Growth website',
-      price: { kind: 'range', from: 18000, to: 35000 },
+      price: { kind: 'range', from: 18000, to: 35000, set: { NGN: { from: 2200000, to: 4200000 } } },
       scope:
         'Advanced journeys, content collections, lead qualification, integrations and reporting.',
       timing: '4–7 weeks',
     },
     {
       name: 'Website or WhatsApp assistant',
-      price: { kind: 'range', from: 8000, to: 20000, note: 'add-on' },
+      price: { kind: 'range', from: 8000, to: 20000, note: 'add-on', set: { NGN: { from: 1000000, to: 2400000 } } },
       scope:
         'Approved knowledge, guided qualification, lead summaries, testing and human handoff.',
       timing: '2–4 weeks',
@@ -113,28 +113,28 @@ const packagesByService: Record<string, PricingPackage[]> = {
   operations: [
     {
       name: 'One workflow',
-      price: { kind: 'range', from: 9000, to: 12000 },
+      price: { kind: 'range', from: 9000, to: 12000, set: { NGN: { from: 1100000, to: 1500000 } } },
       scope:
         'One outcome and channel, up to two straightforward integrations, training and a defect-support period defined in the proposal.',
       timing: '3–4 weeks',
     },
     {
       name: 'Connected workflows',
-      price: { kind: 'range', from: 18000, to: 30000 },
+      price: { kind: 'range', from: 18000, to: 30000, set: { NGN: { from: 2200000, to: 3600000 } } },
       scope:
         'A sequence across enquiry, proposal or delivery, with approvals and failure handling.',
       timing: '5–8 weeks',
     },
     {
       name: 'Internal copilot',
-      price: { kind: 'range', from: 20000, to: 65000 },
+      price: { kind: 'range', from: 20000, to: 65000, set: { NGN: { from: 2500000, to: 7800000 } } },
       scope:
         'Approved knowledge, structured tools, permissions, evaluation and a staff-facing experience.',
       timing: 'Scoped',
     },
     {
       name: 'Multi-workflow programme',
-      price: { kind: 'from', from: 60000 },
+      price: { kind: 'from', from: 60000, set: { NGN: { from: 7500000 } } },
       scope:
         'Connected systems, governance, training and change management across more than one team.',
       timing: 'Scoped',
@@ -143,14 +143,14 @@ const packagesByService: Record<string, PricingPackage[]> = {
   insight: [
     {
       name: 'Reporting layer',
-      price: { kind: 'range', from: 12000, to: 45000 },
+      price: { kind: 'range', from: 12000, to: 45000, set: { NGN: { from: 1500000, to: 5400000 } } },
       scope:
         'Defined metrics, data connections, dashboards, alerts and an operating review rhythm.',
       timing: '3–6 weeks',
     },
     {
       name: 'Data consolidation',
-      price: { kind: 'from', from: 8000 },
+      price: { kind: 'from', from: 8000, set: { NGN: { from: 1000000 } } },
       scope:
         'Cleaning and joining scattered records so the reporting above can be trusted.',
       timing: 'Scoped by volume',
@@ -159,14 +159,14 @@ const packagesByService: Record<string, PricingPackage[]> = {
   products: [
     {
       name: 'Prototype & validation',
-      price: { kind: 'range', from: 8000, to: 20000 },
+      price: { kind: 'range', from: 8000, to: 20000, set: { NGN: { from: 1000000, to: 2400000 } } },
       scope:
         'Interactive prototype, user testing and a decision on whether to build.',
       timing: '2–4 weeks',
     },
     {
       name: 'Portal or web application',
-      price: { kind: 'from', from: 30000 },
+      price: { kind: 'from', from: 30000, set: { NGN: { from: 3600000 } } },
       scope:
         'Authentication, data workflows, dashboards, permissions and custom product logic.',
       timing: 'Scoped',
@@ -184,21 +184,21 @@ export const pricingGroups: PricingGroup[] = services.map((service) => ({
 export const carePlans: CarePlan[] = [
   {
     name: 'Website care',
-    price: { kind: 'from', from: 900, per: 'month' },
+    price: { kind: 'from', from: 900, per: 'month', set: { NGN: { from: 110000 } } },
     bestFor: 'Business websites',
     coverage:
       'Monitoring, backups, minor updates and a technical support allowance.',
   },
   {
     name: 'Assistant care',
-    price: { kind: 'from', from: 1500, per: 'month' },
+    price: { kind: 'from', from: 1500, per: 'month', set: { NGN: { from: 180000 } } },
     bestFor: 'Website and channel assistants',
     coverage:
       'Website care plus knowledge updates, response monitoring and a monthly review.',
   },
   {
     name: 'Managed operations',
-    price: { kind: 'range', from: 4000, to: 18000, per: 'month' },
+    price: { kind: 'range', from: 4000, to: 18000, per: 'month', set: { NGN: { from: 500000, to: 2200000 } } },
     bestFor: 'Live operational workflows',
     coverage:
       'Incident triage, evaluation, cost and quality review, planned improvements and reporting.',

@@ -31,8 +31,17 @@ function moduleUrl(name) {
   return url;
 }
 
-const { convert, formatPrice, formatMoney, currencyForCountry, isCurrency, CURRENCY_INFO, CURRENCIES } =
-  await import(moduleUrl('currency'));
+const {
+  convert,
+  formatPrice,
+  formatMoney,
+  currencyForCountry,
+  isCurrency,
+  isSetPrice,
+  allSetFor,
+  CURRENCY_INFO,
+  CURRENCIES,
+} = await import(moduleUrl('currency'));
 const { stages, carePlans, pricingGroups } = await import(moduleUrl('pricing'));
 
 // ---- the country default, which is what most visitors get ----
@@ -150,6 +159,78 @@ for (const currency of CURRENCIES) {
       `conversion to ${currency} reordered the price list`,
     );
   }
+}
+
+// ---- prices set for a market, rather than converted into it ----
+
+// Nigeria is a primary market and its figures are chosen, not derived. A price
+// that quietly fell back to conversion would move whenever the cedi moved,
+// which is the opposite of what setting it was for.
+assert.ok(
+  allSetFor(everyPrice, 'NGN'),
+  'some published prices have no Nigerian figure and would be converted instead',
+);
+assert.ok(
+  !allSetFor(everyPrice, 'USD'),
+  'dollars are expected to be converted; if that changed, the page note must change with it',
+);
+
+// A set figure is used exactly as written. Passing it through the rounding
+// step would move a deliberate number by an increment meant for arithmetic
+// nobody did here.
+const setExactly = {
+  kind: 'range',
+  from: 10000,
+  to: 18000,
+  set: { NGN: { from: 1234567, to: 2345678 } },
+};
+assert.equal(formatPrice(setExactly, 'NGN'), '₦1,234,567–2,345,678');
+// The same price still converts for a currency it was not set for.
+assert.equal(
+  formatPrice(setExactly, 'USD'),
+  formatPrice({ kind: 'range', from: 10000, to: 18000 }, 'USD'),
+  'a set figure for one market leaked into another',
+);
+
+assert.ok(isSetPrice(stages[0].price, 'NGN'));
+assert.ok(!isSetPrice(stages[0].price, 'USD'));
+// A custom label has no figure to set, and must not claim one.
+assert.ok(!isSetPrice({ kind: 'custom', label: 'Custom retainer' }, 'NGN'));
+
+// Set naira prices must still rise with the cedi list. If a cheaper package
+// were priced above a dearer one, the page would contradict itself between
+// currencies and a customer would notice before we did.
+const nairaOrder = [...everyPrice]
+  .filter((p) => p.kind !== 'custom')
+  .sort((a, b) => a.from - b.from)
+  .map((p) => p.set?.NGN?.from ?? convert(p.from, 'NGN'));
+for (let i = 1; i < nairaOrder.length; i++) {
+  assert.ok(
+    nairaOrder[i] >= nairaOrder[i - 1],
+    'the Nigerian prices are not in the same order as the cedi prices',
+  );
+}
+
+// A set range must not end before it starts.
+for (const price of everyPrice) {
+  const set = price.set?.NGN;
+  if (set?.to !== undefined) {
+    assert.ok(set.to > set.from, 'a Nigerian range ends before it starts');
+  }
+}
+
+// Every set naira figure should be within sight of the cedi price. This is a
+// guard against a typo adding or losing a zero, not a rule about pricing: a
+// deliberate decision to charge half or double will trip it, and should.
+for (const price of everyPrice) {
+  const set = price.set?.NGN;
+  if (!set) continue;
+  const converted = convert(price.from, 'NGN');
+  const ratio = set.from / converted;
+  assert.ok(
+    ratio > 0.5 && ratio < 2,
+    `a Nigerian figure is ${ratio.toFixed(1)}x the converted one, which looks like a missing or extra zero`,
+  );
 }
 
 console.log('currency: all checks passed');

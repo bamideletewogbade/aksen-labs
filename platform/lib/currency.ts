@@ -111,27 +111,66 @@ export function formatMoney(cedis: number, currency: Currency): string {
  * hid the currency inside prose so that adding a second one meant rewriting
  * every entry by hand.
  */
+/**
+ * A figure set for one market rather than converted into it.
+ *
+ * Converting Ghana pricing into naira answers the wrong question. It tells a
+ * Lagos business what we charge in Accra, when what matters is what the work
+ * is worth to them, against what else they could spend it on. Where a price is
+ * set here it is used as written: no rate, no rounding step, no drift when the
+ * cedi moves.
+ */
+export type SetPrice = { from: number; to?: number };
+
+type PriceBase = {
+  per?: 'month';
+  note?: string;
+  /** Markets where the figure is chosen rather than derived. */
+  set?: Partial<Record<Currency, SetPrice>>;
+};
+
 export type Price =
-  | { kind: 'exact'; from: number; per?: 'month'; note?: string }
-  | { kind: 'from'; from: number; per?: 'month'; note?: string }
-  | { kind: 'range'; from: number; to: number; per?: 'month'; note?: string }
+  | ({ kind: 'exact'; from: number } & PriceBase)
+  | ({ kind: 'from'; from: number } & PriceBase)
+  | ({ kind: 'range'; from: number; to: number } & PriceBase)
   | { kind: 'custom'; label: string };
+
+/** True when this currency has its own figure rather than a converted one. */
+export function isSetPrice(price: Price, currency: Currency): boolean {
+  return price.kind !== 'custom' && !!price.set?.[currency];
+}
+
+/** Whether every price in a list is set for this market rather than converted. */
+export function allSetFor(prices: Price[], currency: Currency): boolean {
+  const priced = prices.filter((price) => price.kind !== 'custom');
+  return priced.length > 0 && priced.every((price) => isSetPrice(price, currency));
+}
 
 export function formatPrice(price: Price, currency: Currency): string {
   if (price.kind === 'custom') return price.label;
   const suffix = `${price.per === 'month' ? '/mo' : ''}${
     price.note ? ` ${price.note}` : ''
   }`;
-  if (price.kind === 'range') {
+  const info = CURRENCY_INFO[currency];
+  const set = price.set?.[currency];
+
+  // A figure chosen for a market is used exactly as written. Rounding it to
+  // the conversion step would move a deliberate number by a step meant for
+  // arithmetic nobody did here.
+  const low = set ? set.from : convert(price.from, currency);
+  const high =
+    price.kind === 'range'
+      ? set?.to !== undefined
+        ? set.to
+        : convert(price.to, currency)
+      : undefined;
+
+  if (high !== undefined) {
     // The symbol appears once. Repeating it on both ends of a range reads as
     // two separate prices rather than as one span.
-    const info = CURRENCY_INFO[currency];
-    const from = convert(price.from, currency).toLocaleString('en-US');
-    const to = convert(price.to, currency).toLocaleString('en-US');
-    return `${info.symbol}${from}–${to}${suffix}`;
+    return `${info.symbol}${low.toLocaleString('en-US')}–${high.toLocaleString('en-US')}${suffix}`;
   }
-  const amount = formatMoney(price.from, currency);
-  return `${price.kind === 'from' ? 'From ' : ''}${amount}${suffix}`;
+  return `${price.kind === 'from' ? 'From ' : ''}${info.symbol}${low.toLocaleString('en-US')}${suffix}`;
 }
 
 /** The smallest figure a price implies, for sorting and comparison. */

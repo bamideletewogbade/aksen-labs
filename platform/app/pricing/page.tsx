@@ -14,19 +14,35 @@ import {
   pricingEnquiryHref,
   startingPoints,
 } from '@/lib/pricing';
-import { formatPrice, ratesReviewed, CURRENCY_INFO } from '@/lib/currency';
+import {
+  formatPrice,
+  ratesReviewed,
+  CURRENCY_INFO,
+  allSetFor,
+} from '@/lib/currency';
 import { requestCurrency } from '@/lib/request-currency';
 import { CurrencyPicker } from '@/components/currency-picker';
 export const metadata: Metadata = {
   title: 'Pricing | Aksen Labs',
   description:
-    'Indicative pricing in Ghana cedis for websites, workflow automation, reporting and managed operations. Assess, build, operate — with a fixed quotation after scoping.',
+    'Indicative pricing in Ghana cedis, Nigerian naira or US dollars for websites, workflow automation, reporting and managed operations. Assess, build, operate — with a fixed quotation after scoping.',
 };
 export default async function PricingPage() {
   // Resolved on the server from a stated choice or the country Cloudflare
   // already attached to the request. No lookup, no client-side conversion,
   // and no moment where the reader sees the wrong currency first.
   const { currency, chosen, country } = await requestCurrency();
+  // Whether every figure on this page is chosen for this market or derived from
+  // the cedi. Asked of the data rather than hardcoded per currency, so adding
+  // set prices for another market changes the sentence on its own.
+  const pricesAreSet = allSetFor(
+    [
+      ...stages.map((stage) => stage.price),
+      ...pricingGroups.flatMap((group) => group.packages.map((p) => p.price)),
+      ...carePlans.map((plan) => plan.price),
+    ],
+    currency,
+  );
   return (
     <div className="agency-site refresh-site">
       <SiteNav />
@@ -49,10 +65,22 @@ export default async function PricingPage() {
         <section className="agency-container pricing-currency">
           <CurrencyPicker current={currency} />
           <p className="pricing-currency-note">
+            {/* Set and converted are different promises, and saying the wrong
+                one is worse than saying nothing. Naira figures are chosen for
+                Nigeria and do not move when the cedi does; dollars are
+                converted and the rate and its date are given so the reader can
+                check the arithmetic. */}
             {currency === 'GHS' ? (
               <>
                 Figures are in Ghana cedis, which is the currency of the
                 contract.
+              </>
+            ) : pricesAreSet ? (
+              <>
+                These are our Nigerian prices, set for that market rather than
+                converted from cedis, so they do not move when the exchange rate
+                does. A contract may still be written in cedis, and we will say
+                so before you sign anything.
               </>
             ) : (
               <>
@@ -128,9 +156,9 @@ export default async function PricingPage() {
               </p>
             </div>
             <p className="pricing-scope-note">
-              Project fees in GHS. Timelines are estimates from an agreed
-              kickoff with content, access and initial payment ready.{' '}
-              <a href="#pricing-questions">Read the details below.</a>
+              Project fees in {CURRENCY_INFO[currency].label}s. Timelines are
+              estimates from an agreed kickoff with content, access and initial
+              payment ready. <a href="#pricing-questions">Read the details below.</a>
             </p>
             {pricingGroups.map((group) => (
               <details
