@@ -1,5 +1,5 @@
 import { and, desc, eq } from 'drizzle-orm';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, ShieldAlert } from 'lucide-react';
 import { getDb } from '@/db';
 import { approvals, blogPosts } from '@/db/schema';
 import {
@@ -7,6 +7,7 @@ import {
   type ContentPost,
 } from '@/components/admin-content-panel';
 import { AdminCreateArticle } from '@/components/admin-create-article';
+import { ApprovalActions } from '@/components/admin-approval-actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,12 @@ export const metadata = { title: 'Blog articles | Aksen Workspace' };
 export default async function AdminContentPage() {
   let allPosts: ContentPost[] = [];
   let awaiting: string[] = [];
+  let decisions: {
+    id: string;
+    entityId: string | null;
+    action: string;
+    context: string | null;
+  }[] = [];
   let loadFailed = false;
   try {
     const db = getDb();
@@ -22,8 +29,16 @@ export default async function AdminContentPage() {
     // together rather than one after the other.
     const [posts, pending] = await Promise.all([
       db.select().from(blogPosts).orderBy(desc(blogPosts.updatedAt)).limit(30),
+      // The decision itself, not just which posts are waiting. Approving is a
+      // step in publishing an article, so it belongs beside the drafts rather
+      // than on a page of its own that is empty almost all of the time.
       db
-        .select({ entityId: approvals.entityId })
+        .select({
+          id: approvals.id,
+          entityId: approvals.entityId,
+          action: approvals.action,
+          context: approvals.context,
+        })
         .from(approvals)
         .where(
           and(
@@ -33,6 +48,7 @@ export default async function AdminContentPage() {
         ),
     ]);
     allPosts = posts;
+    decisions = pending;
     awaiting = pending
       .map((row) => row.entityId)
       .filter((value): value is string => Boolean(value));
@@ -51,6 +67,38 @@ export default async function AdminContentPage() {
           </p>
         </div>
       </header>
+      {/* Absent when nothing is waiting, which is almost always. A queue that
+          is empty by design should not occupy space by default, which is the
+          argument for it not being in the sidebar either. */}
+      {decisions.length > 0 && (
+        <section className="admin-panel decision-panel arrive">
+          <div className="panel-head">
+            <div>
+              <small>WAITING FOR YOU</small>
+              <h2>
+                {decisions.length}{' '}
+                {decisions.length === 1 ? 'article' : 'articles'} ready to
+                publish
+              </h2>
+            </div>
+            <ShieldAlert />
+          </div>
+          <p className="decision-note">
+            Approving publishes immediately. Nothing here is live yet.
+          </p>
+          <ul className="decision-list">
+            {decisions.map((decision) => (
+              <li key={decision.id}>
+                <span>
+                  <strong>{decision.action}</strong>
+                  {decision.context && <small>{decision.context}</small>}
+                </span>
+                <ApprovalActions id={decision.id} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <div className="admin-layout">
         <section className="admin-panel content-panel">
           <div className="panel-head">

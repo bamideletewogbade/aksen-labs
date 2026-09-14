@@ -11,6 +11,48 @@
   gap: 6px;
 }
 
+/* Waiting-for-you panel on Articles, which replaced a sidebar entry for a
+   queue that has never had anything in it. It is amber because it is a pause,
+   not a problem: nothing is wrong, something is simply waiting on a person. */
+.admin-refresh .decision-panel {
+  border-left: 3px solid #e7c46a;
+}
+.admin-refresh .decision-note {
+  margin: 0 0 12px;
+  color: #a9bdae;
+  font-size: 0.86rem;
+}
+.admin-refresh .decision-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-refresh .decision-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #2f4736;
+  border-radius: 10px;
+  background: #0f2117;
+}
+.admin-refresh .decision-list li > span {
+  display: grid;
+  gap: 3px;
+}
+.admin-refresh .decision-list strong {
+  color: #e6efe7;
+  font-size: 0.92rem;
+}
+.admin-refresh .decision-list small {
+  color: #8ba392;
+  font-size: 0.78rem;
+}
+
 .admin-refresh .confirm-action button {
   min-height: 32px;
   padding: 5px 11px;
@@ -127,4 +169,23 @@
     .confirm-action-arm {
     opacity: 1;
   }
+}
+
+/* A secondary link under a page heading, for material that is reachable
+   from here but does not deserve a sidebar entry of its own. */
+.admin-refresh .admin-header-aside {
+  margin: 10px 0 0;
+}
+.admin-refresh .admin-header-aside a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #bde997;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.admin-refresh .admin-header-aside a:is(:hover, :focus-visible) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
