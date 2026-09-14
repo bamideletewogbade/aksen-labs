@@ -1658,3 +1658,111 @@
     row-gap: 4px;
   }
 }
+
+/* ---- public site inventory ---- */
+/* Products and free tools in one list. They were two grids, and since there is
+   exactly one product, one of those grids was a single card beside an empty
+   column. A visitor does not care which array a thing came from. */
+.admin-refresh .site-inventory-list {
+  list-style: none;
+  margin: 0;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 14px;
+}
+.admin-refresh .site-inventory-list > li {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid #2b4130;
+  border-radius: 12px;
+  background: #13241a;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    transform 200ms ease;
+}
+.admin-refresh .site-inventory-list > li:hover {
+  border-color: #70935b;
+  background: #183020;
+  transform: translateY(-2px);
+}
+.admin-refresh .site-inventory-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.admin-refresh .site-kind {
+  font:
+    10px/1.6 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: #24402b;
+  color: #bde997;
+}
+/* A demonstration on fictional data is not a working tool, and a product with
+   no address is neither. The colour carries that without extra words. */
+.admin-refresh [data-kind='Demo'] .site-kind {
+  background: #33351f;
+  color: #e3dc9a;
+}
+.admin-refresh [data-kind='Product'] .site-kind {
+  background: #1f3340;
+  color: #a6d2e8;
+}
+.admin-refresh .site-status {
+  font-size: 11px;
+  color: #91a68b;
+  text-align: right;
+}
+.admin-refresh .site-inventory-list h3 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  letter-spacing: -0.03em;
+  color: #eef4e9;
+}
+.admin-refresh .site-inventory-list p {
+  margin: 0 0 18px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #a9bda0;
+}
+.admin-refresh .site-inventory-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding-top: 14px;
+  border-top: 1px solid #253a2a;
+}
+.admin-refresh .site-inventory-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  font-size: 12.5px;
+  color: #c3e2ad;
+}
+.admin-refresh .site-inventory-actions a:hover {
+  color: #e2f5d2;
+}
+.admin-refresh .site-unlisted {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  font-size: 12.5px;
+  color: #7d8f79;
+  font-style: italic;
+}
+@media (max-width: 620px) {
+  .admin-refresh .site-inventory-list {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+}

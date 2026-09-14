@@ -81,7 +81,9 @@ const groups = [
   {
     label: 'Marketing',
     items: [
-      { href: '/admin/products', label: 'Products', icon: Package },
+      // Not "Products": the page covers everything public, and there is one
+      // product against four free tools.
+      { href: '/admin/products', label: 'Public site', icon: Package },
       { href: '/admin/content', label: 'Articles', icon: BookOpen },
       { href: '/admin/studio', label: 'Create media', icon: Image },
       { href: '/admin/demos', label: 'Demos', icon: MonitorPlay },
