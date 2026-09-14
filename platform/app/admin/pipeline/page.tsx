@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, isNull, or } from 'drizzle-orm';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { getDb } from '@/db';
 import { opportunities } from '@/db/schema';
@@ -26,7 +26,12 @@ export default async function AdminPipelinePage({
     leads = await getDb()
       .select()
       .from(opportunities)
-      .where(eq(opportunities.ownerId, owner))
+      // Unowned rows are included deliberately. This is a single-workspace
+      // system, and a lead with no owner is far more likely to be one this
+      // application failed to stamp than one belonging to somebody else. An
+      // enquiry that is captured but invisible is the worst outcome available,
+      // so the reader forgives what the writer may get wrong.
+      .where(or(eq(opportunities.ownerId, owner), isNull(opportunities.ownerId)))
       .orderBy(desc(opportunities.createdAt))
       .limit(30);
   } catch {

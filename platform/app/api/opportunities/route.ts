@@ -3,6 +3,7 @@ import { resolvePricingSelection } from '@/lib/pricing';
 import { NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { auditEvents, opportunities } from '@/db/schema';
+import { workspaceOwnerId } from '@/app/chatgpt-auth';
 import { workflowSuggestion } from '@/lib/workflow-suggestion';
 import { boundedJson } from '@/lib/bounded-json';
 import { currentHour, reserve, visitorKey } from '@/lib/rate-limit';
@@ -122,6 +123,13 @@ async function POSTHandler(request: Request) {
     recommendation,
     summary,
     nextAction: 'Founder review and personal follow-up',
+    // Every admin view of this table filters on owner_id. Without this the row
+    // is stored with a null owner and is invisible in the pipeline, the stage
+    // counts and the overdue follow-ups: captured, stored, emailed, and absent
+    // from the system meant to work it. The notification would be its only
+    // trace. The reader also tolerates a null owner, so a lead can never be
+    // lost this way twice.
+    ownerId: workspaceOwnerId() || null,
   });
 
   // The enquiry is stored. Nothing below may turn a captured lead into an error

@@ -33,6 +33,11 @@ const modules = {
     "export const auditEvents='audit_events';export const opportunities='opportunities';",
   ),
   '@/lib/request-log': uri('export const withRequestLog=(route,fn)=>fn;'),
+  // Real, not stubbed to a constant: the point of the assertion below is that
+  // the route asks for the workspace owner and stores what it gets.
+  '@/app/chatgpt-auth': uri(
+    "export const workspaceOwnerId=()=>process.env.ADMIN_OWNER_ID?.trim()||'';",
+  ),
   '@/lib/pricing': uri(
     "export const resolvePricingSelection=v=>v==='Care'?{name:'Care',price:'GHS 900'}:null;",
   ),
@@ -61,6 +66,9 @@ const rewrite = (file) =>
 modules['@/lib/rate-limit'] = uri(rewrite('lib/rate-limit.ts'));
 modules['@/lib/bounded-json'] = uri(rewrite('lib/bounded-json.ts'));
 modules['@/lib/lead-notification'] = uri(rewrite('lib/lead-notification.ts'));
+// Set before the route is imported, since the stub reads it at call time and
+// the assertion below compares the stored owner against it.
+process.env.ADMIN_OWNER_ID = 'test_workspace_owner';
 const { POST, enquiryVisitorLimit, enquiryHourlyCeiling } = await import(
   uri(rewrite('app/api/opportunities/route.ts'))
 );
@@ -112,6 +120,16 @@ assert.equal(eq.inserted[0].email, 'ama@example.test');
 assert.equal(
   eq.inserted[0].nextAction,
   'Founder review and personal follow-up',
+);
+// Every admin view of this table filters on owner_id. A row stored without one
+// was captured, emailed, and then invisible in the pipeline, the stage counts
+// and the overdue follow-ups, with the notification its only trace. The bug
+// was silent because the table was empty, and it would have surfaced as a lost
+// customer rather than as an error.
+assert.equal(
+  eq.inserted[0].ownerId,
+  process.env.ADMIN_OWNER_ID,
+  'the enquiry must be stamped with the workspace owner or it never reaches the pipeline',
 );
 const [founderMail, ackMail] = eq.sends;
 assert.equal(founderMail.recipient, 'founder@example.test');

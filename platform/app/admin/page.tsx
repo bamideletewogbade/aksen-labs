@@ -90,7 +90,11 @@ export default async function AdminPage() {
       db.execute(sql`
           SELECT status AS stage, count(*)::int AS count
           FROM opportunities
-          WHERE owner_id=${owner} AND status IN ('new','qualified','proposal','won')
+          -- Unowned rows count here too, matching the pipeline. If the two
+          -- disagreed, the dashboard would report work that the list then
+          -- failed to show, which is worse than either being wrong alone.
+          WHERE (owner_id=${owner} OR owner_id IS NULL)
+            AND status IN ('new','qualified','proposal','won')
           GROUP BY status`),
       db.execute(sql`
           SELECT id,name,client_name,health,progress,next_gate
@@ -101,7 +105,7 @@ export default async function AdminPage() {
       db.execute(sql`
           SELECT id,company,next_action,follow_up_at
           FROM opportunities
-          WHERE owner_id=${owner}
+          WHERE (owner_id=${owner} OR owner_id IS NULL)
             AND status IN ('new','qualified','proposal')
             AND follow_up_at IS NOT NULL AND follow_up_at <= CURRENT_DATE
           ORDER BY follow_up_at ASC
