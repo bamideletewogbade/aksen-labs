@@ -4,6 +4,7 @@ import { AdminNav } from '@/components/admin-nav';
 import { RouteTransition } from '@/components/route-transition';
 import './admin-refresh.css';
 import './editor.css';
+import './destructive.css';
 export const metadata = {
   title: 'Aksen Workspace',
   robots: { index: false, follow: false },

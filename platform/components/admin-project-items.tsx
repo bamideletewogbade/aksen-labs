@@ -1,7 +1,8 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import { AlertTriangle, Plus } from 'lucide-react';
 import { PendingButton, SkeletonRows } from '@/components/ui/activity';
+import { ConfirmAction } from '@/components/ui/confirm-action';
 import {
   ITEM_KINDS,
   ITEM_STATUSES,
@@ -22,6 +23,7 @@ export function AdminProjectItems({ projectId }: { projectId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [removing, setRemoving] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<ItemKind>('task');
 
@@ -64,6 +66,30 @@ export function AdminProjectItems({ projectId }: { projectId: string }) {
       setError(e instanceof Error ? e.message : 'That did not save.');
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function remove(item: ProjectItem) {
+    setRemoving(item.id);
+    setError('');
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}/items`, {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ itemId: item.id }),
+      });
+      const data = (await response.json()) as { error?: string };
+      // The refusal to delete a done deliverable with evidence arrives here,
+      // and it explains what to do instead, so it is shown rather than
+      // flattened into a generic failure.
+      if (!response.ok) throw new Error(data.error || 'That did not remove.');
+      setItems((current) =>
+        (current ?? []).filter((row) => row.id !== item.id),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'That did not remove.');
+    } finally {
+      setRemoving(null);
     }
   }
 
@@ -148,6 +174,16 @@ export function AdminProjectItems({ projectId }: { projectId: string }) {
                   ))}
                 </select>
               </label>
+              <ConfirmAction
+                className="project-item-remove"
+                label="Remove"
+                confirmLabel="Remove item"
+                pendingLabel="Removing"
+                title={`Remove ${item.title} from this project`}
+                pending={removing === item.id}
+                disabled={removing !== null}
+                onConfirm={() => void remove(item)}
+              />
             </li>
           ))}
         </ul>

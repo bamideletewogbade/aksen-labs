@@ -220,6 +220,91 @@ async function PATCHHandler(
   return NextResponse.json(updated);
 }
 
+/**
+ * Removes one item. Tasks, deliverables, decisions and risks get added in a
+ * hurry and sometimes to the wrong project, and until now every mistake stayed
+ * on the plan for ever, where it either got worked or quietly ignored. Both
+ * are worse than deleting it.
+ *
+ * A done deliverable carrying evidence is refused. That is a record of work
+ * delivered and what proved it, and losing it silently is not a tidy-up. Marking
+ * it open first is the way through, which is a deliberate moment of friction
+ * rather than an obstacle.
+ */
+async function DELETEHandler(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const { id } = await params;
+  if (!(await ownedProject(id, auth.user.userId)))
+    return NextResponse.json({ error: 'Project not found.' }, { status: 404 });
+
+  let body: Record<string, unknown>;
+  try {
+    body = await boundedJson(request, 1000);
+  } catch {
+    return NextResponse.json(
+      { error: 'Say which item to remove.' },
+      { status: 400 },
+    );
+  }
+  const itemId = text(body.itemId, 100);
+  if (!itemId)
+    return NextResponse.json(
+      { error: 'Say which item to remove.' },
+      { status: 400 },
+    );
+
+  const db = getDb();
+  const [existing] = await db
+    .select({
+      id: projectItems.id,
+      kind: projectItems.kind,
+      status: projectItems.status,
+      evidence: projectItems.evidence,
+    })
+    .from(projectItems)
+    .where(and(eq(projectItems.id, itemId), eq(projectItems.projectId, id)))
+    .limit(1);
+  if (!existing)
+    return NextResponse.json({ error: 'Item not found.' }, { status: 404 });
+
+  if (
+    existing.kind === 'deliverable' &&
+    existing.status === 'done' &&
+    existing.evidence
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          'This deliverable is marked done and carries evidence of it. Set it back to open first if you really mean to remove the record.',
+      },
+      { status: 409 },
+    );
+  }
+
+  const [removed] = await db
+    .delete(projectItems)
+    .where(and(eq(projectItems.id, itemId), eq(projectItems.projectId, id)))
+    .returning({ id: projectItems.id });
+
+  await db
+    .insert(auditEvents)
+    .values({
+      id: crypto.randomUUID(),
+      actorId: auth.user.userId,
+      actorType: 'user',
+      action: 'project.item_removed',
+      entityType: 'project',
+      entityId: id,
+    })
+    .catch(() => null);
+
+  return NextResponse.json({ id: removed.id });
+}
+
 export const GET = withRequestLog('/api/admin/projects/[id]/items', GETHandler);
 export const POST = withRequestLog(
   '/api/admin/projects/[id]/items',
@@ -228,4 +313,8 @@ export const POST = withRequestLog(
 export const PATCH = withRequestLog(
   '/api/admin/projects/[id]/items',
   PATCHHandler,
+);
+export const DELETE = withRequestLog(
+  '/api/admin/projects/[id]/items',
+  DELETEHandler,
 );

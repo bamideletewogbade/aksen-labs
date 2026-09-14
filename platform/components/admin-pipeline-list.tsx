@@ -5,6 +5,8 @@ import { Check, Loader2, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { urgency } from '@/lib/pipeline-order';
 import { AdminLeadHistory } from '@/components/admin-lead-history';
+import { ConfirmAction } from '@/components/ui/confirm-action';
+import { StatusNote } from '@/components/ui/activity';
 
 export type Lead = {
   id: string;
@@ -42,6 +44,67 @@ export function AdminPipelineList({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [failedId, setFailedId] = useState<string | null>(null);
+  const [erasingId, setErasingId] = useState<string | null>(null);
+  const [destroyNote, setDestroyNote] = useState<{
+    id: string;
+    failed: boolean;
+    message: string;
+  } | null>(null);
+
+  async function destroy(lead: Lead, mode: 'erase' | 'remove') {
+    setErasingId(lead.id);
+    setDestroyNote(null);
+    try {
+      const response = await fetch(`/api/admin/opportunities/${lead.id}`, {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      const data = (await response.json()) as {
+        error?: string;
+        interactionsDeleted?: number;
+        projectsKept?: number;
+      };
+      // The refusal to remove an enquiry a project came from explains what to
+      // do instead, so it is shown rather than replaced with a generic failure.
+      if (!response.ok) throw new Error(data.error || 'That did not work.');
+
+      if (mode === 'remove') {
+        setLeads((current) => current.filter((row) => row.id !== lead.id));
+        return;
+      }
+      // Erasure keeps the row, so the list has to show what it now holds
+      // rather than what it held when the page loaded.
+      setLeads((current) =>
+        current.map((row) =>
+          row.id === lead.id
+            ? {
+                ...row,
+                name: 'Erased at their request',
+                email: '',
+                nextAction: 'Erased at their request. No further contact.',
+                followUpAt: null,
+              }
+            : row,
+        ),
+      );
+      setDestroyNote({
+        id: lead.id,
+        failed: false,
+        message: `Erased. ${data.interactionsDeleted ?? 0} history ${
+          data.interactionsDeleted === 1 ? 'entry' : 'entries'
+        } removed.`,
+      });
+    } catch (e) {
+      setDestroyNote({
+        id: lead.id,
+        failed: true,
+        message: e instanceof Error ? e.message : 'That did not work.',
+      });
+    } finally {
+      setErasingId(null);
+    }
+  }
 
   async function startProject(lead: Lead) {
     setBusyId(lead.id);
@@ -257,6 +320,38 @@ export function AdminPipelineList({
               </span>
             </div>
             <AdminLeadHistory leadId={lead.id} today={today} />
+            {/* Two different acts, kept visibly apart. Erasing is what we do
+                when a person asks, and the privacy notice promises it. Removing
+                is for a test row or a duplicate and destroys the record. A
+                single "delete" would have quietly made one of those do the
+                other's job. */}
+            <div className="lead-destructive">
+              <ConfirmAction
+                className="lead-erase"
+                label="Erase their details"
+                confirmLabel="Erase"
+                pendingLabel="Erasing"
+                title="Remove name, email and conversation history. Keeps that this company enquired."
+                pending={erasingId === lead.id}
+                disabled={erasingId !== null}
+                onConfirm={() => void destroy(lead, 'erase')}
+              />
+              <ConfirmAction
+                className="lead-remove"
+                label="Delete the record"
+                confirmLabel="Delete"
+                pendingLabel="Deleting"
+                title="Remove the row entirely. For test rows and duplicates."
+                pending={erasingId === lead.id}
+                disabled={erasingId !== null}
+                onConfirm={() => void destroy(lead, 'remove')}
+              />
+              {destroyNote?.id === lead.id && (
+                <StatusNote tone={destroyNote.failed ? 'error' : 'done'}>
+                  {destroyNote.message}
+                </StatusNote>
+              )}
+            </div>
           </article>
         ))}
       </div>

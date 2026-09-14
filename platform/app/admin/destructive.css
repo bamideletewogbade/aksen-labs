@@ -1,0 +1,130 @@
+/* Destructive controls.
+ *
+ * These sit inside lists next to ordinary actions, so they have to be findable
+ * without being loud. Quiet until hovered or armed, then unmistakably red once
+ * they are one click from doing something permanent.
+ */
+
+.admin-refresh .confirm-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-refresh .confirm-action button {
+  min-height: 32px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+/* Resting: reads as a caption until you go near it. */
+.admin-refresh .confirm-action-arm {
+  border: 1px solid transparent;
+  color: #8aa08f;
+  background: transparent;
+}
+.admin-refresh .confirm-action-arm:is(:hover, :focus-visible):not(:disabled) {
+  color: #f0b3a5;
+  border-color: #a5544433;
+  background: #a554441f;
+}
+.admin-refresh .confirm-action-arm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Armed: the next click does it, so it stops being subtle. */
+.admin-refresh .confirm-action-go {
+  border: 1px solid #c2624f;
+  color: #2a0f0a;
+  background: #e0836c;
+}
+.admin-refresh .confirm-action-go:is(:hover, :focus-visible):not(:disabled) {
+  background: #eb9782;
+}
+.admin-refresh .confirm-action-cancel {
+  border: 1px solid #3d5443;
+  color: #c2d3c6;
+  background: transparent;
+}
+.admin-refresh .confirm-action-cancel:is(:hover, :focus-visible) {
+  border-color: #5d7a64;
+  color: #eaf4ea;
+}
+
+/* Erasing and deleting are different acts with different consequences, so they
+   are not two identically weighted buttons side by side. */
+.admin-refresh .lead-destructive {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #2f4736;
+}
+.admin-refresh .lead-destructive .status-note {
+  flex-basis: 100%;
+}
+/* Deleting the record is the rarer and more final of the two, and is set back
+   a step so it is never the one reached for by accident. */
+.admin-refresh .lead-remove .confirm-action-arm {
+  color: #718576;
+  font-weight: 500;
+}
+
+.admin-refresh .lead-history-remove,
+.admin-refresh .project-item-remove {
+  margin-left: auto;
+}
+/* Revealed on hover or keyboard focus. Present for a pointer that goes looking,
+   and never hidden from the keyboard, which cannot hover. */
+@media (hover: hover) and (pointer: fine) {
+  .admin-refresh .lead-history-list li .confirm-action-arm,
+  .admin-refresh .project-items-list li .confirm-action-arm {
+    opacity: 0;
+  }
+  .admin-refresh .lead-history-list li:is(:hover, :focus-within) .confirm-action-arm,
+  .admin-refresh .project-items-list li:is(:hover, :focus-within) .confirm-action-arm,
+  .admin-refresh .confirm-action-arm:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* The gallery tile is a button; the remove control floats over its corner
+   rather than sitting inside it, which would be a button within a button. */
+.admin-refresh .media-gallery-item {
+  position: relative;
+  margin: 0;
+}
+.admin-refresh .media-gallery-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
+.admin-refresh .media-gallery-remove .confirm-action-arm {
+  min-height: 26px;
+  padding: 3px 8px;
+  color: #e8f0e9;
+  background: #0b1a10cc;
+  border-color: #ffffff1f;
+  backdrop-filter: blur(6px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .admin-refresh .media-gallery-remove .confirm-action-arm {
+    opacity: 0;
+  }
+  .admin-refresh .media-gallery-item:is(:hover, :focus-within)
+    .media-gallery-remove
+    .confirm-action-arm {
+    opacity: 1;
+  }
+}

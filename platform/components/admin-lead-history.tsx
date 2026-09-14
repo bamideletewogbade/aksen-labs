@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { PendingButton, SkeletonRows } from '@/components/ui/activity';
+import { ConfirmAction } from '@/components/ui/confirm-action';
 import {
   CHANNEL_LABEL,
   DIRECTIONS,
@@ -30,6 +31,7 @@ export function AdminLeadHistory({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [removing, setRemoving] = useState<string | null>(null);
   const [summary, setSummary] = useState('');
   const [shared, setShared] = useState('');
   const [channel, setChannel] = useState<InteractionChannel>('whatsapp');
@@ -90,6 +92,32 @@ export function AdminLeadHistory({
     }
   }
 
+  async function remove(entryId: string) {
+    setRemoving(entryId);
+    setError('');
+    try {
+      const response = await fetch(
+        `/api/admin/opportunities/${leadId}/interactions`,
+        {
+          method: 'DELETE',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ entryId }),
+        },
+      );
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(data.error || 'That did not remove.');
+      // Dropped from the list rather than refetched: the server has confirmed
+      // it, and a reload here would collapse the open section.
+      setEntries((current) =>
+        (current ?? []).filter((entry) => entry.id !== entryId),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'That did not remove.');
+    } finally {
+      setRemoving(null);
+    }
+  }
+
   const days = entries ? daysSinceContact(entries, today) : null;
   const waiting = entries?.length ? awaitingReply(entries) : false;
 
@@ -136,6 +164,16 @@ export function AdminLeadHistory({
                 {entry.summary}
                 {entry.shared && <em>Sent: {entry.shared}</em>}
               </span>
+              <ConfirmAction
+                className="lead-history-remove"
+                label="Remove"
+                confirmLabel="Remove entry"
+                pendingLabel="Removing"
+                title="Remove this entry from the history"
+                pending={removing === entry.id}
+                disabled={removing !== null}
+                onConfirm={() => void remove(entry.id)}
+              />
             </li>
           ))}
         </ol>

@@ -1,8 +1,9 @@
-﻿'use client';
+'use client';
 
 import { Download, ImagePlus, Loader2, Plus, Image, FilePenLine, Video, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PendingButton } from '@/components/ui/activity';
+import { ConfirmAction } from '@/components/ui/confirm-action';
 
 type Mode = 'image' | 'video';
 type Reference = { id: string; dataUrl: string };
@@ -50,6 +51,7 @@ export function AdminMediaStudio() {
   const [result, setResult] = useState<Result | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [removingAsset, setRemovingAsset] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function loadGallery() {
@@ -62,6 +64,21 @@ export function AdminMediaStudio() {
 
   useEffect(() => { void loadGallery(); }, []);
 
+
+  async function removeAsset(id: string) {
+    setRemovingAsset(id);
+    try {
+      const response = await fetch('/api/admin/media/save', { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id }) });
+      if (!response.ok) throw new Error('remove failed');
+      // Dropped locally rather than refetched, so the grid does not reshuffle
+      // while someone is looking at it.
+      setGallery((current) => current.filter((item) => item.id !== id));
+    } catch {
+      setErrorMessage('That generation could not be removed.');
+    } finally {
+      setRemovingAsset(null);
+    }
+  }
   function applyPreset(snippet: string) {
     setPrompt((current) => (current.trim() ? `${current.trim()}, ${snippet}` : snippet));
   }
@@ -198,10 +215,26 @@ export function AdminMediaStudio() {
           <span>Recent generations</span>
           <div className="media-gallery-grid">
             {gallery.map((item) => (
-              <button type="button" className="media-gallery-item" key={item.id} onClick={() => reuseFromGallery(item)} title={item.prompt}>
-                {item.kind === 'image' ? <img src={item.url} alt={item.prompt} /> : <video src={item.url} muted />}
-                <span>{item.kind === 'video' && <Video size={11} />} {timeAgo(item.createdAt)}</span>
-              </button>
+              // A figure rather than a nested button: the tile itself is a
+              // button that reuses the prompt, and a remove control inside it
+              // would have been a button inside a button, which is invalid and
+              // behaves differently in every browser.
+              <figure className="media-gallery-item" key={item.id}>
+                <button type="button" onClick={() => reuseFromGallery(item)} title={item.prompt}>
+                  {item.kind === 'image' ? <img src={item.url} alt={item.prompt} /> : <video src={item.url} muted />}
+                  <span>{item.kind === 'video' && <Video size={11} />} {timeAgo(item.createdAt)}</span>
+                </button>
+                <ConfirmAction
+                  className="media-gallery-remove"
+                  label="Remove"
+                  confirmLabel="Remove"
+                  pendingLabel="Removing"
+                  title="Remove this generation from the gallery"
+                  pending={removingAsset === item.id}
+                  disabled={removingAsset !== null}
+                  onConfirm={() => void removeAsset(item.id)}
+                />
+              </figure>
             ))}
           </div>
         </div>
