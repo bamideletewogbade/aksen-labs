@@ -17,7 +17,7 @@ export default async function AgentUseCasePage({
       <SiteNav />
       <main id="main-content">
         <div className="agency-container refresh-back">
-          <Link className="agency-text-link" href="/agents">
+          <Link className="agency-text-link" href="/products#ai-examples">
             <ArrowLeft size={16} /> All AI examples
           </Link>
         </div>

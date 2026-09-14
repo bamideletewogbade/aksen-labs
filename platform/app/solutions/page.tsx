@@ -4,6 +4,7 @@ import { ArrowUpRight, Check } from 'lucide-react';
 import { SiteFooter, SiteNav } from '@/components/site-chrome';
 import { PageIntro } from '@/components/page-intro';
 import { Reveal } from '@/components/agency-motion';
+import { IndustryExplorer } from '@/components/industry-explorer';
 import { services } from '@/lib/agency-content';
 export const metadata: Metadata = {
   title: 'Services | Aksen Labs',
@@ -62,6 +63,31 @@ export default function ServicesPage() {
               </article>
             </Reveal>
           ))}
+        </section>
+        {/* Industries used to be its own nav item leading to this one explorer.
+            It answers the same question as the services above it, from the
+            other end: not what we do, but what it looks like where you work. */}
+        <section
+          id="industries"
+          className="agency-container refresh-industries"
+          aria-label="Explore by industry"
+        >
+          <div className="refresh-section-heading">
+            <h2>
+              Your world.
+              <br />
+              <em>Working better.</em>
+            </h2>
+            <p>
+              Find a familiar challenge and see what a more connected way of
+              working could look like in your sector.
+            </p>
+          </div>
+          <IndustryExplorer />
+          <p className="refresh-scenario-note">
+            Illustrative scenarios, not completed client projects. We agree the
+            exact tools, connections and outcomes with your business.
+          </p>
         </section>
         <section className="refresh-soft-band">
           <Reveal className="agency-container refresh-section refresh-scope">

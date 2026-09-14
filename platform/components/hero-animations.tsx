@@ -305,7 +305,7 @@ export function HeroShowcase() {
               {heroStories[active].caption}
             </figcaption>
           </figure>
-          <Link className="ambition-ai-chip" href="/agents">
+          <Link className="ambition-ai-chip" href="/products#ai-examples">
             <span>
               <NodeMark />
             </span>

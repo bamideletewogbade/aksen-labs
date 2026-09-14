@@ -668,3 +668,130 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- page tabs ---- */
+/* One page, several categories the reader picks between. Every panel is in the
+   HTML and only toggled with `hidden`, so a section is never invisible to
+   search or to Ctrl+F just because its tab is closed. */
+.page-tabs {
+  scroll-margin-top: calc(var(--site-nav-h, 76px) + 16px);
+}
+.page-tabs-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 28px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(16, 38, 29, 0.12);
+}
+.page-tab {
+  position: relative;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--agency-muted);
+  padding: 12px 16px 14px;
+  min-height: 44px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px 10px 0 0;
+  transition:
+    color 180ms ease,
+    background 180ms ease;
+}
+.page-tab:hover {
+  color: var(--agency-ink);
+  background: rgba(16, 38, 29, 0.04);
+}
+/* The underline is drawn on the tab rather than slid between tabs: a travelling
+   bar has to know where it is going, and gets it wrong the moment the strip
+   wraps onto two lines on a phone. */
+.page-tab::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--agency-green);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.page-tab[aria-selected='true'] {
+  color: var(--agency-ink);
+  font-weight: 600;
+}
+.page-tab[aria-selected='true']::after {
+  transform: scaleX(1);
+}
+.page-tab > span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(16, 38, 29, 0.08);
+  color: var(--agency-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+.page-tab[aria-selected='true'] > span {
+  background: var(--agency-lime);
+  color: var(--agency-ink);
+}
+.page-tab:focus-visible {
+  outline: 3px solid var(--agency-green);
+  outline-offset: -3px;
+}
+/* Panels animate in on switch. The keyframe is on the panel itself rather than
+   a class, so it replays every time a tab is chosen without state to track. */
+.page-tab-panel:not([hidden]) {
+  display: block;
+  animation: page-tab-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes page-tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@media (max-width: 620px) {
+  .page-tabs-strip {
+    gap: 2px;
+    /* Rather than wrap to two rows on a narrow phone, the strip scrolls. Wrapped
+       tabs read as two separate groups. */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .page-tabs-strip::-webkit-scrollbar {
+    display: none;
+  }
+  .page-tab {
+    white-space: nowrap;
+    padding: 12px 12px 14px;
+    font-size: 0.94rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-tab,
+  .page-tab::after,
+  .page-tab > span {
+    transition: none;
+  }
+  .page-tab-panel:not([hidden]) {
+    animation: none;
+  }
+}

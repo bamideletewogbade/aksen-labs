@@ -6,15 +6,16 @@ import { usePathname } from 'next/navigation';
 import { AksenGuide } from '@/components/aksen-guide';
 import { WhatsAppLink } from '@/components/whatsapp-link';
 import { Reveal } from './agency-motion';
+// Six, down from eight. Two came out because they were not separate questions:
+// "Free tools" pointed at one of the four tools the Products page already
+// listed, and "Industries" led to a single explorer that answers the same
+// question as Services from the other end. Both now live where they belong,
+// which cost the nav nothing and gave each page a reason to exist.
 const navItems = [
   { href: '/solutions', label: 'Services' },
-  { href: '/products', label: 'Products' },
-  // "Free agents" read as freelancers or transfer windows. What they are is
-  // free tools, and the page itself explains they are agents.
-  { href: '/business-agents', label: 'Free tools' },
+  { href: '/products', label: 'Products & tools' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/how-it-works', label: 'Approach' },
-  { href: '/industries', label: 'Industries' },
   { href: '/about', label: 'About' },
   { href: '/blog', label: 'Blog' },
 ];
@@ -207,7 +208,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             <Link href="/business-agents">
               Try business agents <ArrowUpRight size={15} />
             </Link>
-            <Link href="/agents">
+            <Link href="/products#ai-examples">
               AI in practice <ArrowUpRight size={15} />
             </Link>
             <Link href="/workspace-demo">
