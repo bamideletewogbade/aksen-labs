@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Reveal } from './agency-motion';
 import { stages } from '@/lib/pricing';
+import { formatPrice, type Currency } from '@/lib/currency';
 type Opening =
   | 'services'
   | 'approach'
@@ -32,10 +33,13 @@ function OpeningArt({
   variant,
   image,
   alt,
+  currency = 'GHS',
 }: {
   variant: Opening;
   image?: string;
   alt: string;
+  /** Only the pricing opening shows figures. Cedis for everything else. */
+  currency?: Currency;
 }) {
   // The most valuable thing on a pricing page is the number. This replaces a
   // decorative currency mark that repeated the stage names without ever saying
@@ -50,7 +54,7 @@ function OpeningArt({
             <div key={stage.number} className="pricing-ledger-row">
               <dt>{stage.title}</dt>
               <dd>
-                <strong>{stage.price}</strong>
+                <strong>{formatPrice(stage.price, currency)}</strong>
                 <span>{stage.cadence}</span>
               </dd>
             </div>
@@ -166,6 +170,7 @@ export function PageIntro({
   target,
   action = 'Explore this page',
   variant = 'minimal',
+  currency,
 }: {
   label: string;
   title: ReactNode;
@@ -175,6 +180,8 @@ export function PageIntro({
   target?: string;
   action?: string;
   variant?: Opening;
+  /** Threaded from the pricing page so the opening figures match the list below it. */
+  currency?: Currency;
 }) {
   return (
     <header className={`page-opening opening-${variant}`}>
@@ -207,7 +214,7 @@ export function PageIntro({
           </Reveal>
         </div>
         <Reveal delay={120} className="opening-art">
-          <OpeningArt variant={variant} image={image} alt={alt} />
+          <OpeningArt variant={variant} image={image} alt={alt} currency={currency} />
         </Reveal>
       </div>
     </header>

@@ -1,5 +1,6 @@
 import { withRequestLog } from '@/lib/request-log';
 import { resolvePricingSelection } from '@/lib/pricing';
+import { formatPrice } from '@/lib/currency';
 import { NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { auditEvents, opportunities } from '@/db/schema';
@@ -33,7 +34,10 @@ async function POSTHandler(request: Request) {
 
   const pricingSelection = resolvePricingSelection(input.pricingPackage);
   const pricingPrefix = pricingSelection
-    ? `Pricing enquiry: ${pricingSelection.name} (${pricingSelection.price}, indicative). `
+    ? // Recorded in cedis regardless of what the visitor was reading. The
+      // lead is a business record, and a figure in it has to mean one thing
+      // when it is read back in six months.
+      `Pricing enquiry: ${pricingSelection.name} (${formatPrice(pricingSelection.price, 'GHS')}, indicative). `
     : '';
   const answers = Array.isArray(input.answers) ? input.answers : [];
   // Preserve the older mapper payload while storing the new answers meaningfully.

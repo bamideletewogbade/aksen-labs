@@ -2,6 +2,10 @@ import { agencyDescription, services, approach } from './agency-content';
 import { stages, carePlans, pricingGroups, pricingFaqs } from './pricing';
 import { freeTools, products } from './product-catalog';
 import { whatsappDisplay } from './contact-channels';
+import { formatPrice, type Price } from './currency';
+
+/** Every figure the assistant quotes is in cedis. See the pricing entry below. */
+const cedis = (price: Price) => formatPrice(price, 'GHS');
 
 export type SupportArticle = {
   id: string;
@@ -58,7 +62,10 @@ export function supportArticles(): SupportArticle[] {
       href: '/pricing',
       keywords:
         'price pricing cost budget fee quote quotation cedi ghs assessment deposit payment care monthly support hours timeline delivery weeks credit refund',
-      content: `${stages.map((s) => `${s.title}: ${s.price} ${s.cadence}`).join('; ')}. Packages: ${pricingGroups.flatMap((g) => g.packages.map((p) => `${p.name}: ${p.price}; ${p.scope}; estimated ${p.timing}`)).join('\n')}. Care: ${carePlans.map((p) => `${p.name}: ${p.price}; ${p.coverage}`).join('\n')}. ${pricingFaqs.map((f) => `${f.question} ${f.answer}`).join('\n')}`,
+      // Quoted in cedis whatever the site is displaying. The assistant answers
+      // questions about what we will charge, and the contract is in cedis; the
+      // other currencies are a convenience for reading the page.
+      content: `All figures in Ghana cedis, the currency of the contract. ${stages.map((s) => `${s.title}: ${cedis(s.price)} ${s.cadence}`).join('; ')}. Packages: ${pricingGroups.flatMap((g) => g.packages.map((p) => `${p.name}: ${cedis(p.price)}; ${p.scope}; estimated ${p.timing}`)).join('\n')}. Care: ${carePlans.map((p) => `${p.name}: ${cedis(p.price)}; ${p.coverage}`).join('\n')}. ${pricingFaqs.map((f) => `${f.question} ${f.answer}`).join('\n')}`,
     },
     {
       id: 'process',
@@ -198,7 +205,7 @@ export function supportFallback(articles: SupportArticle[]) {
   if (article?.id === 'pricing')
     // Every figure here is read from the published stages. A hard-coded build
     // price had already fallen out of step with the pricing page once.
-    return `Our published assessment is ${stages[0].price}, additional to a build and not automatically credited. A clear brief may go directly to quotation. Builds start ${stages[1].price.toLowerCase()}; monthly care starts ${stages[2].price.toLowerCase()} per month. Scope, payment milestones, included support and dates are agreed in the proposal. Use the pricing page for the full ranges and exclusions.`;
+    return `Our published assessment is ${cedis(stages[0].price)}, additional to a build and not automatically credited. A clear brief may go directly to quotation. Builds start ${cedis(stages[1].price).toLowerCase()}; monthly care starts ${cedis(stages[2].price).toLowerCase()}. All figures are in Ghana cedis, the currency of the contract. Scope, payment milestones, included support and dates are agreed in the proposal. Use the pricing page for the full ranges and exclusions.`;
   if (article?.id === 'catalog')
     return 'CV Forge is our own CV review and CV building product. It is built but has no public address yet, so it cannot be used from this site and there is nothing to sign up for. Ask to be told when it opens. The free business agents work here now with no account, and the order, support and workspace demonstrations use fictional businesses. None of these has a subscription price, and no paid plan is published.';
   return 'Aksen builds websites and online shops, connects business systems, creates useful reports and develops digital products. We are based in Ghana and welcome suitable projects across Africa and beyond. Describe what you want to improve, try a business agent or send an enquiry to discuss the work.';

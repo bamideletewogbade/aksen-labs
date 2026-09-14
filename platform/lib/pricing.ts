@@ -1,9 +1,10 @@
+import { formatPrice, type Price } from './currency';
 import { services, type ServiceItem } from './agency-content';
 
 export interface PricingStage {
   number: string;
   title: string;
-  price: string;
+  price: Price;
   cadence: string;
   text: string;
   includes: string[];
@@ -11,7 +12,7 @@ export interface PricingStage {
 
 export interface PricingPackage {
   name: string;
-  price: string;
+  price: Price;
   scope: string;
   timing: string;
 }
@@ -25,7 +26,7 @@ export interface PricingGroup {
 
 export interface CarePlan {
   name: string;
-  price: string;
+  price: Price;
   bestFor: string;
   coverage: string;
 }
@@ -34,7 +35,7 @@ export const stages: PricingStage[] = [
   {
     number: '01',
     title: 'Assess',
-    price: 'GHS 1,500',
+    price: { kind: 'exact', from: 1500 },
     cadence: 'fixed',
     text: 'One process examined properly before anyone builds anything. If the assessment shows the work is not worth doing, we say so.',
     includes: [
@@ -46,7 +47,7 @@ export const stages: PricingStage[] = [
   {
     number: '02',
     title: 'Build',
-    price: 'From GHS 3,000',
+    price: { kind: 'from', from: 3000 },
     cadence: 'per project',
     text: 'A defined piece of work with agreed deliverables, acceptance criteria and a named owner on both sides.',
     includes: [
@@ -58,7 +59,7 @@ export const stages: PricingStage[] = [
   {
     number: '03',
     title: 'Operate',
-    price: 'From GHS 900',
+    price: { kind: 'from', from: 900 },
     cadence: 'per month',
     text: 'Someone responsible for the system after launch: monitoring, corrections and a monthly review of whether it still earns its place.',
     includes: [
@@ -75,35 +76,35 @@ const packagesByService: Record<string, PricingPackage[]> = {
     // starting figure no listed package matches.
     {
       name: 'Single page',
-      price: 'GHS 3,000–6,000',
+      price: { kind: 'range', from: 3000, to: 6000 },
       scope:
         'One page with an enquiry form that reaches a named person with the details already complete, plus analytics and launch. The smallest thing we will build properly.',
       timing: '1–2 weeks',
     },
     {
       name: 'Campaign site',
-      price: 'GHS 6,500–10,000',
+      price: { kind: 'range', from: 6500, to: 10000 },
       scope:
         'One focused conversion journey, responsive build, enquiry form, analytics and launch.',
       timing: '2–3 weeks',
     },
     {
       name: 'Business website',
-      price: 'GHS 10,000–18,000',
+      price: { kind: 'range', from: 10000, to: 18000 },
       scope:
         'Core pages, services, proof, editable content structure, forms and basic search visibility.',
       timing: '3–5 weeks',
     },
     {
       name: 'Growth website',
-      price: 'GHS 18,000–35,000',
+      price: { kind: 'range', from: 18000, to: 35000 },
       scope:
         'Advanced journeys, content collections, lead qualification, integrations and reporting.',
       timing: '4–7 weeks',
     },
     {
       name: 'Website or WhatsApp assistant',
-      price: 'GHS 8,000–20,000 add-on',
+      price: { kind: 'range', from: 8000, to: 20000, note: 'add-on' },
       scope:
         'Approved knowledge, guided qualification, lead summaries, testing and human handoff.',
       timing: '2–4 weeks',
@@ -112,28 +113,28 @@ const packagesByService: Record<string, PricingPackage[]> = {
   operations: [
     {
       name: 'One workflow',
-      price: 'GHS 9,000–12,000',
+      price: { kind: 'range', from: 9000, to: 12000 },
       scope:
         'One outcome and channel, up to two straightforward integrations, training and a defect-support period defined in the proposal.',
       timing: '3–4 weeks',
     },
     {
       name: 'Connected workflows',
-      price: 'GHS 18,000–30,000',
+      price: { kind: 'range', from: 18000, to: 30000 },
       scope:
         'A sequence across enquiry, proposal or delivery, with approvals and failure handling.',
       timing: '5–8 weeks',
     },
     {
       name: 'Internal copilot',
-      price: 'GHS 20,000–65,000',
+      price: { kind: 'range', from: 20000, to: 65000 },
       scope:
         'Approved knowledge, structured tools, permissions, evaluation and a staff-facing experience.',
       timing: 'Scoped',
     },
     {
       name: 'Multi-workflow programme',
-      price: 'From GHS 60,000',
+      price: { kind: 'from', from: 60000 },
       scope:
         'Connected systems, governance, training and change management across more than one team.',
       timing: 'Scoped',
@@ -142,14 +143,14 @@ const packagesByService: Record<string, PricingPackage[]> = {
   insight: [
     {
       name: 'Reporting layer',
-      price: 'GHS 12,000–45,000',
+      price: { kind: 'range', from: 12000, to: 45000 },
       scope:
         'Defined metrics, data connections, dashboards, alerts and an operating review rhythm.',
       timing: '3–6 weeks',
     },
     {
       name: 'Data consolidation',
-      price: 'From GHS 8,000',
+      price: { kind: 'from', from: 8000 },
       scope:
         'Cleaning and joining scattered records so the reporting above can be trusted.',
       timing: 'Scoped by volume',
@@ -158,14 +159,14 @@ const packagesByService: Record<string, PricingPackage[]> = {
   products: [
     {
       name: 'Prototype & validation',
-      price: 'GHS 8,000–20,000',
+      price: { kind: 'range', from: 8000, to: 20000 },
       scope:
         'Interactive prototype, user testing and a decision on whether to build.',
       timing: '2–4 weeks',
     },
     {
       name: 'Portal or web application',
-      price: 'From GHS 30,000',
+      price: { kind: 'from', from: 30000 },
       scope:
         'Authentication, data workflows, dashboards, permissions and custom product logic.',
       timing: 'Scoped',
@@ -183,28 +184,28 @@ export const pricingGroups: PricingGroup[] = services.map((service) => ({
 export const carePlans: CarePlan[] = [
   {
     name: 'Website care',
-    price: 'From GHS 900/mo',
+    price: { kind: 'from', from: 900, per: 'month' },
     bestFor: 'Business websites',
     coverage:
       'Monitoring, backups, minor updates and a technical support allowance.',
   },
   {
     name: 'Assistant care',
-    price: 'From GHS 1,500/mo',
+    price: { kind: 'from', from: 1500, per: 'month' },
     bestFor: 'Website and channel assistants',
     coverage:
       'Website care plus knowledge updates, response monitoring and a monthly review.',
   },
   {
     name: 'Managed operations',
-    price: 'GHS 4,000–18,000/mo',
+    price: { kind: 'range', from: 4000, to: 18000, per: 'month' },
     bestFor: 'Live operational workflows',
     coverage:
       'Incident triage, evaluation, cost and quality review, planned improvements and reporting.',
   },
   {
     name: 'Transformation partner',
-    price: 'Custom retainer',
+    price: { kind: 'custom', label: 'Custom retainer' },
     bestFor: 'Several teams and workflows',
     coverage:
       'Roadmap, governance, delivery leadership, change management and portfolio review.',
@@ -259,16 +260,21 @@ export const startingPoints: { need: string; step: string; href: string }[] = [
   },
 ];
 
+// The assessment figure appears in these answers and in stages[0]. Written out
+// twice it drifts, which is how the published build price once disagreed with
+// the pricing page. Quoted in cedis deliberately: the answer is about what the
+// contract says, and the contract is in cedis.
+const assessmentFee = formatPrice(stages[0].price, 'GHS');
+
 export const pricingFaqs = [
   {
-    question: 'Do I need the GHS 1,500 assessment?',
+    question: `Do I need the ${assessmentFee} assessment?`,
     answer:
       'For an unclear workflow or a complex system, we recommend a separate assessment of one process. A straightforward project with a clear brief can go directly to a quotation. We agree the assessment scope before you pay.',
   },
   {
     question: 'Is the assessment included in the build price?',
-    answer:
-      'No. The GHS 1,500 pays for the assessment and written implementation scope. It is additional to the build and is not automatically credited. Any agreed credit will be stated in your proposal. You can stop after the assessment without commissioning a build.',
+    answer: `No. The ${assessmentFee} pays for the assessment and written implementation scope. It is additional to the build and is not automatically credited. Any agreed credit will be stated in your proposal. You can stop after the assessment without commissioning a build.`,
   },
   {
     question: 'What does monthly care actually cover?',

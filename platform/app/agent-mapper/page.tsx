@@ -1,4 +1,6 @@
 import { resolvePricingSelection } from '@/lib/pricing';
+import { formatPrice } from '@/lib/currency';
+import { requestCurrency } from '@/lib/request-currency';
 import { ArrowUpRight } from 'lucide-react';
 import { Reveal } from '@/components/agency-motion';
 import type { Metadata } from 'next';
@@ -16,6 +18,14 @@ export default async function OpportunityPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const selection = resolvePricingSelection((await searchParams).package);
+  // Formatted here rather than in the mapper. The mapper is a client component
+  // and shows this figure as text, and the visitor arrives from a pricing page
+  // that was showing their currency: seeing a different one on the next screen
+  // would read as two different prices for the same package.
+  const { currency } = await requestCurrency();
+  const shownSelection = selection
+    ? { name: selection.name, price: formatPrice(selection.price, currency) }
+    : undefined;
   return (
     <div className="agency-site refresh-site">
       <SiteNav />
@@ -67,8 +77,8 @@ export default async function OpportunityPage({
             </div>
           </Reveal>
           <StandaloneMapper
-            key={selection?.name ?? 'general'}
-            pricingSelection={selection}
+            key={shownSelection?.name ?? 'general'}
+            pricingSelection={shownSelection}
           />
         </section>
       </main>

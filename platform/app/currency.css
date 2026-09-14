@@ -1,0 +1,107 @@
+/* Currency picker on the pricing page.
+ *
+ * Sits between the introduction and the first figures, because it has to be
+ * seen before the prices rather than found after the reader has already done
+ * the conversion in their head.
+ */
+
+.agency-site .pricing-currency {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 14px 28px;
+  padding-block: 8px 4px;
+}
+
+.agency-site .currency-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 160ms ease;
+}
+/* Dimmed rather than disabled while the server re-renders: the choice has
+   already been made, and taking the control away would make a fast switch
+   feel like a fault. */
+.agency-site .currency-picker[data-pending] {
+  opacity: 0.6;
+}
+/* The fieldset is the row, not the pill. Its own border and padding are
+   removed: the grouping is there for assistive technology, and the visible
+   outline belongs to the buttons inside it. */
+.agency-site .currency-picker-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.agency-site .currency-picker-label {
+  padding: 0;
+  color: #59635c;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.agency-site .currency-picker-options {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid var(--line, #d8ded6);
+  border-radius: 999px;
+  background: #ffffff;
+}
+.agency-site .currency-picker-options button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  color: #59635c;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.agency-site .currency-picker-options button b {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.agency-site .currency-picker-options button:hover {
+  color: var(--emerald-dark, #175b3b);
+}
+.agency-site .currency-picker-options button[aria-pressed='true'] {
+  color: #ffffff;
+  background: var(--emerald-dark, #175b3b);
+}
+.agency-site .currency-picker-options button:focus-visible {
+  outline: 2px solid var(--emerald-dark, #175b3b);
+  outline-offset: 2px;
+}
+
+/* The rate and its date are part of the price, not small print: a converted
+   figure without them is a number the reader has no way to check. */
+.agency-site .pricing-currency-note {
+  flex: 1 1 340px;
+  max-width: 62ch;
+  margin: 0;
+  color: #6b756e;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 620px) {
+  .agency-site .pricing-currency {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .agency-site .currency-picker-options button {
+    padding: 6px 11px;
+  }
+}

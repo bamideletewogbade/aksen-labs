@@ -63,6 +63,10 @@ const rewrite = (file) =>
     /from\s+['"]([^'"]+)['"]/g,
     (_, name) => `from '${modules[name] || name}'`,
   );
+// The real formatter, so the figure written into a lead is the one the pricing
+// page would have shown for the same package. Registered here rather than in
+// the literal above, because rewrite is not defined until this point.
+modules['@/lib/currency'] = uri(rewrite('lib/currency.ts'));
 modules['@/lib/rate-limit'] = uri(rewrite('lib/rate-limit.ts'));
 modules['@/lib/bounded-json'] = uri(rewrite('lib/bounded-json.ts'));
 modules['@/lib/lead-notification'] = uri(rewrite('lib/lead-notification.ts'));

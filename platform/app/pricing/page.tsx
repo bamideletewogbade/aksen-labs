@@ -14,18 +14,26 @@ import {
   pricingEnquiryHref,
   startingPoints,
 } from '@/lib/pricing';
+import { formatPrice, ratesReviewed, CURRENCY_INFO } from '@/lib/currency';
+import { requestCurrency } from '@/lib/request-currency';
+import { CurrencyPicker } from '@/components/currency-picker';
 export const metadata: Metadata = {
   title: 'Pricing | Aksen Labs',
   description:
     'Indicative pricing in Ghana cedis for websites, workflow automation, reporting and managed operations. Assess, build, operate — with a fixed quotation after scoping.',
 };
-export default function PricingPage() {
+export default async function PricingPage() {
+  // Resolved on the server from a stated choice or the country Cloudflare
+  // already attached to the request. No lookup, no client-side conversion,
+  // and no moment where the reader sees the wrong currency first.
+  const { currency, chosen, country } = await requestCurrency();
   return (
     <div className="agency-site refresh-site">
       <SiteNav />
       <main id="main-content">
         <PageIntro
           variant="pricing"
+          currency={currency}
           label="PRICING"
           title={
             <>
@@ -34,10 +42,36 @@ export default function PricingPage() {
               <em>Before you ask.</em>
             </>
           }
-          text="You should not have to fill in a form to find out what something costs. These are indicative figures in Ghana cedis, so you can judge whether a conversation is worth your time. Your final price is fixed in a written proposal once we agree the scope."
+          text="You should not have to fill in a form to find out what something costs. These are indicative figures, so you can judge whether a conversation is worth your time. Your final price is fixed in a written proposal once we agree the scope."
           target="#packages"
           action="Explore project budgets"
         />
+        <section className="agency-container pricing-currency">
+          <CurrencyPicker current={currency} />
+          <p className="pricing-currency-note">
+            {currency === 'GHS' ? (
+              <>
+                Figures are in Ghana cedis, which is the currency of the
+                contract.
+              </>
+            ) : (
+              <>
+                Converted from Ghana cedis at {CURRENCY_INFO[currency].symbol}
+                {CURRENCY_INFO[currency].perCedi.toLocaleString('en-US')} to the
+                cedi, set on {ratesReviewed} and rounded. Shown so you can judge
+                the scale of a project; the contract is written in cedis, and
+                the figure there is the one that binds.
+              </>
+            )}
+            {!chosen && country && (
+              <>
+                {' '}
+                Chosen because you appear to be reading from {country}. Change
+                it above if that is wrong.
+              </>
+            )}
+          </p>
+        </section>
         <section id="stages" className="agency-container pricing-stages">
           {stages.map((stage, index) => (
             <Reveal key={stage.number} delay={index * 50}>
@@ -45,7 +79,7 @@ export default function PricingPage() {
                 <span className="refresh-small-index">{stage.number}</span>
                 <h2>{stage.title}</h2>
                 <p className="pricing-stage-price">
-                  {stage.price}
+                  {formatPrice(stage.price, currency)}
                   <span>{stage.cadence}</span>
                 </p>
                 <p>{stage.text}</p>
@@ -118,7 +152,7 @@ export default function PricingPage() {
                   {group.packages.map((item) => (
                     <li key={item.name}>
                       <strong>{item.name}</strong>
-                      <span className="pricing-figure">{item.price}</span>
+                      <span className="pricing-figure">{formatPrice(item.price, currency)}</span>
                       <p>{item.scope}</p>
                       <span className="pricing-timing">{item.timing}</span>
                       <Link
@@ -154,7 +188,7 @@ export default function PricingPage() {
               <Reveal key={plan.name} delay={index * 40}>
                 <article>
                   <h3>{plan.name}</h3>
-                  <span className="pricing-figure">{plan.price}</span>
+                  <span className="pricing-figure">{formatPrice(plan.price, currency)}</span>
                   <p className="pricing-care-for">{plan.bestFor}</p>
                   <p>{plan.coverage}</p>
                   <Link
