@@ -1,7 +1,11 @@
 import { sql } from 'drizzle-orm';
 
 /** One statement: a failed publication or audit write leaves the approval pending. */
-export function approvalDecisionQuery(id: string, decision: 'approved' | 'rejected', actorId: string) {
+export function approvalDecisionQuery(
+  id: string,
+  decision: 'approved' | 'rejected',
+  actorId: string,
+) {
   return sql`
     WITH pending AS (
       SELECT id, entity_type, entity_id FROM approvals

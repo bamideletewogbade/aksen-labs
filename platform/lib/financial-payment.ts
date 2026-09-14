@@ -1,6 +1,26 @@
 import { sql } from 'drizzle-orm';
 
-export function paymentQuery({ id, businessId, financialId, amount, reference, date, number, actorId, auditId }: { id: string; businessId: string; financialId: string; amount: number; reference: string; date: string; number: string; actorId: string; auditId: string }) {
+export function paymentQuery({
+  id,
+  businessId,
+  financialId,
+  amount,
+  reference,
+  date,
+  number,
+  actorId,
+  auditId,
+}: {
+  id: string;
+  businessId: string;
+  financialId: string;
+  amount: number;
+  reference: string;
+  date: string;
+  number: string;
+  actorId: string;
+  auditId: string;
+}) {
   return sql`WITH changed AS (
         UPDATE business_financials SET paid_minor=paid_minor+${amount},status=CASE WHEN paid_minor+${amount}=total_minor THEN 'paid' ELSE 'issued' END
         WHERE id=${financialId} AND business_id=${businessId} AND kind='invoice' AND status='issued' AND paid_minor+${amount}<=total_minor RETURNING *

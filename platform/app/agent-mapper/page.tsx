@@ -53,9 +53,9 @@ export default async function OpportunityPage({
             <div className="agency-contact-note">
               <strong>What happens after you send an enquiry?</strong>
               <p>
-                Our team reviews your answers and uses your email to discuss
-                the scope and next steps. Sending an enquiry does not commit
-                you to a paid assessment or project.
+                Our team reviews your answers and uses your email to discuss the
+                scope and next steps. Sending an enquiry does not commit you to
+                a paid assessment or project.
               </p>
             </div>
             <div className="agency-contact-note">

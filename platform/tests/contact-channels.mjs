@@ -56,8 +56,16 @@ assert.match(decodeURIComponent(fromPricing), /\/pricing/);
 // The home page adds nothing useful, so it is left out rather than saying "/".
 const fromHome = whatsappLink('/');
 assert.doesNotMatch(decodeURIComponent(fromHome), /reading \//);
-assert.equal(whatsappLink(''), fromHome, 'an empty path should match the home page');
-assert.equal(whatsappLink(), fromHome, 'a missing path should match the home page');
+assert.equal(
+  whatsappLink(''),
+  fromHome,
+  'an empty path should match the home page',
+);
+assert.equal(
+  whatsappLink(),
+  fromHome,
+  'a missing path should match the home page',
+);
 
 // The text must survive being put in a URL. An unencoded space silently
 // truncates the prefill in some clients.

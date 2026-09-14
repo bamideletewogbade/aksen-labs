@@ -39,6 +39,7 @@ export const targetMaxLength = 8000;
 
 /** The allowance sentence, so the interface and the error messages agree. */
 export function allowanceSentence(remaining: number | null): string {
-  if (remaining === null) return 'Research runs are not capped for this workspace. ';
+  if (remaining === null)
+    return 'Research runs are not capped for this workspace. ';
   return `${remaining} of ${dailyResearchRuns()} research runs remaining today. `;
 }

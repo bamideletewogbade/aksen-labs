@@ -59,14 +59,22 @@ const groups = [
     items: [
       { href: '/admin/prospects', label: 'Find leads', icon: Search },
       { href: '/admin/support', label: 'Messages', icon: MessageSquareText },
-      { href: '/admin/pipeline', label: 'Sales pipeline', icon: MessageSquareText },
+      {
+        href: '/admin/pipeline',
+        label: 'Sales pipeline',
+        icon: MessageSquareText,
+      },
       { href: '/admin/email', label: 'Email drafts', icon: Mail },
     ],
   },
   {
     label: 'Client work',
     items: [
-      { href: '/admin/projects', label: 'Client projects', icon: BriefcaseBusiness },
+      {
+        href: '/admin/projects',
+        label: 'Client projects',
+        icon: BriefcaseBusiness,
+      },
       { href: '/admin/workspaces', label: 'Clients & invoices', icon: Receipt },
     ],
   },
@@ -89,7 +97,11 @@ const groups = [
         label: 'Help answers',
         icon: BookOpen,
       },
-      { href: '/admin/settings', label: 'Workspace settings', icon: SlidersHorizontal },
+      {
+        href: '/admin/settings',
+        label: 'Workspace settings',
+        icon: SlidersHorizontal,
+      },
     ],
   },
 ];
@@ -134,27 +146,39 @@ export function AdminNav({ signOutPath }: { signOutPath: string }) {
         {groups.map((group) => {
           const expanded = expandedGroup === group.label;
           return (
-          <div className={expanded ? 'admin-nav-group is-expanded' : 'admin-nav-group'} key={group.label}>
-            <button className="admin-nav-group-toggle" type="button" aria-expanded={expanded} onClick={() => setExpandedGroup(expanded ? '' : group.label)}>
-              <span>{group.label}</span><ChevronDown size={15} />
-            </button>
-            <div className="admin-nav-group-items">
-            {group.items.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                prefetch={false}
-                onClick={() => setOpenPath(null)}
-                aria-current={pathname === href ? 'page' : undefined}
-                className={pathname === href ? 'active' : ''}
+            <div
+              className={
+                expanded ? 'admin-nav-group is-expanded' : 'admin-nav-group'
+              }
+              key={group.label}
+            >
+              <button
+                className="admin-nav-group-toggle"
+                type="button"
+                aria-expanded={expanded}
+                onClick={() => setExpandedGroup(expanded ? '' : group.label)}
               >
-                <Icon size={17} />
-                {label}
-              </Link>
-            ))}
+                <span>{group.label}</span>
+                <ChevronDown size={15} />
+              </button>
+              <div className="admin-nav-group-items">
+                {group.items.map(({ href, label, icon: Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    prefetch={false}
+                    onClick={() => setOpenPath(null)}
+                    aria-current={pathname === href ? 'page' : undefined}
+                    className={pathname === href ? 'active' : ''}
+                  >
+                    <Icon size={17} />
+                    {label}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        )})}
+          );
+        })}
         <Link href="/" className="admin-site-link">
           View website <ArrowUpRight size={16} />
         </Link>

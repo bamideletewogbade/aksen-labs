@@ -46,11 +46,27 @@ const { stages, carePlans, pricingGroups } = await import(moduleUrl('pricing'));
 
 // ---- the country default, which is what most visitors get ----
 assert.equal(currencyForCountry('GH'), 'GHS');
-assert.equal(currencyForCountry('gh'), 'GHS', 'the header case must not matter');
+assert.equal(
+  currencyForCountry('gh'),
+  'GHS',
+  'the header case must not matter',
+);
 assert.equal(currencyForCountry('NG'), 'NGN');
-assert.equal(currencyForCountry('KE'), 'USD', 'an unlisted country gets dollars');
-assert.equal(currencyForCountry(null), 'USD', 'a missing country must not throw');
-assert.equal(currencyForCountry('XX'), 'USD', 'Cloudflare sends XX when it cannot place a client');
+assert.equal(
+  currencyForCountry('KE'),
+  'USD',
+  'an unlisted country gets dollars',
+);
+assert.equal(
+  currencyForCountry(null),
+  'USD',
+  'a missing country must not throw',
+);
+assert.equal(
+  currencyForCountry('XX'),
+  'USD',
+  'Cloudflare sends XX when it cannot place a client',
+);
 
 assert.ok(isCurrency('NGN'));
 assert.ok(!isCurrency('EUR'));
@@ -69,7 +85,11 @@ for (const currency of ['NGN', 'USD']) {
   const step = CURRENCY_INFO[currency].step;
   for (const amount of [900, 1500, 3000, 8000, 18000, 60000]) {
     const value = convert(amount, currency);
-    assert.equal(value % step, 0, `${amount} in ${currency} is not on the ${step} step`);
+    assert.equal(
+      value % step,
+      0,
+      `${amount} in ${currency} is not on the ${step} step`,
+    );
     assert.ok(value > 0, 'a converted price rounded away to nothing');
     // Rounding must stay close to the true figure, or it is not the price.
     const exact = amount * CURRENCY_INFO[currency].perCedi;
@@ -121,7 +141,10 @@ const everyPrice = [
 assert.ok(everyPrice.length >= 20, 'the price list lost entries');
 
 for (const price of everyPrice) {
-  assert.ok(price && typeof price === 'object', 'a price is still a plain string');
+  assert.ok(
+    price && typeof price === 'object',
+    'a price is still a plain string',
+  );
   assert.ok(
     ['exact', 'from', 'range', 'custom'].includes(price.kind),
     `unknown price kind: ${price.kind}`,
@@ -155,7 +178,8 @@ const ordered = [...everyPrice]
 for (const currency of CURRENCIES) {
   for (let i = 1; i < ordered.length; i++) {
     assert.ok(
-      convert(ordered[i].from, currency) >= convert(ordered[i - 1].from, currency),
+      convert(ordered[i].from, currency) >=
+        convert(ordered[i - 1].from, currency),
       `conversion to ${currency} reordered the price list`,
     );
   }

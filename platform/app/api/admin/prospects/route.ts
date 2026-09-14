@@ -15,6 +15,7 @@ import {
   targetMinLength,
   targetMaxLength,
 } from '@/lib/scout-limits';
+import { describeSchedule, isCadence } from '@/lib/automation-schedule';
 
 function streamProspecting(
   ownerId: string,
@@ -74,7 +75,7 @@ async function get() {
     const db = getDb();
     const [campaign, leads, runs, events, usage] = await Promise.all([
       db.execute(
-        sql`SELECT id,target,enabled,next_run_at,running_until FROM prospect_campaigns WHERE owner_id=${user.userId}`,
+        sql`SELECT id,target,enabled,next_run_at,running_until,cadence,run_hour,max_per_day,last_scheduled_at FROM prospect_campaigns WHERE owner_id=${user.userId}`,
       ),
       db.execute(
         sql`SELECT * FROM prospect_leads WHERE owner_id=${user.userId} ORDER BY updated_at DESC LIMIT 100`,
@@ -97,10 +98,12 @@ async function get() {
         events: events.rows,
         aiConfigured: !!process.env.OPENROUTER_API_KEY,
         // null means uncapped, which the interface reports as words rather than
-      // as a number that would otherwise read as zero runs left.
-      remainingRuns: remainingResearchRuns(Number(usage.rows[0]?.requests || 0)),
-      dailyRuns: dailyResearchRuns(),
-      targetMaxLength,
+        // as a number that would otherwise read as zero runs left.
+        remainingRuns: remainingResearchRuns(
+          Number(usage.rows[0]?.requests || 0),
+        ),
+        dailyRuns: dailyResearchRuns(),
+        targetMaxLength,
       },
       { headers: { 'Cache-Control': 'private, no-store' } },
     );
@@ -160,6 +163,49 @@ async function post(request: Request) {
       );
       return Response.json({ note: 'Search target saved.' });
     }
+
+    if (body.action === 'schedule') {
+      // Validated here rather than trusted from the form. This decides when an
+      // unattended job spends model credits, so a hand-made request must not be
+      // able to set it running every hour.
+      if (!isCadence(body.cadence))
+        return Response.json(
+          { error: 'Choose how often to search.' },
+          { status: 400 },
+        );
+      const runHour = Number(body.runHour);
+      if (!Number.isInteger(runHour) || runHour < 0 || runHour > 23)
+        return Response.json(
+          { error: 'Choose an hour between 00:00 and 23:00 UTC.' },
+          { status: 400 },
+        );
+      const maxPerDay = Number(body.maxPerDay);
+      if (!Number.isInteger(maxPerDay) || maxPerDay < 1 || maxPerDay > 6)
+        return Response.json(
+          { error: 'Between one and six runs a day.' },
+          { status: 400 },
+        );
+
+      const saved = await db.execute(
+        sql`UPDATE prospect_campaigns
+              SET cadence=${body.cadence}, run_hour=${runHour}, max_per_day=${maxPerDay}
+            WHERE owner_id=${user.userId}
+            RETURNING id`,
+      );
+      if (!saved.rows.length)
+        return Response.json(
+          { error: 'Save your search target first.' },
+          { status: 400 },
+        );
+      return Response.json({
+        note: describeSchedule({
+          cadence: body.cadence,
+          runHour,
+          maxPerDay,
+          enabled: true,
+        }),
+      });
+    }
     const campaign = await db.execute(
       sql`SELECT id FROM prospect_campaigns WHERE owner_id=${user.userId}`,
     );
@@ -216,8 +262,7 @@ async function post(request: Request) {
   } catch {
     return Response.json(
       {
-        error:
-          `Action could not complete. Check AI activity, database access and the daily allowance${dailyResearchRuns() ? ` of ${dailyResearchRuns()} runs` : ''}.`,
+        error: `Action could not complete. Check AI activity, database access and the daily allowance${dailyResearchRuns() ? ` of ${dailyResearchRuns()} runs` : ''}.`,
       },
       { status: 503 },
     );

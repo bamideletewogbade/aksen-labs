@@ -1,7 +1,7 @@
 ﻿'use client';
 import Link from 'next/link';
-import {cleanAiText} from '@/lib/ai-text';
-import {ResponseText} from '@/components/response-text';
+import { cleanAiText } from '@/lib/ai-text';
+import { ResponseText } from '@/components/response-text';
 import { useEffect, useState } from 'react';
 import { PendingButton } from '@/components/ui/activity';
 import { operationTasks, demoScenarios } from '@/lib/operations-catalog';
@@ -371,7 +371,12 @@ export function OperationsDesk({
             Human handoff required. In this demo, no staff notification is sent.
           </p>
         )}
-        {content && <details className="response-preview" open={mode === 'demos'}><summary>Reading preview</summary><ResponseText text={content}/></details>}
+        {content && (
+          <details className="response-preview" open={mode === 'demos'}>
+            <summary>Reading preview</summary>
+            <ResponseText text={content} />
+          </details>
+        )}
         <label>
           Document title
           <input

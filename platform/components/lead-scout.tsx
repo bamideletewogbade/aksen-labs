@@ -2,15 +2,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { SkeletonRows, Spinner } from '@/components/ui/activity';
-import type { Prospect } from '@/lib/prospect-evidence';
-type Lead = {
-  id: string;
-  company: string;
-  website: string;
-  status: string;
-  data: Prospect;
-  opportunity_id: string | null;
-};
+import { LeadFilterBar } from '@/components/lead-filter-bar';
+import { LeadSchedule } from '@/components/lead-schedule';
+import {
+  EMPTY_FILTER,
+  filterLeads,
+  type LeadFilter,
+  type StoredLead,
+} from '@/lib/lead-filters';
+import type { Cadence } from '@/lib/automation-schedule';
+// The stored shape is defined beside the filter rules rather than here, so a
+// column the filter reads can never go missing from the type the list uses.
+type Lead = StoredLead;
 type RunEvent = {
   id?: string;
   run_id?: string;
@@ -28,6 +31,10 @@ type Data = {
     enabled: boolean;
     next_run_at: string;
     running_until: string | null;
+    cadence: Cadence;
+    run_hour: number;
+    max_per_day: number;
+    last_scheduled_at: string | null;
   } | null;
   leads: Lead[];
   runs: {
@@ -83,8 +90,13 @@ export function LeadScout() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('new');
-  const [query, setQuery] = useState('');
+  // One object rather than a field per facet, so the bar and filterLeads can
+  // never end up applying different rules to the same list. Opens on the
+  // unreviewed leads, which is the only view with work waiting in it.
+  const [filter, setFilter] = useState<LeadFilter>({
+    ...EMPTY_FILTER,
+    status: 'new',
+  });
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState('');
   const [checkedAt, setCheckedAt] = useState(0);
@@ -102,14 +114,7 @@ export function LeadScout() {
     box.style.height = 'auto';
     box.style.height = `${Math.min(box.scrollHeight + 2, 520)}px`;
   }, [target]);
-  const visible = (data?.leads || []).filter(
-    (lead) =>
-      (filter === 'all' || lead.status === filter) &&
-      [lead.company, lead.website, ...lead.data.contacts.map((c) => c.value)]
-        .join(' ')
-        .toLowerCase()
-        .includes(query.trim().toLowerCase()),
-  );
+  const visible = filterLeads(data?.leads || [], filter);
   const unsaved = target.trim() !== data?.campaign?.target;
   const validTarget = target.trim().length >= 10;
   const running =
@@ -164,7 +169,11 @@ export function LeadScout() {
       .catch((e) => setError(e instanceof Error ? e.message : 'Load failed.'))
       .finally(() => setLoading(false));
   }, [load]);
-  async function act(action: string, id?: string) {
+  async function act(
+    action: string,
+    id?: string,
+    extra?: Record<string, unknown>,
+  ) {
     if (locked.current) return;
     locked.current = true;
     setPending(action + (id ? ':' + id : ''));
@@ -181,7 +190,7 @@ export function LeadScout() {
       const response = await fetch('/api/admin/prospects', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action, target, id }),
+        body: JSON.stringify({ action, target, id, ...extra }),
         signal: AbortSignal.timeout(150000),
       });
       if (
@@ -453,45 +462,31 @@ export function LeadScout() {
           </ul>
         </details>
       )}
+      <LeadSchedule
+        campaign={data?.campaign ?? null}
+        busy={busy}
+        pending={pending}
+        onSave={(schedule) => void act('schedule', undefined, schedule)}
+      />
       <section>
         <h2>Prospect review queue</h2>
-        <label htmlFor="scout-query">Search saved leads</label>
-        <input
-          id="scout-query"
-          className="scout-query"
-          type="search"
-          placeholder="Company, website or contact"
-          value={query}
-          maxLength={200}
-          onChange={(e) => setQuery(e.target.value)}
+        <LeadFilterBar
+          leads={data?.leads || []}
+          filter={filter}
+          onChange={setFilter}
+          shown={visible.length}
         />
-        <p className="scout-small">
-          {visible.length} matching leads · Latest {data?.leads.length || 0}{' '}
-          records loaded (up to 100).
-        </p>
-        <fieldset className="scout-filters">
-          <legend>Show</legend>
-          {['new', 'shortlisted', 'promoted', 'dismissed', 'all'].map(
-            (status) => (
-              <label key={status}>
-                <input
-                  type="radio"
-                  name="scout-filter"
-                  checked={filter === status}
-                  onChange={() => setFilter(status)}
-                />
-                {status} (
-                {data?.leads.filter(
-                  (l) => status === 'all' || l.status === status,
-                ).length || 0}
-                )
-              </label>
-            ),
-          )}
-        </fieldset>
-        {!data && !error && <SkeletonRows rows={5} label="Loading saved leads" />}
+        {!data && !error && (
+          <SkeletonRows rows={5} label="Loading saved leads" />
+        )}
+        {/* An empty list has two quite different causes, and saying which one
+            it is saves someone re-running a search they did not need. */}
         {data && !visible.length && (
-          <p>No leads in this view. Run a search or choose another status.</p>
+          <p>
+            {data.leads.length
+              ? 'No leads match these filters. Clear one, or widen the status.'
+              : 'Nothing saved yet. Run a search, or set a schedule above and let one run overnight.'}
+          </p>
         )}
         <div className="scout-grid">
           {visible.map((lead) => (

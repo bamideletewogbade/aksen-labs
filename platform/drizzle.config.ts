@@ -4,5 +4,9 @@ export default defineConfig({
   out: './drizzle-neon',
   schema: './db/schema.ts',
   dialect: 'postgresql',
-  dbCredentials: { url: process.env.DATABASE_URL || 'postgresql://placeholder:placeholder@localhost:5432/placeholder' },
+  dbCredentials: {
+    url:
+      process.env.DATABASE_URL ||
+      'postgresql://placeholder:placeholder@localhost:5432/placeholder',
+  },
 });

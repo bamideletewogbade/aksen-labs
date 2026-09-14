@@ -133,8 +133,14 @@
   .admin-refresh .project-items-list li .confirm-action-arm {
     opacity: 0;
   }
-  .admin-refresh .lead-history-list li:is(:hover, :focus-within) .confirm-action-arm,
-  .admin-refresh .project-items-list li:is(:hover, :focus-within) .confirm-action-arm,
+  .admin-refresh
+    .lead-history-list
+    li:is(:hover, :focus-within)
+    .confirm-action-arm,
+  .admin-refresh
+    .project-items-list
+    li:is(:hover, :focus-within)
+    .confirm-action-arm,
   .admin-refresh .confirm-action-arm:focus-visible {
     opacity: 1;
   }
@@ -164,7 +170,8 @@
   .admin-refresh .media-gallery-remove .confirm-action-arm {
     opacity: 0;
   }
-  .admin-refresh .media-gallery-item:is(:hover, :focus-within)
+  .admin-refresh
+    .media-gallery-item:is(:hover, :focus-within)
     .media-gallery-remove
     .confirm-action-arm {
     opacity: 1;

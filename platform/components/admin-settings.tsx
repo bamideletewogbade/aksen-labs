@@ -1,7 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { UserRound } from 'lucide-react';
-import { PendingButton, SkeletonRows, StatusNote } from '@/components/ui/activity';
+import {
+  PendingButton,
+  SkeletonRows,
+  StatusNote,
+} from '@/components/ui/activity';
 
 /**
  * Profile only, on purpose.

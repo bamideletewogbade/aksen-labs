@@ -24,7 +24,8 @@ export function byUrgency<T extends Sortable>(leads: T[], today: string): T[] {
     const difference = rank(a, today) - rank(b, today);
     if (difference !== 0) return difference;
     // Within a dated group, the one waiting longest goes first.
-    if (a.followUpAt && b.followUpAt) return a.followUpAt.localeCompare(b.followUpAt);
+    if (a.followUpAt && b.followUpAt)
+      return a.followUpAt.localeCompare(b.followUpAt);
     return 0;
   });
 }

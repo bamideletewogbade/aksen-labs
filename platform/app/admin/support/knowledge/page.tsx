@@ -9,7 +9,8 @@ export default function SupportKnowledge() {
   // Derived here rather than in the browser: it is the same arithmetic either
   // way, and the page then renders complete instead of filling in after load.
   const words = articles.reduce(
-    (total, article) => total + article.keywords.split(/\s+/).filter(Boolean).length,
+    (total, article) =>
+      total + article.keywords.split(/\s+/).filter(Boolean).length,
     0,
   );
   // An entry with few retrieval words is hard to reach, and the only previous
@@ -25,8 +26,8 @@ export default function SupportKnowledge() {
           <small>ASK AKSEN</small>
           <h1>Help answers</h1>
           <p>
-            Everything the public assistant is allowed to answer from. It
-            cannot invent a fact that is not here.
+            Everything the public assistant is allowed to answer from. It cannot
+            invent a fact that is not here.
           </p>
         </div>
         <dl className="knowledge-stats">

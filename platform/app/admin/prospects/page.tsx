@@ -8,7 +8,10 @@ export default function Page() {
         <div>
           <small>SALES & RESEARCH</small>
           <h1>Find potential clients</h1>
-          <p>Research businesses, check the evidence and choose which ones enter your sales pipeline.</p>
+          <p>
+            Research businesses, check the evidence and choose which ones enter
+            your sales pipeline.
+          </p>
         </div>
       </header>
       <LeadScout />

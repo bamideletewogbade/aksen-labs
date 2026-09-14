@@ -47,7 +47,11 @@ export function AdminCreateArticle() {
       <form className="admin-create-form" onSubmit={submit}>
         <label>
           Title
-          <input name="title" required placeholder="A useful, specific promise" />
+          <input
+            name="title"
+            required
+            placeholder="A useful, specific promise"
+          />
         </label>
         <label>
           Series

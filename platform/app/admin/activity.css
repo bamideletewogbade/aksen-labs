@@ -217,12 +217,24 @@
   .admin-refresh .run-list > article {
     animation: arrive-in 320ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
-  .admin-refresh .run-list > article:nth-child(1) { animation-delay: 0ms; }
-  .admin-refresh .run-list > article:nth-child(2) { animation-delay: 24ms; }
-  .admin-refresh .run-list > article:nth-child(3) { animation-delay: 48ms; }
-  .admin-refresh .run-list > article:nth-child(4) { animation-delay: 72ms; }
-  .admin-refresh .run-list > article:nth-child(5) { animation-delay: 96ms; }
-  .admin-refresh .run-list > article:nth-child(6) { animation-delay: 120ms; }
+  .admin-refresh .run-list > article:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .admin-refresh .run-list > article:nth-child(2) {
+    animation-delay: 24ms;
+  }
+  .admin-refresh .run-list > article:nth-child(3) {
+    animation-delay: 48ms;
+  }
+  .admin-refresh .run-list > article:nth-child(4) {
+    animation-delay: 72ms;
+  }
+  .admin-refresh .run-list > article:nth-child(5) {
+    animation-delay: 96ms;
+  }
+  .admin-refresh .run-list > article:nth-child(6) {
+    animation-delay: 120ms;
+  }
   /* Capped deliberately: past the sixth row the delay would outlast the wait
      for the next page, and the list would feel slower rather than livelier. */
   .admin-refresh .run-list > article:nth-child(n + 7) {

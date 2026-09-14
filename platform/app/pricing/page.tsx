@@ -158,7 +158,8 @@ export default async function PricingPage() {
             <p className="pricing-scope-note">
               Project fees in {CURRENCY_INFO[currency].label}s. Timelines are
               estimates from an agreed kickoff with content, access and initial
-              payment ready. <a href="#pricing-questions">Read the details below.</a>
+              payment ready.{' '}
+              <a href="#pricing-questions">Read the details below.</a>
             </p>
             {pricingGroups.map((group) => (
               <details
@@ -180,7 +181,9 @@ export default async function PricingPage() {
                   {group.packages.map((item) => (
                     <li key={item.name}>
                       <strong>{item.name}</strong>
-                      <span className="pricing-figure">{formatPrice(item.price, currency)}</span>
+                      <span className="pricing-figure">
+                        {formatPrice(item.price, currency)}
+                      </span>
                       <p>{item.scope}</p>
                       <span className="pricing-timing">{item.timing}</span>
                       <Link
@@ -216,7 +219,9 @@ export default async function PricingPage() {
               <Reveal key={plan.name} delay={index * 40}>
                 <article>
                   <h3>{plan.name}</h3>
-                  <span className="pricing-figure">{formatPrice(plan.price, currency)}</span>
+                  <span className="pricing-figure">
+                    {formatPrice(plan.price, currency)}
+                  </span>
                   <p className="pricing-care-for">{plan.bestFor}</p>
                   <p>{plan.coverage}</p>
                   <Link

@@ -257,7 +257,10 @@ export async function runProspecting(
         added += updated.rows.length;
       } else {
         const saved = await db.execute(
-          sql`INSERT INTO prospect_leads(id,owner_id,campaign_id,company,website,domain,data) VALUES(${crypto.randomUUID()},${ownerId},${campaignId},${lead.company},${lead.website},${lead.domain},${JSON.stringify(lead)}::jsonb) ON CONFLICT(owner_id,domain) DO NOTHING RETURNING id`,
+          // The run is recorded on the lead. Once searching happens on a schedule,
+          // the first question about the queue is which run filled it, and a lead
+          // that only knows its campaign cannot answer that.
+          sql`INSERT INTO prospect_leads(id,owner_id,campaign_id,run_id,company,website,domain,data) VALUES(${crypto.randomUUID()},${ownerId},${campaignId},${runId},${lead.company},${lead.website},${lead.domain},${JSON.stringify(lead)}::jsonb) ON CONFLICT(owner_id,domain) DO NOTHING RETURNING id`,
         );
         added += saved.rows.length;
       }

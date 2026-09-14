@@ -39,9 +39,7 @@ export default function ApproachPage() {
                   <p>{step.text}</p>
                 </div>
                 <div className="refresh-output">
-                  <span className="refresh-small-index">
-                    WHAT YOU GET
-                  </span>
+                  <span className="refresh-small-index">WHAT YOU GET</span>
                   <p>{step.output}</p>
                 </div>
               </article>

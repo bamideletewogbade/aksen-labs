@@ -90,12 +90,22 @@ console.log(
     ` chars, ${iterations} iterations, no plaintext involved`,
 );
 
-const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'aksen-')), 's.json');
+const file = path.join(
+  fs.mkdtempSync(path.join(os.tmpdir(), 'aksen-')),
+  's.json',
+);
 try {
   fs.writeFileSync(file, JSON.stringify(payload), { mode: 0o600 });
   execFileSync(
     process.execPath,
-    ['node_modules/wrangler/bin/wrangler.js', 'secret', 'bulk', file, '--name', WORKER],
+    [
+      'node_modules/wrangler/bin/wrangler.js',
+      'secret',
+      'bulk',
+      file,
+      '--name',
+      WORKER,
+    ],
     { stdio: 'inherit' },
   );
 } finally {
@@ -103,4 +113,7 @@ try {
   fs.rmSync(path.dirname(file), { recursive: true, force: true });
 }
 
-console.log('Done. Check with: node node_modules/wrangler/bin/wrangler.js secret list --name ' + WORKER);
+console.log(
+  'Done. Check with: node node_modules/wrangler/bin/wrangler.js secret list --name ' +
+    WORKER,
+);

@@ -44,15 +44,17 @@
 .admin-refresh .scout textarea.scout-target {
   min-height: 190px;
   padding: 14px 16px;
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
-    monospace;
+  font-family:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.86rem;
   line-height: 1.65;
   tab-size: 2;
   resize: vertical;
   white-space: pre-wrap;
   overflow-wrap: break-word;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 .admin-refresh .scout textarea.scout-target::placeholder {
   color: #6f8676;
@@ -440,5 +442,271 @@
 @media (prefers-reduced-motion: reduce) {
   .admin-refresh .scout button {
     transition: none;
+  }
+}
+
+/* ---- saved lead queue: filters and schedule ---- */
+/* The queue fills up while nobody is watching, so the controls have to answer
+   "what of this is worth my next hour" before they answer anything else.
+   Status and count stay in the open; the rest folds away. */
+.admin-refresh .lead-filters {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 20px;
+}
+.admin-refresh .lead-filters-top {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.admin-refresh .lead-search {
+  position: relative;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.admin-refresh .lead-search .scout-query {
+  width: 100%;
+  padding-right: 38px;
+}
+.admin-refresh .lead-search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #b4c6b7;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.admin-refresh .lead-search-clear:hover {
+  color: #edf5ee;
+  background: #23402b;
+}
+.admin-refresh .lead-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.admin-refresh .lead-more b {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #7bd894;
+  color: #0c1a12;
+  font-size: 0.75rem;
+}
+.admin-refresh .lead-more span {
+  transition: transform 180ms ease;
+}
+.admin-refresh .lead-more span.is-open {
+  transform: rotate(180deg);
+}
+.admin-refresh .scout fieldset.lead-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.admin-refresh .scout .lead-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #395440;
+  background: #0f2217;
+  color: #cfe0d3;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+.admin-refresh .scout .lead-chip:hover {
+  transform: translateY(-1px);
+  border-color: #7bd894;
+}
+.admin-refresh .scout .lead-chip span {
+  font-variant-numeric: tabular-nums;
+  color: #8fa795;
+  font-size: 0.8rem;
+}
+.admin-refresh .scout .lead-chip[data-empty='true'] {
+  opacity: 0.55;
+}
+.admin-refresh .scout .lead-chip[aria-pressed='true'] {
+  background: #7bd894;
+  border-color: #7bd894;
+  color: #0c1a12;
+  font-weight: 600;
+}
+.admin-refresh .scout .lead-chip[aria-pressed='true'] span {
+  color: #17351f;
+}
+/* Collapsed by grid rows rather than height, so the panel does not need a
+   measured pixel value and can hold any number of facets. */
+.admin-refresh .lead-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.admin-refresh .lead-panel.is-open {
+  grid-template-rows: 1fr;
+}
+.admin-refresh .lead-panel-inner {
+  overflow: hidden;
+  min-height: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.admin-refresh .lead-panel.is-open .lead-panel-inner {
+  padding: 16px 0 4px;
+}
+.admin-refresh .scout :is(.lead-panel, .lead-options-group) fieldset,
+.admin-refresh .scout fieldset.lead-options-group,
+.admin-refresh .lead-panel-inner fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.admin-refresh .scout legend {
+  padding: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8fa795;
+  margin-bottom: 8px;
+}
+.admin-refresh .lead-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.admin-refresh .scout .lead-option {
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 1px solid #395440;
+  background: #0f2217;
+  color: #cfe0d3;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+.admin-refresh .scout .lead-option:hover {
+  border-color: #7bd894;
+}
+.admin-refresh .scout .lead-option[aria-pressed='true'] {
+  background: #23402b;
+  border-color: #7bd894;
+  color: #edf5ee;
+}
+.admin-refresh .lead-filters-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.admin-refresh .scout .lead-count {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #b4c6b7;
+  font-variant-numeric: tabular-nums;
+  transition: color 200ms ease;
+}
+/* The number changes while you type. Colouring it briefly says the list
+   responded without moving anything under the cursor. */
+.admin-refresh .lead-count.is-changed {
+  color: #7bd894;
+}
+.admin-refresh .scout :is(.lead-pill, .lead-reset) {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px dashed #4d6b56;
+  background: transparent;
+  color: #cfe0d3;
+  animation: lead-pill-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.admin-refresh .scout .lead-pill:hover {
+  border-color: #e08f8f;
+  color: #f2d3d3;
+  border-style: solid;
+}
+.admin-refresh .scout .lead-reset {
+  border-style: solid;
+  margin-left: auto;
+}
+@keyframes lead-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.admin-refresh .scout-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.admin-refresh .lead-schedule-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.admin-refresh .lead-schedule-head h2 {
+  margin: 6px 0 0;
+}
+.admin-refresh .scout .lead-schedule-sentence {
+  font-size: 1.05rem;
+  color: #edf5ee;
+  padding: 12px 14px;
+  border-left: 3px solid #7bd894;
+  background: #0f2217;
+  border-radius: 0 8px 8px 0;
+}
+.admin-refresh .scout .lead-options-group {
+  margin: 16px 0 0;
+}
+.admin-refresh .scout .lead-schedule-status {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid #2b4433;
+  font-size: 0.88rem;
+  color: #b4c6b7;
+}
+.admin-refresh .scout .lead-schedule-status b {
+  color: #cfe0d3;
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-refresh :is(.lead-panel, .lead-chip, .lead-option, .lead-more span) {
+    transition: none;
+  }
+  .admin-refresh :is(.lead-pill, .lead-reset) {
+    animation: none;
   }
 }

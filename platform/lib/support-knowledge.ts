@@ -29,7 +29,8 @@ export function supportArticles(): SupportArticle[] {
   return [
     {
       id: 'business-agents',
-      source: 'Written in lib/support-knowledge.ts. The tools themselves are in lib/agent-workbench.ts.',
+      source:
+        'Written in lib/support-knowledge.ts. The tools themselves are in lib/agent-workbench.ts.',
       title: 'Free business agents',
       href: '/business-agents',
       keywords:
@@ -39,7 +40,8 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'agency',
-      source: 'agencyDescription in lib/agency-content.ts, plus a note written here.',
+      source:
+        'agencyDescription in lib/agency-content.ts, plus a note written here.',
       title: 'About Aksen',
       href: '/about',
       keywords: 'aksen agency ghana nigeria africa location who company',
@@ -57,7 +59,8 @@ export function supportArticles(): SupportArticle[] {
     })),
     {
       id: 'pricing',
-      source: 'stages, pricingGroups, carePlans and pricingFaqs in lib/pricing.ts. The same figures the pricing page renders.',
+      source:
+        'stages, pricingGroups, carePlans and pricingFaqs in lib/pricing.ts. The same figures the pricing page renders.',
       title: 'Service pricing in GHS',
       href: '/pricing',
       keywords:
@@ -100,7 +103,8 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'examples',
-      source: 'Written in lib/support-knowledge.ts. Deliberately cautious: TFS is a proposal, not a delivered case study.',
+      source:
+        'Written in lib/support-knowledge.ts. Deliberately cautious: TFS is a proposal, not a delivered case study.',
       title: 'Industry scenarios',
       href: '/industries',
       keywords:
@@ -110,17 +114,18 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'support',
-      source: 'Written in lib/support-knowledge.ts. The WhatsApp number comes from lib/contact-channels.ts.',
+      source:
+        'Written in lib/support-knowledge.ts. The WhatsApp number comes from lib/contact-channels.ts.',
       title: 'Talk to the team',
       href: '/agent-mapper',
       keywords:
         'human person contact support help broken login issue complaint refund urgent invoice order status existing project email whatsapp message phone number call',
-      content:
-        `Two ways to reach the team. The business enquiry form takes your goal and a reply address. Or message ${whatsappDisplay} on WhatsApp, which is a real number answered by a person and is not one of the fictional demonstrations on this site. This public assistant cannot view private accounts, invoices, orders or projects, book meetings, issue refunds, send emails or WhatsApp messages, accept payments or make commitments. Do not ask for passwords, card details or credentials. An escalation note can be recorded for the team, but it does not guarantee a reply or a booked appointment. Existing clients should use their agreed project support channel. No public response SLA is established, on either channel.`,
+      content: `Two ways to reach the team. The business enquiry form takes your goal and a reply address. Or message ${whatsappDisplay} on WhatsApp, which is a real number answered by a person and is not one of the fictional demonstrations on this site. This public assistant cannot view private accounts, invoices, orders or projects, book meetings, issue refunds, send emails or WhatsApp messages, accept payments or make commitments. Do not ask for passwords, card details or credentials. An escalation note can be recorded for the team, but it does not guarantee a reply or a booked appointment. Existing clients should use their agreed project support channel. No public response SLA is established, on either channel.`,
     },
     {
       id: 'demos',
-      source: 'Written in lib/support-knowledge.ts. The scenarios are supportScenarios, lower in the same file.',
+      source:
+        'Written in lib/support-knowledge.ts. The scenarios are supportScenarios, lower in the same file.',
       title: 'Try a support demonstration',
       href: '/support-demo',
       keywords:

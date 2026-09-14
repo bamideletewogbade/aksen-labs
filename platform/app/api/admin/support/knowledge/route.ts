@@ -64,7 +64,4 @@ async function POSTHandler(request: Request) {
   );
 }
 
-export const POST = withRequestLog(
-  '/api/admin/support/knowledge',
-  POSTHandler,
-);
+export const POST = withRequestLog('/api/admin/support/knowledge', POSTHandler);

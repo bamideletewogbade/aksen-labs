@@ -1,5 +1,10 @@
-export const PROJECT_STAGES = ['discovery', 'delivery', 'accepted', 'closed'] as const;
-export type ProjectStage = typeof PROJECT_STAGES[number];
+export const PROJECT_STAGES = [
+  'discovery',
+  'delivery',
+  'accepted',
+  'closed',
+] as const;
+export type ProjectStage = (typeof PROJECT_STAGES)[number];
 
 export const STAGE_LABEL: Record<string, string> = {
   discovery: 'Discovery',

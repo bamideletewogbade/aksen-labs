@@ -282,7 +282,7 @@
   margin: 8px 0 10px;
   color: #f0f5ed;
   font-size: clamp(2.5rem, 5vw, 4.7rem);
-  line-height: .98;
+  line-height: 0.98;
 }
 .admin-agent-page .business-agents-intro > p:last-child {
   color: #91a296;

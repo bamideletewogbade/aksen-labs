@@ -56,7 +56,8 @@ export function KnowledgeConsole({ entries }: { entries: KnowledgeEntry[] }) {
   const ordered = useMemo(() => {
     if (!matches) return visible;
     return [...visible].sort(
-      (a, b) => (scoreFor.get(b.id)?.score ?? 0) - (scoreFor.get(a.id)?.score ?? 0),
+      (a, b) =>
+        (scoreFor.get(b.id)?.score ?? 0) - (scoreFor.get(a.id)?.score ?? 0),
     );
   }, [visible, matches, scoreFor]);
 

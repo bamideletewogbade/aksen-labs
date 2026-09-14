@@ -147,35 +147,52 @@ export function AgentWorkbench({
       <div className="agent-workbench-layout">
         {admin ? (
           <div className="agent-admin-picker">
-            <label htmlFor="admin-agent-select">What do you need help with?</label>
-            <select id="admin-agent-select" value={selected} disabled={busy} onChange={(event) => choose(event.target.value)}>
-              {agents.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-            </select>
-            <span>{agent.public ? 'Also available on the public website' : 'Private workspace tool'}</span>
-          </div>
-        ) : <nav className="agent-picker" aria-label="Choose a business agent">
-          {agents.map((item) => (
-            <Button
-              key={item.id}
-              type="button"
-              variant="ghost"
+            <label htmlFor="admin-agent-select">
+              What do you need help with?
+            </label>
+            <select
+              id="admin-agent-select"
+              value={selected}
               disabled={busy}
-              aria-pressed={selected === item.id}
-              className={`agent-choice ${selected === item.id ? 'is-selected' : ''}`}
-              onClick={() => choose(item.id)}
+              onChange={(event) => choose(event.target.value)}
             >
-              <span className="agent-choice-name">{item.name}</span>
-              <span className="agent-choice-job">{item.job}</span>
-              <span className="agent-choice-access">
-                {admin
-                  ? item.public
-                    ? 'Also available to visitors'
-                    : 'Admin only'
-                  : 'Free AI draft'}
-              </span>
-            </Button>
-          ))}
-        </nav>}
+              {agents.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <span>
+              {agent.public
+                ? 'Also available on the public website'
+                : 'Private workspace tool'}
+            </span>
+          </div>
+        ) : (
+          <nav className="agent-picker" aria-label="Choose a business agent">
+            {agents.map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                variant="ghost"
+                disabled={busy}
+                aria-pressed={selected === item.id}
+                className={`agent-choice ${selected === item.id ? 'is-selected' : ''}`}
+                onClick={() => choose(item.id)}
+              >
+                <span className="agent-choice-name">{item.name}</span>
+                <span className="agent-choice-job">{item.job}</span>
+                <span className="agent-choice-access">
+                  {admin
+                    ? item.public
+                      ? 'Also available to visitors'
+                      : 'Admin only'
+                    : 'Free AI draft'}
+                </span>
+              </Button>
+            ))}
+          </nav>
+        )}
         <div className="agent-working-area">
           <div className="agent-task-heading">
             <span className="agent-kicker">

@@ -31,7 +31,9 @@ export default async function AdminPipelinePage({
       // application failed to stamp than one belonging to somebody else. An
       // enquiry that is captured but invisible is the worst outcome available,
       // so the reader forgives what the writer may get wrong.
-      .where(or(eq(opportunities.ownerId, owner), isNull(opportunities.ownerId)))
+      .where(
+        or(eq(opportunities.ownerId, owner), isNull(opportunities.ownerId)),
+      )
       .orderBy(desc(opportunities.createdAt))
       .limit(30);
   } catch {

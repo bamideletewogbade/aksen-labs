@@ -125,13 +125,13 @@ At the most basic level, useful business software repeatedly performs the same l
 
 That loop composes into larger products:
 
-| Business experience | Composition of primitives |
-|---|---|
-| Customer service | Request + knowledge + action + outcome |
-| Lead management | Person + organization + signal + qualification + next action |
-| Project delivery | Promise + work items + decisions + evidence + outcome |
-| Content operations | Insight + sources + draft + approval + distribution + outcome |
-| Industry pack | Shared objects + vocabulary + rules + tools + templates |
+| Business experience | Composition of primitives                                     |
+| ------------------- | ------------------------------------------------------------- |
+| Customer service    | Request + knowledge + action + outcome                        |
+| Lead management     | Person + organization + signal + qualification + next action  |
+| Project delivery    | Promise + work items + decisions + evidence + outcome         |
+| Content operations  | Insight + sources + draft + approval + distribution + outcome |
+| Industry pack       | Shared objects + vocabulary + rules + tools + templates       |
 
 This is how Aksen can grow without becoming a collection of unrelated bots.
 

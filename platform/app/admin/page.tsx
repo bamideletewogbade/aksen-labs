@@ -297,13 +297,19 @@ export default async function AdminPage() {
           </section>
 
           <div className="founder-grid">
-            <section className="founder-card founder-trend" aria-labelledby="activity-heading">
+            <section
+              className="founder-card founder-trend"
+              aria-labelledby="activity-heading"
+            >
               <div className="founder-card-head">
                 <div>
                   <small>14-DAY MOMENTUM</small>
                   <h2 id="activity-heading">Demand and agent activity</h2>
                 </div>
-                <span><i className="legend-leads" /> Leads <i className="legend-ai" /> AI runs</span>
+                <span>
+                  <i className="legend-leads" /> Leads{' '}
+                  <i className="legend-ai" /> AI runs
+                </span>
               </div>
               <FounderActivityChart data={activity} />
             </section>
@@ -422,7 +428,6 @@ export default async function AdminPage() {
                 </div>
               )}
             </section>
-
           </div>
         </>
       )}

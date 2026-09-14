@@ -1,5 +1,5 @@
 'use client';
-import {ResponseText} from '@/components/response-text';
+import { ResponseText } from '@/components/response-text';
 import Link from 'next/link';
 import { useState } from 'react';
 import { SiteNav, SiteFooter } from '@/components/site-chrome';
@@ -83,7 +83,11 @@ export default function WorkspaceDemo() {
                 </p>
               )}
               <div className="ws-document-text" aria-live="polite">
-                {result ? <ResponseText text={result}/> : 'Choose a task to prepare a readable draft from the sample brief.'}
+                {result ? (
+                  <ResponseText text={result} />
+                ) : (
+                  'Choose a task to prepare a readable draft from the sample brief.'
+                )}
               </div>
               <p className="ws-note">
                 In a business workspace, you choose your own documents, edit the

@@ -1,5 +1,5 @@
 ﻿'use client';
-import {cleanAiText} from '@/lib/ai-text';
+import { cleanAiText } from '@/lib/ai-text';
 import { useEffect, useState } from 'react';
 import { PendingButton } from '@/components/ui/activity';
 type EmailItem = {

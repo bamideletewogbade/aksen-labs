@@ -11,8 +11,15 @@ process.loadEnvFile('.env');
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set.');
 
 const q = neon(process.env.DATABASE_URL);
+// Comments come out before the split. A semicolon inside a comment is ordinary
+// English punctuation, and splitting first would cut a statement in half. That
+// happened in the automation migration and failed as "syntax error at end of
+// input", which does not point at the comma it actually lost.
 const statements = fs
   .readFileSync('db/settings-migration.sql', 'utf8')
+  .split('\n')
+  .filter((line) => !line.trim().startsWith('--'))
+  .join('\n')
   .split(';')
   .map((s) => s.trim())
   .filter(Boolean);

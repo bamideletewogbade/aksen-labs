@@ -42,13 +42,19 @@ assert.ok(
   'a new hash records an iteration count the Worker cannot compute',
 );
 
-assert.equal(await verifyPassword('a-correct-horse-battery-staple', encoded), true);
+assert.equal(
+  await verifyPassword('a-correct-horse-battery-staple', encoded),
+  true,
+);
 assert.equal(await verifyPassword('the-wrong-password', encoded), false);
 
 // Two hashes of one password differ, so the salt is actually random.
 const again = await hashPassword('a-correct-horse-battery-staple');
 assert.notEqual(again, encoded, 'the salt is not random');
-assert.equal(await verifyPassword('a-correct-horse-battery-staple', again), true);
+assert.equal(
+  await verifyPassword('a-correct-horse-battery-staple', again),
+  true,
+);
 
 // A hash above the cap must be refused rather than attempted. Left unchecked,
 // deriveBits throws inside the Worker and the user is told to try again.

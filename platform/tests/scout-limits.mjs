@@ -62,11 +62,18 @@ delete process.env.SCOUT_DAILY_RUNS;
 
 // The brief is a prompt, not a sentence.
 assert.ok(limits.targetMaxLength >= 4000);
-assert.ok(limits.targetMinLength >= 1 && limits.targetMinLength < limits.targetMaxLength);
+assert.ok(
+  limits.targetMinLength >= 1 &&
+    limits.targetMinLength < limits.targetMaxLength,
+);
 
 // No file may carry its own copy of the cap.
 const enforcement = fs.readFileSync('lib/prospecting.ts', 'utf8');
-assert.match(enforcement, /dailyResearchRuns\(\)/, 'the quota no longer reads the shared limit');
+assert.match(
+  enforcement,
+  /dailyResearchRuns\(\)/,
+  'the quota no longer reads the shared limit',
+);
 assert.doesNotMatch(
   enforcement,
   /requests<6\b/,
@@ -74,7 +81,11 @@ assert.doesNotMatch(
 );
 
 const route = fs.readFileSync('app/api/admin/prospects/route.ts', 'utf8');
-assert.match(route, /remainingResearchRuns\(/, 'the route no longer reports the shared limit');
+assert.match(
+  route,
+  /remainingResearchRuns\(/,
+  'the route no longer reports the shared limit',
+);
 assert.doesNotMatch(route, /six-run/, 'the route still says "six-run"');
 assert.match(
   route,
@@ -83,8 +94,16 @@ assert.match(
 );
 
 const ui = fs.readFileSync('components/lead-scout.tsx', 'utf8');
-assert.doesNotMatch(ui, /of 6 research runs/, 'the interface still hardcodes 6');
+assert.doesNotMatch(
+  ui,
+  /of 6 research runs/,
+  'the interface still hardcodes 6',
+);
 assert.doesNotMatch(ui, /Up to six/, 'the interface still says "six"');
-assert.match(ui, /data\.dailyRuns/, 'the interface should show the figure the server enforces');
+assert.match(
+  ui,
+  /data\.dailyRuns/,
+  'the interface should show the figure the server enforces',
+);
 
 console.log('scout-limits: all checks passed');

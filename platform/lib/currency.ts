@@ -68,9 +68,7 @@ export const CURRENCY_INFO: Record<Currency, CurrencyInfo> = {
 };
 
 export function isCurrency(value: unknown): value is Currency {
-  return (
-    typeof value === 'string' && CURRENCIES.includes(value as Currency)
-  );
+  return typeof value === 'string' && CURRENCIES.includes(value as Currency);
 }
 
 /**
@@ -143,7 +141,9 @@ export function isSetPrice(price: Price, currency: Currency): boolean {
 /** Whether every price in a list is set for this market rather than converted. */
 export function allSetFor(prices: Price[], currency: Currency): boolean {
   const priced = prices.filter((price) => price.kind !== 'custom');
-  return priced.length > 0 && priced.every((price) => isSetPrice(price, currency));
+  return (
+    priced.length > 0 && priced.every((price) => isSetPrice(price, currency))
+  );
 }
 
 export function formatPrice(price: Price, currency: Currency): string {

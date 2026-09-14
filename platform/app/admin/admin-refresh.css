@@ -96,7 +96,7 @@
   }
   .admin-nav-group-toggle:hover {
     color: #dcead7;
-    background: rgba(255,255,255,.035);
+    background: rgba(255, 255, 255, 0.035);
   }
   .admin-nav-group.is-expanded .admin-nav-group-toggle svg {
     transform: rotate(180deg);

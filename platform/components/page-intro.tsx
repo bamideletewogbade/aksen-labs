@@ -214,7 +214,12 @@ export function PageIntro({
           </Reveal>
         </div>
         <Reveal delay={120} className="opening-art">
-          <OpeningArt variant={variant} image={image} alt={alt} currency={currency} />
+          <OpeningArt
+            variant={variant}
+            image={image}
+            alt={alt}
+            currency={currency}
+          />
         </Reveal>
       </div>
     </header>
