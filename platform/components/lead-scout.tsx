@@ -38,7 +38,10 @@ type Data = {
   }[];
   events: RunEvent[];
   aiConfigured: boolean;
-  remainingRuns: number;
+  /** null when the workspace is uncapped, which is not the same as none left. */
+  remainingRuns: number | null;
+  dailyRuns: number;
+  targetMaxLength: number;
 };
 const researchAgents = [
   {
@@ -87,6 +90,17 @@ export function LeadScout() {
   const [liveEvents, setLiveEvents] = useState<RunEvent[]>([]);
   const dirty = useRef(false);
   const locked = useRef(false);
+  const targetBox = useRef<HTMLTextAreaElement>(null);
+  // Falls back until the first load answers; the server remains the authority.
+  const maxTarget = data?.targetMaxLength ?? 8000;
+  // Grow to fit the brief instead of scrolling a small window, capped so a
+  // long prompt cannot push the search buttons off the screen.
+  useEffect(() => {
+    const box = targetBox.current;
+    if (!box) return;
+    box.style.height = 'auto';
+    box.style.height = `${Math.min(box.scrollHeight + 2, 520)}px`;
+  }, [target]);
   const visible = (data?.leads || []).filter(
     (lead) =>
       (filter === 'all' || lead.status === filter) &&
@@ -249,17 +263,55 @@ export function LeadScout() {
           Search public company information, review the evidence and move
           suitable prospects into Enquiries. No outreach is sent.
         </p>
-        <label htmlFor="scout-target">Target market</label>
+        <div className="scout-target-head">
+          <label htmlFor="scout-target">Target market</label>
+          <span
+            className={
+              target.length > maxTarget * 0.9
+                ? 'scout-counter is-near'
+                : 'scout-counter'
+            }
+          >
+            {target.length.toLocaleString()} / {maxTarget.toLocaleString()}
+          </span>
+        </div>
         <textarea
           id="scout-target"
+          ref={targetBox}
+          className="scout-target"
           value={target}
-          maxLength={500}
+          maxLength={maxTarget}
+          spellCheck={false}
           disabled={busy || loading}
+          aria-describedby="scout-target-hint"
+          placeholder={
+            'Describe who you want to reach. Markdown is fine.\n\n## Objective\nFind ...\n\n## Good fit\n- ...\n\n## Avoid\n- ...'
+          }
+          onKeyDown={(e) => {
+            // A prompt is written as an outline, so Tab should indent rather
+            // than jump to the next control and lose the writer's place.
+            // Shift+Tab still moves focus, which keeps keyboard navigation out.
+            if (e.key !== 'Tab' || e.shiftKey) return;
+            e.preventDefault();
+            const box = e.currentTarget;
+            const { selectionStart: from, selectionEnd: to } = box;
+            const next = target.slice(0, from) + '  ' + target.slice(to);
+            if (next.length > maxTarget) return;
+            dirty.current = true;
+            setTarget(next);
+            requestAnimationFrame(() => {
+              box.selectionStart = box.selectionEnd = from + 2;
+            });
+          }}
           onChange={(e) => {
             dirty.current = true;
             setTarget(e.target.value);
           }}
         />
+        <p id="scout-target-hint" className="scout-small">
+          Headings and lists are kept as written. Tab indents; Shift+Tab leaves
+          the field.
+        </p>
         <div className="scout-actions">
           <button
             disabled={busy || loading || !data || !validTarget || !unsaved}
@@ -291,12 +343,15 @@ export function LeadScout() {
           {reason}
         </p>
         <p className="scout-small">
+          {/* Read from the server rather than written here, so the number
+              shown is the number actually enforced. */}
           {data
-            ? `${data.remainingRuns} of 6 research runs remaining today. `
+            ? data.remainingRuns === null
+              ? 'Research runs are not capped for this workspace. '
+              : `${data.remainingRuns} of ${data.dailyRuns} research runs remaining today. `
             : ''}
-          Up to six discovery/enrichment runs daily. Sources and contact details
-          need human review. A saved target controls searches; recurring
-          execution requires the connected scheduler.
+          Sources and contact details need human review. A saved target controls
+          searches; recurring execution requires the connected scheduler.
         </p>
         {busy && (
           <output aria-live="polite">

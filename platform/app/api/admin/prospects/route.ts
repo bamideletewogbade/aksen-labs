@@ -9,6 +9,12 @@ import {
   reviewProspectQuery,
   type ProspectProgress,
 } from '@/lib/prospecting';
+import {
+  dailyResearchRuns,
+  remainingResearchRuns,
+  targetMinLength,
+  targetMaxLength,
+} from '@/lib/scout-limits';
 
 function streamProspecting(
   ownerId: string,
@@ -90,7 +96,11 @@ async function get() {
         runs: runs.rows,
         events: events.rows,
         aiConfigured: !!process.env.OPENROUTER_API_KEY,
-        remainingRuns: Math.max(0, 6 - Number(usage.rows[0]?.requests || 0)),
+        // null means uncapped, which the interface reports as words rather than
+      // as a number that would otherwise read as zero runs left.
+      remainingRuns: remainingResearchRuns(Number(usage.rows[0]?.requests || 0)),
+      dailyRuns: dailyResearchRuns(),
+      targetMaxLength,
       },
       { headers: { 'Cache-Control': 'private, no-store' } },
     );
@@ -118,10 +128,16 @@ async function post(request: Request) {
     return Response.json({ error: 'Invalid origin.' }, { status: 403 });
   let body;
   try {
-    body = await boundedJson(request);
+    // The target brief is a prompt and may run to targetMaxLength characters,
+    // so the body cap has to clear it with room for the rest of the payload.
+    // At the previous 4 KB default a full-length brief was refused here,
+    // before the validation below could report anything useful about it.
+    body = await boundedJson(request, targetMaxLength + 4096);
   } catch {
     return Response.json(
-      { error: 'Provide a valid request under 4 KB.' },
+      {
+        error: `Provide a valid request under ${Math.round((targetMaxLength + 4096) / 1024)} KB.`,
+      },
       { status: 400 },
     );
   }
@@ -130,11 +146,13 @@ async function post(request: Request) {
     if (body.action === 'configure') {
       if (
         typeof body.target !== 'string' ||
-        body.target.trim().length < 10 ||
-        body.target.length > 500
+        body.target.trim().length < targetMinLength ||
+        body.target.length > targetMaxLength
       )
         return Response.json(
-          { error: 'Describe a target market in 10–500 characters.' },
+          {
+            error: `Describe a target market in ${targetMinLength}–${targetMaxLength} characters.`,
+          },
           { status: 400 },
         );
       await db.execute(
@@ -199,7 +217,7 @@ async function post(request: Request) {
     return Response.json(
       {
         error:
-          'Action could not complete. Check AI activity, database access and the six-run daily allowance.',
+          `Action could not complete. Check AI activity, database access and the daily allowance${dailyResearchRuns() ? ` of ${dailyResearchRuns()} runs` : ''}.`,
       },
       { status: 503 },
     );

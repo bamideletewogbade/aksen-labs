@@ -89,6 +89,10 @@ const prospectingSource = compile(fs.readFileSync('lib/prospecting.ts', 'utf8'))
     "from '@/db'",
     `from '${uri('export function getDb(){throw new Error("not called")}')}'`,
   )
+  .replace(
+    "from './scout-limits'",
+    `from '${uri(compile(fs.readFileSync('lib/scout-limits.ts', 'utf8')))}'`,
+  )
   .replace("from 'drizzle-orm'", `from '${uri('export const sql=()=>[]')}'`);
 const { parseProspectCandidates } = await import(uri(prospectingSource));
 assert.deepEqual(
@@ -119,6 +123,11 @@ const mods = {
   ),
   '@/lib/prospecting': uri(
     'export async function runProspecting(){throw new Error("not expected")};export const promoteProspectQuery=()=>[];export const reviewProspectQuery=()=>[]',
+  ),
+  // The real module, so the route is tested against the limits it will
+  // actually enforce rather than against numbers invented for the test.
+  '@/lib/scout-limits': uri(
+    compile(fs.readFileSync('lib/scout-limits.ts', 'utf8')),
   ),
 };
 const code = compile(

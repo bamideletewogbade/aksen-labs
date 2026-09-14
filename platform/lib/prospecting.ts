@@ -3,6 +3,7 @@ import { getDb } from '@/db';
 import { chatComplete } from './openrouter';
 import { logBackendEvent } from './backend-events';
 import { publicUrl, validateProspects } from './prospect-evidence';
+import { dailyResearchRuns } from './scout-limits';
 
 export type ProspectStage = 'scout' | 'enrich' | 'verify' | 'save';
 export type ProspectProgress = {
@@ -104,8 +105,14 @@ export async function runProspecting(
         // UI delivery is best-effort; the durable event remains the source of truth.
       }
     };
+    // The cap still counts when uncapped, so the interface can report usage
+    // without the insert ever refusing a run.
+    const bucket = `scout-${ownerId}-${new Date().toISOString().slice(0, 10)}`;
+    const cap = dailyResearchRuns();
     const quota = await db.execute(
-      sql`INSERT INTO workspace_demo_usage(bucket,requests) VALUES(${`scout-${ownerId}-${new Date().toISOString().slice(0, 10)}`},1) ON CONFLICT(bucket) DO UPDATE SET requests=workspace_demo_usage.requests+1 WHERE workspace_demo_usage.requests<6 RETURNING requests`,
+      cap > 0
+        ? sql`INSERT INTO workspace_demo_usage(bucket,requests) VALUES(${bucket},1) ON CONFLICT(bucket) DO UPDATE SET requests=workspace_demo_usage.requests+1 WHERE workspace_demo_usage.requests<${cap} RETURNING requests`
+        : sql`INSERT INTO workspace_demo_usage(bucket,requests) VALUES(${bucket},1) ON CONFLICT(bucket) DO UPDATE SET requests=workspace_demo_usage.requests+1 RETURNING requests`,
     );
     if (!quota.rows.length) throw new Error('Daily search allowance reached.');
     let candidates: { company: string; website: string }[] = [];
