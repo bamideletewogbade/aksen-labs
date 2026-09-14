@@ -115,7 +115,7 @@ export function OperationsDesk({
       setContent(body.content);
       setAiDraft(true);
       setTitle(
-        `${mode === 'demos' ? demo.name : operationTasks.find((t) => t.id === task)!.name} â€” ${body.sourceLabel}`,
+        `${mode === 'demos' ? demo.name : operationTasks.find((t) => t.id === task)!.name} — ${body.sourceLabel}`,
       );
       setHandoff(body.handoff);
       setNotice('Draft saved to AI activity. Review before using.');
@@ -205,7 +205,7 @@ export function OperationsDesk({
               client-specific copy or download an editable Markdown document.
             </p>
             <Link href="/admin/workspaces">
-              Open Clients & billing for invoices and receipts â†’
+              Open Clients & invoices for invoices and receipts →
             </Link>
           </>
         ) : mode === 'demos' ? (
@@ -230,7 +230,7 @@ export function OperationsDesk({
               </select>
             </label>
             <p className="ops-status">
-              {demo.channel} Â· Fictional data Â· No external messages
+              {demo.channel} · Fictional data · No external messages
             </p>
             <details>
               <summary>Approved demo knowledge</summary>
@@ -326,7 +326,7 @@ export function OperationsDesk({
             >
               Prepare AI draft
             </PendingButton>
-            <Link href="/admin/email">Review and send service emails â†’</Link>
+            <Link href="/admin/email">Review and send service emails →</Link>
           </>
         )}
         {data && !data.aiConfigured && mode !== 'templates' && (
@@ -346,7 +346,7 @@ export function OperationsDesk({
                   setContent(cleanAiText(d.trace.content || ''));
                   setAiDraft(true);
                   setTitle(
-                    `${d.agent_name} â€” ${d.trace.sourceLabel || 'Draft'}`,
+                    `${d.agent_name} — ${d.trace.sourceLabel || 'Draft'}`,
                   );
                   setNotice('Loaded a saved AI draft.');
                 }}

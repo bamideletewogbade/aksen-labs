@@ -91,7 +91,7 @@ export const services: ServiceItem[] = [
     title: 'Digital products & new services',
     short: 'Test a new idea, then build a custom application or service.',
     description:
-      'Turn a new business idea into a tested digital productâ€”built for real users, connected to local payments, and ready to launch.',
+      'Turn a new business idea into a tested digital product—built for real users, connected to local payments, and ready to launch.',
     buyerExplanation: 'Turn a business idea into something people can use',
     capabilities: [
       'Customer research & idea testing',

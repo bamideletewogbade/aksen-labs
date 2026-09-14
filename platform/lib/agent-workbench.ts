@@ -14,7 +14,7 @@ export const agentWorkbenchVersion = '2026-09-13';
 export const businessAgents: AgentDefinition[] = [
   {
     id: 'opportunity-finder',
-    name: 'Automation Opportunity Finder',
+    name: 'Find work to automate',
     public: true,
     sourceNumber: 5,
     job: 'Find the repetitive work worth improving first.',
@@ -31,7 +31,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'service-blueprint',
-    name: 'Service-to-Product Planner',
+    name: 'Plan a digital product',
     public: true,
     sourceNumber: 2,
     job: 'Turn a repeated service into a focused software brief.',
@@ -48,7 +48,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'lead-magnet',
-    name: 'Lead-Magnet Planner',
+    name: 'Plan an interactive lead tool',
     public: true,
     sourceNumber: 9,
     job: 'Design a useful interactive experience that introduces your service.',
@@ -65,7 +65,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'cost-review',
-    name: 'Software & Cost Reviewer',
+    name: 'Review software costs',
     public: false,
     sourceNumber: 1,
     job: 'Spot duplicated subscriptions and prepare renewal questions.',
@@ -81,7 +81,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'sourcing-review',
-    name: 'Sourcing Opportunity Reviewer',
+    name: 'Compare a purchase',
     public: false,
     sourceNumber: 3,
     job: 'Compare supplied listings for equipment or resale opportunities.',
@@ -98,7 +98,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'founder-review',
-    name: 'Weekly Founder Review',
+    name: 'Review the business week',
     public: false,
     sourceNumber: 4,
     job: 'Turn business notes and project records into three priorities.',
@@ -115,7 +115,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'workflow-playbook',
-    name: 'Workflow Playbook Writer',
+    name: 'Write a process guide',
     public: false,
     sourceNumber: 6,
     job: 'Turn a completed workflow or rough notes into a repeatable procedure.',
@@ -132,7 +132,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'qa-planner',
-    name: 'Release QA Planner',
+    name: 'Plan release checks',
     public: false,
     sourceNumber: 7,
     job: 'Plan checks for the customer journeys that matter before release.',
@@ -149,7 +149,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'competitor-review',
-    name: 'Competitor Evidence Reviewer',
+    name: 'Compare competitors',
     public: false,
     sourceNumber: 8,
     job: 'Compare competitors using dated material you provide.',

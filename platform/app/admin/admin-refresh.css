@@ -69,16 +69,45 @@
   .admin-refresh .admin-nav-group {
     display: grid;
     gap: 3px;
-    margin-bottom: 17px;
+    margin-bottom: 4px;
   }
-  .admin-refresh .admin-nav-group > p {
+  .admin-nav-group-toggle {
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 7px;
+    color: #8fa589;
+    background: transparent;
+    cursor: pointer;
+  }
+  .admin-nav-group-toggle span {
     font:
       10px/1.5 var(--font-geist-mono),
       monospace;
     letter-spacing: 0.065em;
     text-transform: uppercase;
-    color: #8fa589;
-    margin: 0 12px 7px;
+  }
+  .admin-nav-group-toggle svg {
+    transition: transform 160ms ease;
+  }
+  .admin-nav-group-toggle:hover {
+    color: #dcead7;
+    background: rgba(255,255,255,.035);
+  }
+  .admin-nav-group.is-expanded .admin-nav-group-toggle svg {
+    transform: rotate(180deg);
+  }
+  .admin-nav-group-items {
+    display: none;
+    gap: 3px;
+    padding: 1px 0 8px;
+  }
+  .admin-nav-group.is-expanded .admin-nav-group-items {
+    display: grid;
   }
   .admin-refresh .admin-sidebar nav a {
     font-size: 13px;

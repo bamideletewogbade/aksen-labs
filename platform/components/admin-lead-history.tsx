@@ -130,7 +130,7 @@ export function AdminLeadHistory({
             {days === null
               ? 'nothing recorded'
               : `last contact ${days === 0 ? 'today' : `${days}d ago`}`}
-            {waiting ? ' Â· awaiting reply' : ''}
+            {waiting ? ' · awaiting reply' : ''}
           </span>
         )}
       </summary>

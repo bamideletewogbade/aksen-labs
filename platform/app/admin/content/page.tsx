@@ -11,7 +11,7 @@ import { ApprovalActions } from '@/components/admin-approval-actions';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Blog articles | Aksen Workspace' };
+export const metadata = { title: 'Articles | Aksen Workspace' };
 
 export default async function AdminContentPage() {
   let allPosts: ContentPost[] = [];
@@ -61,7 +61,7 @@ export default async function AdminContentPage() {
       <header className="admin-header">
         <div>
           <small>BLOG</small>
-          <h1>Blog articles</h1>
+          <h1>Articles</h1>
           <p>
             AI may research and draft. Publication still needs your approval.
           </p>

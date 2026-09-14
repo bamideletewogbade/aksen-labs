@@ -45,7 +45,7 @@ const groups = [
     label: 'Today',
     items: [
       { href: '/admin', label: 'Home', icon: Activity },
-      { href: '/admin/operations', label: 'Daily work', icon: Bot },
+      { href: '/admin/operations', label: 'Client drafts', icon: Bot },
       { href: '/admin/agent-desk', label: 'AI tools', icon: ClipboardList },
     ],
   },

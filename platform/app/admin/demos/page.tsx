@@ -1,6 +1,6 @@
 import { OperationsDesk } from '@/components/operations-desk';
 import Link from 'next/link';
-export const metadata = { title: 'Service demo lab | Aksen Workspace' };
+export const metadata = { title: 'Demos | Aksen Workspace' };
 export default async function Page({
   searchParams,
 }: {
@@ -13,7 +13,7 @@ export default async function Page({
       <header className="admin-header">
         <div>
           <small>AGENCY OPERATIONS</small>
-          <h1>Service demo lab</h1>
+          <h1>Service demos</h1>
           <p>
             Demonstrate service behaviour using fictional data. WhatsApp is
             simulated here; no live channel is connected.

@@ -9,7 +9,7 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Conversations | Aksen Workspace' };
+export const metadata = { title: 'Messages | Aksen Workspace' };
 
 export default async function AdminSupportPage() {
   let threads: ConversationView[] = [];
@@ -32,7 +32,7 @@ export default async function AdminSupportPage() {
       <header className="admin-header">
         <div>
           <small>SUPPORT INBOX</small>
-          <h1>Conversations</h1>
+          <h1>Messages</h1>
           <p>
             Saved summaries from Aksen Guide. This is not a full message history
             or a connected reply inbox.

@@ -267,10 +267,87 @@
   color: #526556;
 }
 .admin-agent-page {
-  max-width: 1300px;
+  max-width: 1120px;
+  padding: 34px clamp(22px, 3.2vw, 50px) 60px;
 }
 .admin-agent-page .agent-workbench-layout {
-  grid-template-columns: minmax(220px, 270px) minmax(0, 1fr);
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+.admin-agent-page .business-agents-intro {
+  margin-bottom: 24px;
+}
+.admin-agent-page .business-agents-intro h1 {
+  max-width: 760px;
+  margin: 8px 0 10px;
+  color: #f0f5ed;
+  font-size: clamp(2.5rem, 5vw, 4.7rem);
+  line-height: .98;
+}
+.admin-agent-page .business-agents-intro > p:last-child {
+  color: #91a296;
+  font-size: 15px;
+}
+.admin-agent-page .agent-workbench {
+  --aw-line: #ced9ce;
+}
+.agent-admin-picker {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid #2a4031;
+  border-radius: 12px;
+  color: #dfe9dc;
+  background: #112219;
+}
+.agent-admin-picker label {
+  font-size: 13px;
+  font-weight: 700;
+}
+.agent-admin-picker select {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 38px 0 13px;
+  border: 1px solid #49614e;
+  border-radius: 8px;
+  color: #f2f6ef;
+  background: #0b1710;
+  font-size: 14px;
+}
+.agent-admin-picker > span {
+  color: #8da08f;
+  font-size: 11px;
+}
+.admin-agent-page .agent-task-heading {
+  margin: 3px 0 14px;
+}
+.admin-agent-page .agent-task-heading h2 {
+  margin: 6px 0 4px;
+  color: #f0f5ed;
+}
+.admin-agent-page .agent-task-heading > p {
+  margin: 0;
+  color: #91a296;
+  font-size: 14px;
+}
+.admin-agent-page .agent-kicker {
+  color: #9fca80;
+}
+.admin-agent-page .agent-brief-form {
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: 14px;
+}
+.admin-agent-page .agent-history {
+  border-color: #2a4031;
+}
+.admin-agent-page .agent-history h2 {
+  color: #edf4e9;
+}
+.admin-agent-page .agent-history > p,
+.admin-agent-page .agent-history > output {
+  color: #94a497;
 }
 @media (max-width: 800px) {
   .agent-workbench-layout,
@@ -303,6 +380,9 @@
   }
   .business-agents-intro h1 {
     font-size: 2.25rem;
+  }
+  .agent-admin-picker {
+    grid-template-columns: 1fr;
   }
   .agent-task-heading h2 {
     font-size: 1.8rem;

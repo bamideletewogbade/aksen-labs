@@ -131,7 +131,7 @@ export function AgentWorkbench({
     if (!draft) return;
     const blob = new Blob(
       [
-        `${draft.name}\nDraft for human review Â· ${draft.createdAt}\n\n${draft.content}`,
+        `${draft.name}\nDraft for human review · ${draft.createdAt}\n\n${draft.content}`,
       ],
       { type: 'text/plain;charset=utf-8' },
     );
@@ -145,7 +145,15 @@ export function AgentWorkbench({
   return (
     <div className="agent-workbench">
       <div className="agent-workbench-layout">
-        <nav className="agent-picker" aria-label="Choose a business agent">
+        {admin ? (
+          <div className="agent-admin-picker">
+            <label htmlFor="admin-agent-select">What do you need help with?</label>
+            <select id="admin-agent-select" value={selected} disabled={busy} onChange={(event) => choose(event.target.value)}>
+              {agents.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+            </select>
+            <span>{agent.public ? 'Also available on the public website' : 'Private workspace tool'}</span>
+          </div>
+        ) : <nav className="agent-picker" aria-label="Choose a business agent">
           {agents.map((item) => (
             <Button
               key={item.id}
@@ -167,11 +175,11 @@ export function AgentWorkbench({
               </span>
             </Button>
           ))}
-        </nav>
+        </nav>}
         <div className="agent-working-area">
           <div className="agent-task-heading">
             <span className="agent-kicker">
-              {admin ? 'AKSEN AGENT DESK' : 'TRY A BUSINESS AGENT'}
+              {admin ? 'SELECTED TOOL' : 'TRY A BUSINESS AGENT'}
             </span>
             <h2>{agent.name}</h2>
             <p>{agent.job}</p>
@@ -232,14 +240,14 @@ export function AgentWorkbench({
               </label>
             )}
             <div className="agent-output-promise">
-              <strong>What youâ€™ll get</strong>
+              <strong>What you’ll get</strong>
               <p>{agent.output}</p>
               <p className="agent-boundary">{agent.boundary}</p>
             </div>
             <p id="agent-privacy" className="agent-privacy">
               {admin
                 ? 'Your brief goes to the AI provider. Completed drafts are saved in your admin history. Use authorised business information and remove credentials.'
-                : 'Use non-sensitive information. Your brief goes to the AI provider; Aksenâ€™s public activity log stores run details, not your brief or result. Download anything you want to keep.'}
+                : 'Use non-sensitive information. Your brief goes to the AI provider; Aksen’s public activity log stores run details, not your brief or result. Download anything you want to keep.'}
             </p>
             <Button
               type="submit"
@@ -253,12 +261,12 @@ export function AgentWorkbench({
                   label mid-click. */}
               <span className="pending-button-sizer" aria-hidden="true">
                 <span>Run this agent</span>
-                <span>Preparing your draftâ€¦</span>
+                <span>Preparing your draft…</span>
               </span>
               {busy ? (
                 <>
                   <Spinner size={17} />
-                  Preparing your draftâ€¦
+                  Preparing your draft…
                 </>
               ) : (
                 <>

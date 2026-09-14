@@ -140,7 +140,7 @@ export function EmailDesk() {
         </p>
         <p className="ops-status">
           {data?.configured
-            ? `Provider configured Â· From ${data.from}`
+            ? `Provider configured · From ${data.from}`
             : 'Sending not configured'}
           <br />
           Reply-to: {data?.replyTo || 'bishoptewogbade@gmail.com'}
@@ -217,7 +217,7 @@ export function EmailDesk() {
             <article className="ops-email-row" key={item.id}>
               <strong>{item.subject}</strong>
               <p>
-                {item.recipient} Â·{' '}
+                {item.recipient} ·{' '}
                 {item.status === 'sent' ? 'Accepted by Resend' : item.status}
               </p>
               {item.provider_id && (

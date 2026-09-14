@@ -8,7 +8,7 @@ import { byUrgency, todayIso } from '@/lib/pipeline-order';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Enquiries | Aksen Workspace' };
+export const metadata = { title: 'Sales pipeline | Aksen Workspace' };
 
 export default async function AdminPipelinePage({
   searchParams,
@@ -46,7 +46,7 @@ export default async function AdminPipelinePage({
       <header className="admin-header">
         <div>
           <small>SALES & SCOPING</small>
-          <h1>Enquiries</h1>
+          <h1>Sales pipeline</h1>
           <p>
             Review the latest 30 enquiries. Update the stage, next action and
             follow-up date.

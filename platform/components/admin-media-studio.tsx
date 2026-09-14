@@ -189,7 +189,7 @@ export function AdminMediaStudio() {
           {mode === 'video' && <label>Duration<select value={duration} onChange={(event) => setDuration(Number(event.target.value))}>{DURATIONS.map((value) => <option key={value} value={value}>{value}s</option>)}</select></label>}
         </div>
         <div className="media-reference-field">
-          <span>Reference images (optional, up to 4) â€” style guides or examples to match</span>
+          <span>Reference images (optional, up to 4) — style guides or examples to match</span>
           <div className="media-reference-list">
             {references.map((ref) => <div className="media-reference-thumb" key={ref.id}><img src={ref.dataUrl} alt="Reference" /><button type="button" onClick={() => removeReference(ref.id)} aria-label="Remove reference"><X size={13} /></button></div>)}
             {references.length < 4 && <button type="button" className="media-reference-add" onClick={() => fileInputRef.current?.click()}><Plus size={16} /></button>}

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { knowledgeVersion, supportArticles } from '@/lib/support-knowledge';
 import { KnowledgeConsole } from '@/components/knowledge-console';
 
-export const metadata = { title: 'Support knowledge | Aksen Workspace' };
+export const metadata = { title: 'Help answers | Aksen Workspace' };
 
 export default function SupportKnowledge() {
   const articles = supportArticles();
@@ -23,7 +23,7 @@ export default function SupportKnowledge() {
       <header className="admin-header">
         <div>
           <small>ASK AKSEN</small>
-          <h1>Support knowledge</h1>
+          <h1>Help answers</h1>
           <p>
             Everything the public assistant is allowed to answer from. It
             cannot invent a fact that is not here.

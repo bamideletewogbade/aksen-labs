@@ -11,7 +11,7 @@ import type { Billing } from '@/lib/project-stages';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Projects | Aksen Workspace' };
+export const metadata = { title: 'Client projects | Aksen Workspace' };
 
 export default async function AdminProjectsPage() {
   const user = await getChatGPTUser();
@@ -60,7 +60,7 @@ export default async function AdminProjectsPage() {
       <header className="admin-header">
         <div>
           <small>DELIVERY</small>
-          <h1>Projects</h1>
+          <h1>Client projects</h1>
           <p>
             Review the latest 30 projects, delivery stages and billing status.
           </p>

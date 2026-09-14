@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { OperationsDesk } from '@/components/operations-desk';
-export const metadata = { title: 'Operations desk | Aksen Workspace' };
+export const metadata = { title: 'Client drafts | Aksen Workspace' };
 export default async function Page({
   searchParams,
 }: {
@@ -13,8 +13,8 @@ export default async function Page({
     <section className="admin-main">
       <header className="admin-header">
         <div>
-          <small>AGENCY OPERATIONS</small>
-          <h1>Operations desk</h1>
+          <small>CLIENT WORK</small>
+          <h1>Prepare client drafts</h1>
           <p>
             Prepare enquiry, proposal and delivery drafts from your records.
             Review outputs before acting.

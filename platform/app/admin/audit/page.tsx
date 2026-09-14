@@ -34,7 +34,7 @@ function when(date: Date): string {
   });
 }
 
-export const metadata = { title: 'Activity log | Aksen Workspace' };
+export const metadata = { title: 'Activity history | Aksen Workspace' };
 
 export default async function AdminAuditPage({
   searchParams,
@@ -78,7 +78,7 @@ export default async function AdminAuditPage({
       <header className="admin-header">
         <div>
           <small>RECORD OF ACTIONS</small>
-          <h1>Activity log</h1>
+          <h1>Activity history</h1>
           <p>
             API requests, AI runs and workflow actions, newest first. Filter by
             request reference to trace a call. Database logging failures are

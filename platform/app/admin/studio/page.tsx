@@ -2,7 +2,7 @@ import { AdminMediaStudio } from '@/components/admin-media-studio';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Media studio | Aksen Workspace' };
+export const metadata = { title: 'Create media | Aksen Workspace' };
 
 export default function AdminStudioPage() {
   return (
@@ -10,7 +10,7 @@ export default function AdminStudioPage() {
       <header className="admin-header">
         <div>
           <small>CREATIVE STUDIO</small>
-          <h1>Media studio</h1>
+          <h1>Create media</h1>
           <p>
             Create draft images and videos from a brief and references. Review
             each asset before publishing.

@@ -89,7 +89,7 @@ function timeAgo(date: Date): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export const metadata = { title: 'AI activity | Aksen Workspace' };
+export const metadata = { title: 'AI usage | Aksen Workspace' };
 
 /** Twenty fills a screen without the page becoming a scroll to nowhere. */
 const RUNS_PER_PAGE = 20;
@@ -147,7 +147,7 @@ export default async function AdminAgentsPage({
       <header className="admin-header">
         <div>
           <small>AI ACTIVITY</small>
-          <h1>AI activity</h1>
+          <h1>AI usage</h1>
           <p>
             Recent saved runs from the Guide, mapper and creative tools. A
             successful request does not by itself prove a business outcome.

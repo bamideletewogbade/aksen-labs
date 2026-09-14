@@ -21,7 +21,7 @@ import {
 import { money } from '@/lib/workspace-rules';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Overview | Aksen Workspace' };
+export const metadata = { title: 'Home | Aksen Workspace' };
 
 type Action = {
   id: string;
@@ -66,7 +66,6 @@ export default async function AdminPage() {
   let leadsToReview = 0;
   let openConversations = 0;
   let pendingApprovals = 0;
-  let recordedAiRuns = 0;
   let activity: FounderActivityPoint[] = [];
   let overdueByCurrency: { currency: string; amount: number; count: number }[] =
     [];
@@ -86,8 +85,7 @@ export default async function AdminPage() {
             (SELECT count(*)::int FROM projects WHERE owner_id=${owner} AND stage IN ('discovery','delivery')) AS active_projects,
             (SELECT count(*)::int FROM prospect_leads WHERE owner_id=${owner} AND status IN ('new','shortlisted')) AS leads_to_review,
             (SELECT count(*)::int FROM conversations WHERE status <> 'resolved') AS open_conversations,
-            (SELECT count(*)::int FROM approvals WHERE status='pending') AS pending_approvals,
-            (SELECT count(*)::int FROM agent_runs WHERE created_at >= now() - interval '7 days') AS ai_runs`),
+            (SELECT count(*)::int FROM approvals WHERE status='pending') AS pending_approvals`),
       db.execute(sql`
           SELECT status AS stage, count(*)::int AS count
           FROM opportunities
@@ -152,7 +150,6 @@ export default async function AdminPage() {
     leadsToReview = rowValue(summary, 'leads_to_review');
     openConversations = rowValue(summary, 'open_conversations');
     pendingApprovals = rowValue(summary, 'pending_approvals');
-    recordedAiRuns = rowValue(summary, 'ai_runs');
     pipeline = pipelineResult.rows.map((row) => ({
       stage: String(row.stage),
       count: Number(row.count),
@@ -248,15 +245,15 @@ export default async function AdminPage() {
               })
               .toUpperCase()}
           </small>
-          <h1>Here’s what matters, {firstName}.</h1>
-          <p>Demand, delivery and cash—one view of the agency today.</p>
+          <h1>Today at Aksen, {firstName}.</h1>
+          <p>Start with the decisions and work that need your attention.</p>
         </div>
         <div className="founder-quick-actions" aria-label="Quick actions">
           <Link href="/admin/prospects">
             <Radar /> Find leads
           </Link>
-          <Link href="/admin/operations">
-            <Bot /> Draft work
+          <Link href="/admin/agent-desk">
+            <Bot /> Use AI tools
           </Link>
         </div>
       </header>
@@ -436,38 +433,6 @@ export default async function AdminPage() {
               )}
             </section>
 
-            <aside
-              className="founder-card founder-system"
-              aria-labelledby="system-heading"
-            >
-              <div className="founder-card-head">
-                <div>
-                  <small>SYSTEM</small>
-                  <h2 id="system-heading">Operating signals</h2>
-                </div>
-              </div>
-              <dl>
-                <div>
-                  <dt>AI runs · 7 days</dt>
-                  <dd>{recordedAiRuns}</dd>
-                </div>
-                <div>
-                  <dt>Decisions waiting</dt>
-                  <dd>{pendingApprovals}</dd>
-                </div>
-                <div>
-                  <dt>Leads to review</dt>
-                  <dd>{leadsToReview}</dd>
-                </div>
-                <div>
-                  <dt>Database</dt>
-                  <dd className="signal-good">Connected</dd>
-                </div>
-              </dl>
-              <Link href="/admin/agents">
-                Review AI activity <ArrowRight />
-              </Link>
-            </aside>
           </div>
         </>
       )}
