@@ -1,0 +1,47 @@
+/* Compact product collection: one summary per product, details on demand. */
+.products-collection {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.products-collection > div {
+  min-width: 0;
+  display: flex;
+}
+.product-showcase {
+  grid-template-columns: 1fr;
+  width: 100%;
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+}
+.product-showcase .product-copy {
+  padding: 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.product-copy h2 {
+  font-size: 2.1rem;
+}
+.product-topline {
+  margin-bottom: 17px;
+}
+.product-copy > p {
+  font-size: 0.93rem;
+  margin-bottom: 18px;
+}
+.product-copy > .agency-button {
+  margin-top: auto;
+  align-self: flex-start;
+}
+@media (max-width: 760px) {
+  .products-collection {
+    grid-template-columns: 1fr;
+  }
+  .product-showcase .product-copy {
+    padding: 24px;
+  }
+  .product-copy h2 {
+    font-size: 2rem;
+  }
+}

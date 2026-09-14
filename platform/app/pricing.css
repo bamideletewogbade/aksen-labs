@@ -1,0 +1,447 @@
+/* Pricing page: indicative figures presented as editorial tables, not upsell cards. */
+.pricing-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  padding-block: 60px;
+}
+.pricing-stage {
+  border-top: 2px solid var(--agency-ink);
+  padding-top: 22px;
+}
+.pricing-stage h2 {
+  font-size: clamp(1.7rem, 2.4vw, 2.3rem);
+}
+.pricing-stage-price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 14px 0 16px !important;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+.pricing-stage-price span {
+  font:
+    0.7rem/1.6 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--agency-muted);
+}
+.pricing-stage > p:not(.pricing-stage-price) {
+  color: var(--agency-muted);
+  font-size: 0.96rem;
+}
+.pricing-stage ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: grid;
+  gap: 10px;
+}
+.pricing-stage li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.92rem;
+}
+.pricing-stage li svg {
+  flex-shrink: 0;
+  color: var(--agency-green);
+}
+.pricing-group {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 60px;
+  padding-block: 36px;
+  border-top: 1px solid #ccd5cc;
+  scroll-margin-top: 100px;
+}
+.pricing-group-title h3 {
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  max-width: 340px;
+}
+.pricing-group-title > p {
+  color: var(--agency-muted);
+  font-size: 0.96rem;
+  margin-top: 12px !important;
+}
+.pricing-group-title .agency-text-link {
+  margin-top: 16px;
+}
+.pricing-table {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 18px;
+}
+.pricing-table li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ccd5cc;
+}
+.pricing-table li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.pricing-table strong {
+  font-size: 1.02rem;
+  font-weight: 500;
+}
+.pricing-table p {
+  grid-column: 1;
+  color: var(--agency-muted);
+  font-size: 0.9rem;
+}
+.pricing-figure {
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--agency-green);
+}
+.pricing-timing {
+  grid-column: 2;
+  align-self: end;
+  font:
+    0.68rem/1.6 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--agency-muted);
+  text-align: right;
+}
+.pricing-care-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 34px;
+}
+/* The grid already stretches its items, but the card inside sat at its own
+   content height, so four plans of different lengths left the actions on four
+   different lines. The card fills its item and the action takes the slack. */
+.pricing-care-grid > * {
+  display: flex;
+}
+.pricing-care-grid article {
+  border-top: 1px solid #ccd5cc;
+  padding-top: 18px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.pricing-care-grid h3 {
+  font-size: 1.3rem;
+}
+.pricing-care-grid .pricing-figure {
+  display: block;
+  margin-top: 10px;
+  white-space: normal;
+}
+.pricing-care-for {
+  font:
+    0.68rem/1.6 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--agency-muted);
+  margin: 12px 0 10px !important;
+}
+.pricing-care-grid p:last-child {
+  color: var(--agency-muted);
+  font-size: 0.92rem;
+}
+.pricing-terms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  align-items: start;
+}
+.pricing-terms ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+.pricing-terms li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--agency-muted);
+}
+.pricing-terms li svg {
+  flex-shrink: 0;
+  color: var(--agency-green);
+}
+.pricing-start-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+.pricing-start-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 30px;
+  padding-block: 18px;
+  border-bottom: 1px solid #ccd5cc;
+}
+.pricing-start-list li:first-child {
+  border-top: 1px solid #ccd5cc;
+}
+.pricing-start-list p {
+  font-size: 1.05rem;
+}
+@media (max-width: 1100px) {
+  .pricing-stages {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .pricing-group,
+  .pricing-terms {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .pricing-care-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .pricing-stages {
+    padding-block: 40px;
+  }
+  .pricing-care-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .pricing-table li {
+    grid-template-columns: 1fr;
+  }
+  .pricing-figure {
+    white-space: normal;
+  }
+  .pricing-timing {
+    grid-column: 1;
+    text-align: left;
+  }
+  .pricing-start-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+/* Pricing: a quotation-inspired opening, with details available on demand. */
+.opening-pricing {
+  background: #e8eddf;
+  overflow: hidden;
+}
+.pricing-opening-ledger {
+  width: min(100%, 440px);
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 38px);
+  background: #133e2e;
+  color: #edf5e7;
+  border: 1px solid #32604b;
+  border-radius: 7px 7px 28px 7px;
+  box-shadow: 12px 14px 0 #c4d2b9;
+  transform: rotate(-2deg);
+  transition: transform 350ms ease;
+}
+.pricing-opening-ledger:hover {
+  transform: rotate(0deg);
+}
+.pricing-ledger-label,
+.pricing-opening-ledger > small {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+}
+.pricing-ledger-figures {
+  margin: 18px 0 0;
+}
+.pricing-ledger-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid #48705b;
+  padding: 15px 0;
+}
+.pricing-ledger-row dt {
+  font-size: 0.82rem;
+  color: #dce8d8;
+}
+.pricing-ledger-row dd {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  text-align: right;
+}
+/* The figure is the reason anyone opened this page, so it carries the weight. */
+.pricing-ledger-row dd strong {
+  font-size: clamp(1.05rem, 2.1vw, 1.35rem);
+  letter-spacing: -0.02em;
+  color: #c2f575;
+  white-space: nowrap;
+}
+.pricing-ledger-row dd span {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a8bfa2;
+  white-space: nowrap;
+}
+.pricing-opening-ledger > small {
+  margin-top: 20px;
+  color: #c2f575;
+}
+.pricing-stage-price {
+  flex-wrap: wrap;
+}
+.pricing-stage > .agency-text-link {
+  margin-top: 16px;
+}
+.pricing-why {
+  padding-bottom: clamp(34px, 5vw, 56px);
+}
+.pricing-why .pricing-scope-note {
+  margin-bottom: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  border-left: 2px solid #b7c9ad;
+  padding-left: 18px;
+}
+.pricing-scope-note {
+  color: var(--agency-muted);
+  font-size: 0.9rem;
+  margin-bottom: 26px;
+  max-width: 760px;
+}
+.pricing-scope-note a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pricing-disclosure {
+  border-top: 1px solid #bbcbbb;
+  scroll-margin-top: 110px;
+}
+.pricing-disclosure:last-child {
+  border-bottom: 1px solid #bbcbbb;
+}
+.pricing-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 0;
+  cursor: pointer;
+  list-style: none;
+  min-height: 64px;
+}
+.pricing-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.pricing-disclosure > summary strong {
+  display: block;
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
+  font-weight: 500;
+}
+.pricing-disclosure > summary small {
+  display: block;
+  margin-top: 6px;
+  color: var(--agency-muted);
+  font-size: 0.9rem;
+}
+.pricing-disclosure-hint {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+.pricing-disclosure-hint > span {
+  display: inline-block;
+  margin-left: 15px;
+  font-size: 1.4rem;
+  transition: transform 200ms ease;
+}
+.pricing-disclosure[open] .pricing-disclosure-hint > span {
+  transform: rotate(45deg);
+}
+.pricing-disclosure .pricing-table {
+  padding: 6px 0 26px;
+}
+.pricing-package-link {
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-height: 44px;
+}
+.pricing-care-grid .agency-text-link {
+  margin-top: auto;
+  padding-top: 16px;
+  min-height: 44px;
+}
+.pricing-faq .pricing-disclosure > p {
+  max-width: 820px;
+  padding-bottom: 24px;
+  color: var(--agency-muted);
+  line-height: 1.7;
+}
+.pricing-disclosure > summary:focus-visible {
+  outline: 2px solid var(--agency-green);
+  outline-offset: 5px;
+}
+.mapper-pricing-selection {
+  margin: 18px;
+  padding: 18px;
+  border: 1px solid #b8d2a7;
+  background: #eef5e8;
+  border-radius: 12px;
+  display: grid;
+  gap: 8px;
+  color: #183d2c;
+}
+.mapper-pricing-selection small {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+}
+.mapper-pricing-selection p,
+.mapper-pricing-selection span {
+  font-size: 0.85rem;
+}
+.mapper-pricing-selection button {
+  justify-self: start;
+  min-height: 44px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+@media (max-width: 760px) {
+  .pricing-opening-ledger {
+    max-width: 380px;
+    transform: none;
+    box-shadow: 6px 8px 0 #c4d2b9;
+  }
+  .pricing-disclosure > summary {
+    gap: 12px;
+  }
+  .pricing-disclosure-hint {
+    font-size: 0.7rem;
+  }
+  .pricing-disclosure-hint > span {
+    margin-left: 5px;
+  }
+  .pricing-faq .refresh-section-heading {
+    margin-bottom: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pricing-opening-ledger,
+  .pricing-disclosure-hint > span {
+    transition: none;
+    transform: none;
+  }
+}

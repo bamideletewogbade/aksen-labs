@@ -1,0 +1,670 @@
+/* Homepage composition and product collection. */
+.ambition-hero {
+  background: #eff3e8;
+  color: #10261d;
+  overflow: hidden;
+  position: relative;
+  background-image: radial-gradient(
+    ellipse at 90% 25%,
+    #d6e9b8 0,
+    transparent 55%
+  );
+}
+.ambition-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: center;
+  padding-block: 64px 40px;
+}
+.ambition-copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+.ambition-copy .agency-eyebrow {
+  font-size: 0.67rem !important;
+  margin-bottom: 26px !important;
+}
+.refresh-site .ambition-copy h1 {
+  font-size: clamp(3.6rem, 6.8vw, 7.2rem);
+  line-height: 0.99;
+  letter-spacing: -0.07em;
+  position: relative;
+  white-space: nowrap;
+}
+.ambition-copy h1 em {
+  color: #216044;
+  position: relative;
+  display: inline-block;
+}
+.ambition-copy h1 em::after {
+  content: '';
+  height: 9px;
+  position: absolute;
+  left: 0;
+  right: -9px;
+  bottom: -9px;
+  border-top: 2px solid #699643;
+  border-radius: 50%;
+  transform: rotate(-3deg);
+}
+.ambition-description {
+  max-width: 470px;
+  color: #52644f;
+  margin-top: 32px !important;
+  font-size: 1.03rem !important;
+}
+.ambition-copy .agency-button {
+  background: #153d2b;
+  min-height: 54px;
+}
+.ambition-copy .agency-actions {
+  gap: 18px;
+}
+.ambition-copy .agency-text-link {
+  font-size: 0.87rem;
+}
+.ambition-scene {
+  position: relative;
+  min-height: 520px;
+  perspective: 1000px;
+  --scene-x: 0deg;
+  --scene-y: 0deg;
+}
+.ambition-orbit {
+  position: absolute;
+  inset: 12% -9% 5% -5%;
+  border: 1px solid #879d6350;
+  border-radius: 50%;
+  transform: rotate(-24deg);
+}
+.ambition-orbit::after {
+  content: '';
+  position: absolute;
+  inset: -22px;
+  border: 1px dashed #879d6325;
+  border-radius: 50%;
+}
+.ambition-machine {
+  margin: 0;
+  position: absolute;
+  inset: 20px -20px 70px 15px;
+  border-radius: 48% 48% 38% 38%;
+  overflow: hidden;
+  background: #091008;
+  box-shadow: 0 30px 50px #18351a22;
+  transform: rotateX(var(--scene-x)) rotateY(var(--scene-y)) rotate(-5deg);
+  transition: transform 0.25s ease-out;
+}
+.refresh-site .ambition-machine img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.ambition-machine figcaption {
+  position: absolute;
+  bottom: 34px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font:
+    0.6rem var(--font-geist-mono),
+    monospace;
+  color: #d3e8be;
+  letter-spacing: 0.08em;
+}
+.ambition-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c2f576;
+}
+.ambition-ai-chip {
+  position: absolute;
+  right: -10px;
+  bottom: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #e1efcc;
+  border: 1px solid #adc990;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px #213c1c12;
+  transition: transform 0.25s;
+}
+.ambition-ai-chip:hover {
+  transform: translateY(-5px);
+}
+.ambition-ai-chip > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #234831;
+  color: #d6f2b3;
+  display: grid;
+  place-items: center;
+}
+.ambition-ai-chip small {
+  display: block;
+  font:
+    0.55rem var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.05em;
+  color: #536e4c;
+  margin-bottom: 5px;
+}
+.ambition-ai-chip strong {
+  font-size: 0.8rem;
+  font-weight: 550;
+}
+.ambition-scene-note {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font:
+    0.52rem var(--font-geist-mono),
+    monospace;
+  color: #60784f;
+  letter-spacing: 0.1em;
+}
+.ambition-bottom {
+  border-top: 1px solid #b9c6ac;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  padding-block: 23px;
+}
+.ambition-disciplines {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-size: 0.83rem;
+  color: #53694d;
+}
+.ambition-disciplines i {
+  width: 4px;
+  height: 4px;
+  background: #638049;
+  border-radius: 50%;
+}
+.ambition-bottom > a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.84rem;
+  min-height: 40px;
+}
+.ambition-bottom > a > span {
+  font:
+    0.55rem var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.04em;
+  background: #dce9c9;
+  border-radius: 20px;
+  padding: 7px 10px;
+}
+.refresh-header.is-home {
+  background: #eff3e8ef;
+  border-bottom-color: #b9c6ac70;
+}
+.refresh-header.is-home .agency-nav {
+  min-height: 88px;
+}
+.refresh-header.is-home.is-scrolled .agency-nav {
+  min-height: 68px;
+}
+.refresh-header .agency-nav-links {
+  gap: 24px;
+}
+.refresh-header .agency-nav-links a {
+  font-size: 0.88rem;
+}
+.products-intro {
+  padding-block: 58px 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  border-bottom: 1px solid #ccd5cc;
+}
+.products-intro > div > p:last-child {
+  max-width: 580px;
+  color: #53635a;
+  margin-top: 24px;
+}
+.products-intro-mark {
+  background: #e8eeda;
+  border: 1px solid #d6dfc8;
+  width: 220px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex-shrink: 0;
+  transform: rotate(8deg);
+}
+.products-intro-mark svg {
+  width: 110px;
+  height: 110px;
+  color: #54754a;
+}
+.products-intro-mark span {
+  font:
+    0.6rem var(--font-geist-mono),
+    monospace;
+  color: #54754a;
+}
+.products-collection {
+  display: grid;
+  gap: 32px;
+  padding-block: 36px 50px;
+}
+.product-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #c9d4c7;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+.product-copy {
+  padding: 40px;
+}
+.product-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #637769;
+  margin-bottom: 26px;
+}
+.product-status {
+  display: inline-flex;
+  font-size: 0.68rem;
+  border: 1px solid #b9cbaa;
+  padding: 6px 10px;
+  border-radius: 99px;
+  background: #f0f5e9;
+  color: #496039;
+  white-space: nowrap;
+}
+.product-copy h2 {
+  font-size: 2.8rem;
+}
+.product-copy h3 {
+  font-size: 1.2rem;
+  margin-top: 18px;
+  line-height: 1.4;
+}
+.product-copy > p {
+  font-size: 0.96rem;
+  color: #53635a;
+  margin-top: 14px;
+}
+.product-copy ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  margin-block: 24px;
+}
+.product-copy li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.85rem;
+  color: #52644c;
+}
+.product-copy li svg {
+  flex-shrink: 0;
+}
+@media (max-width: 760px) {
+}
+.product-enquiry {
+  background: white;
+  border: 1px solid #c7d4c0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.product-enquiry summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  padding: 22px;
+  font-weight: 550;
+}
+.product-enquiry summary::-webkit-details-marker {
+  display: none;
+}
+.product-enquiry form,
+.product-enquiry > p {
+  padding: 0 22px 22px;
+}
+.product-enquiry form {
+  display: grid;
+  gap: 10px;
+}
+.product-enquiry form > p {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+}
+.product-enquiry label {
+  font-size: 0.8rem;
+}
+.product-enquiry input,
+.product-enquiry textarea {
+  width: 100%;
+  border: 1px solid #bccbb2;
+  background: #f9fbf6;
+  color: #10261d;
+  padding: 10px;
+  border-radius: 5px;
+  font: inherit;
+  min-width: 0;
+}
+.product-enquiry small {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #637769;
+}
+.product-enquiry button {
+  margin-top: 8px;
+}
+@media (max-width: 1150px) {
+  .ambition-grid {
+    gap: 15px;
+    padding-top: 45px;
+  }
+  .ambition-scene {
+    min-height: 460px;
+  }
+  .ambition-machine {
+    inset: 30px -10px 70px 0;
+  }
+  .ambition-ai-chip {
+    right: 0;
+    bottom: 15px;
+    padding: 12px;
+    gap: 8px;
+  }
+  .ambition-description {
+    font-size: 0.95rem !important;
+  }
+  .ambition-copy .agency-actions {
+    gap: 10px;
+  }
+  .ambition-copy .agency-button {
+    font-size: 0.85rem;
+    padding-inline: 18px;
+  }
+  .refresh-header .agency-nav-links {
+    gap: 18px;
+  }
+  .product-copy {
+    padding: 30px;
+  }
+}
+@media (max-width: 760px) {
+  .ambition-grid {
+    grid-template-columns: 1fr;
+    padding-top: 34px;
+    gap: 20px;
+  }
+  .refresh-site .ambition-copy h1 {
+    font-size: clamp(3.6rem, 12vw, 5.8rem);
+  }
+  .ambition-description {
+    max-width: 550px;
+    margin-top: 25px !important;
+  }
+  .ambition-scene {
+    min-height: 440px;
+    max-width: 580px;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .ambition-machine {
+    inset: 18px 7px 70px 15px;
+  }
+  .ambition-ai-chip {
+    bottom: 30px;
+    right: 5px;
+  }
+  .ambition-scene-note {
+    top: 2px;
+    right: 20px;
+    font-size: 0.47rem;
+  }
+  .ambition-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-block: 17px;
+  }
+  .ambition-disciplines {
+    font-size: 0.77rem;
+    gap: 18px;
+  }
+  .ambition-bottom > a {
+    font-size: 0.78rem;
+  }
+  .products-intro {
+    padding-block: 36px;
+    gap: 20px;
+  }
+  .products-intro-mark {
+    display: none;
+  }
+  .product-showcase {
+    grid-template-columns: 1fr;
+  }
+  .product-copy {
+    padding: 26px;
+  }
+  .product-copy h2 {
+    font-size: 2.35rem;
+  }
+  .product-topline {
+    margin-bottom: 20px;
+  }
+  .products-collection {
+    gap: 24px;
+    padding-top: 24px;
+  }
+  .refresh-header.is-home .agency-nav {
+    min-height: 72px;
+  }
+}
+@media (max-width: 400px) {
+  .ambition-scene {
+    min-height: 340px;
+  }
+  .ambition-machine {
+    inset: 16px 5px 58px 8px;
+  }
+  .ambition-ai-chip {
+    padding: 10px;
+    gap: 7px;
+    bottom: 13px;
+  }
+  .ambition-ai-chip > span {
+    width: 28px;
+    height: 28px;
+  }
+  .ambition-ai-chip strong {
+    font-size: 0.65rem;
+  }
+  .ambition-ai-chip small {
+    font-size: 0.45rem;
+  }
+  .ambition-ai-chip > svg {
+    display: none;
+  }
+  .ambition-copy .agency-eyebrow {
+    font-size: 0.56rem !important;
+  }
+  .product-topline {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambition-machine {
+    transform: none;
+    transition: none;
+  }
+}
+.product-enquiry > output {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 22px 22px;
+  color: #34573a;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.product-enquiry summary:focus-visible {
+  outline: 3px solid #39976c;
+  outline-offset: -4px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ambition-machine {
+    animation: ambition-arrive 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .ambition-ai-chip {
+    animation: ambition-chip-arrive 0.7s 0.25s ease backwards;
+  }
+}
+@keyframes ambition-arrive {
+  from {
+    opacity: 0.2;
+    translate: 25px 16px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes ambition-chip-arrive {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Products page after the split: products describe themselves and link out,
+   free tools link inward. A product with no address says so instead of
+   offering a button that goes nowhere. */
+.products-collection {
+  padding-block: clamp(44px, 6vw, 76px);
+}
+.product-showcase .product-headline {
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+  letter-spacing: -0.03em;
+  color: #1d3f2c;
+  margin: 6px 0 18px;
+}
+.product-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 22px 0 0;
+  display: grid;
+  gap: 10px;
+  max-width: 560px;
+}
+.product-feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #53635a;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.product-feature-list svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: #4f7840;
+}
+.product-pending {
+  margin-top: 24px;
+  padding: 16px 18px;
+  border-left: 2px solid #b7c9ad;
+  background: #eef2e8;
+  color: #47554d;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  max-width: 560px;
+}
+.tool-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.tool-list > li > a {
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  padding: 24px;
+  border: 1px solid #ccd5cc;
+  border-radius: 10px;
+  background: #fbfdf9;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.tool-list > li > a:hover {
+  border-color: #8fae83;
+  transform: translateY(-2px);
+}
+.tool-status {
+  font:
+    0.62rem var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #5d7a56;
+}
+.tool-list h3 {
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.tool-list p {
+  color: #53635a;
+  font-size: 0.94rem;
+  line-height: 1.62;
+  margin: 0;
+}
+.tool-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 0.86rem;
+  font-weight: 550;
+  color: #175b3b;
+}
+@media (max-width: 860px) {
+  .tool-list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,96 @@
+/* Motion confirms an action or introduces a section. Content stays visible
+   before hydration, and no form field or navigation target moves on hover. */
+.agency-site .refresh-footer-bottom a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+  transition:
+    color 160ms ease,
+    text-decoration-color 180ms ease;
+}
+.agency-site .refresh-footer-bottom a:is(:hover, :focus-visible) {
+  text-decoration-color: currentColor;
+}
+.agency-site :is(a, button, summary):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+.agency-site
+  :is(
+    .agency-button,
+    .agency-nav-cta,
+    .agency-text-link,
+    .refresh-footer-cta,
+    .refresh-service-list a,
+    .refresh-blog-grid h2 a
+  )
+  svg {
+  transition: transform 180ms ease;
+  flex-shrink: 0;
+}
+.refresh-service-list a {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+.pricing-disclosure summary {
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.pricing-disclosure summary:is(:hover, :focus-visible) {
+  color: #175b3b;
+}
+.opening-action[data-direction='forward']:hover > span {
+  transform: translate(2px, -2px);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .agency-site
+    :is(
+      .agency-button,
+      .agency-nav-cta,
+      .agency-text-link,
+      .refresh-footer-cta,
+      .refresh-service-list a,
+      .refresh-blog-grid h2 a
+    ):hover
+    svg {
+    transform: translate(2px, -2px);
+  }
+  .refresh-service-list a:hover {
+    background-color: #175b3b06;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pricing-disclosure[open] > p {
+    animation: disclosure-content-in 180ms ease-out;
+  }
+}
+@keyframes disclosure-content-in {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agency-site .opening-action > span,
+  .agency-site
+    :is(
+      .agency-button,
+      .agency-nav-cta,
+      .agency-text-link,
+      .refresh-footer-cta,
+      .refresh-service-list a,
+      .refresh-blog-grid h2 a
+    )
+    svg {
+    transform: none !important;
+  }
+}
+
+.agency-nav-links a:focus-visible::after {
+  transform: scaleX(1);
+}

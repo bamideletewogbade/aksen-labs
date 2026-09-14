@@ -1,0 +1,567 @@
+/* The header and opening scene use one viewport as a minimum. --site-nav-h is measured from the
+   live header by SiteNav, so the scene ends exactly where the screen does. Content may
+   still grow at zoom or on short screens, where the lock relaxes to a minimum. */
+.refresh-header.is-home .agency-nav {
+  min-height: 88px;
+}
+.immersive-hero {
+  --hero-height: calc(100svh - var(--site-nav-h, 89px));
+  min-height: calc(100vh - var(--site-nav-h, 89px));
+  min-height: var(--hero-height);
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  background: #eff3e8;
+}
+@media (min-width: 761px) and (min-height: 680px) {
+  .immersive-hero {
+    height: auto;
+    /* Padding sits inside the locked height, so the story bar comes to rest
+       just clear of the screen edge instead of flush against it. */
+    padding-bottom: clamp(6px, 1.1svh, 14px);
+  }
+}
+.immersive-hero .ambition-grid {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  padding-block: clamp(24px, 4.2svh, 60px) 24px;
+  position: relative;
+  z-index: 1;
+}
+/* The complete business promise wraps instead of competing with the image. */
+.refresh-site .immersive-hero .ambition-copy h1 {
+  font-size: clamp(2.3rem, 3.7vw, 4.7rem);
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+  white-space: normal;
+}
+.immersive-hero .ambition-copy h1 em {
+  display: inline;
+}
+.immersive-hero .ambition-copy h1 em::after {
+  content: none;
+}
+.immersive-hero .ambition-copy .agency-eyebrow {
+  line-height: 1.5;
+}
+.immersive-hero .ambition-bottom {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  padding-block: 16px;
+  margin-top: auto;
+}
+.hero-atmosphere {
+  position: absolute;
+  inset: -15%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 77% 32%, #c4e79990 0, transparent 46%),
+    radial-gradient(ellipse at 40% 80%, #b7dbc245 0, transparent 45%);
+  animation: hero-atmosphere-drift 22s ease-in-out infinite alternate;
+}
+.hero-network {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.3;
+  mask-image: linear-gradient(to right, transparent 0%, #0004 40%, #000 72%);
+}
+.hero-network line {
+  stroke: #69986a;
+  stroke-width: 0.055;
+}
+.hero-network circle {
+  fill: #3c744b;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-node-breathe 6s ease-in-out infinite;
+}
+/* The source photographs are 3:2. The scene takes its width from the height budget
+   (78svh ~= 52svh x 1.5) so the frame can hold that ratio without object-fit
+   stretching the crop, and it hugs the right gutter. Sizing the scene rather than
+   the frame keeps the orbit, the photo card and the AI chip anchored to the image. */
+.immersive-hero .ambition-scene {
+  align-self: center;
+  min-height: 0;
+  width: min(100%, 78svh, 800px);
+  margin-left: auto;
+}
+.immersive-hero .ambition-machine {
+  position: relative;
+  inset: auto;
+  margin: 14px 0 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  animation: none;
+}
+/* The wrapper only cross-fades. The drift lives on the image itself (hero-pan),
+   so the two never compound into a heavier crop. */
+.hero-story-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  /* The caption and chip swap on the same tick, so a long crossfade leaves one
+     business's line sitting over another's photograph. Kept close to the shared
+     reveal timing so the two read as one change. */
+  transition: opacity 0.55s ease;
+}
+.hero-story-image.is-current {
+  opacity: 1;
+}
+.immersive-hero .ambition-machine figcaption {
+  bottom: 0;
+  padding: 42px 20px 24px;
+  background: linear-gradient(transparent, #06130cbd);
+  font-size: 0.65rem;
+  min-height: 88px;
+  text-align: center;
+}
+.hero-story-lines {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  text-align: right;
+  padding-right: 12px;
+}
+.hero-story-lines p {
+  grid-area: 1/1;
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+  color: #355b3e;
+  font-size: 0.85rem;
+}
+.hero-story-lines p.is-current {
+  opacity: 1;
+  transform: none;
+}
+.immersive-hero .ambition-orbit {
+  animation: hero-orbit-drift 18s ease-in-out infinite alternate;
+}
+/* The gap between the columns reads as wide because the copy stopped well short
+   of its own column, not because the grid gap is large. Letting the measure run
+   closer to the column edge closes the space without moving the scene. */
+.immersive-hero .ambition-description {
+  max-width: 560px;
+}
+/* Fixed width so the per-story copy swaps without the chip resizing under it. */
+.immersive-hero .ambition-ai-chip {
+  bottom: 13%;
+  right: 0;
+  width: clamp(262px, 30%, 300px);
+}
+.ambition-ai-chip-copy {
+  min-width: 0;
+  animation: hero-chip-swap 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero-story-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.hero-story-controls button {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* A wrapped label would make its pill taller than the rest of the row. */
+  white-space: nowrap;
+  gap: 9px;
+  background: transparent;
+  color: #4a634a;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 12px 13px;
+  min-height: 44px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.hero-story-controls button:hover {
+  background: #dce9cf;
+  transform: translateY(-2px);
+}
+.hero-story-controls button.is-current {
+  background: #dce9cf;
+  color: #143c28;
+  border-color: #b2c5a0;
+}
+.hero-story-number {
+  font-size: 0.65rem;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+.hero-story-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: #4f7840;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.is-playing .hero-story-controls .is-current .hero-story-progress {
+  animation: hero-story-time 7s linear forwards;
+}
+.hero-story-controls .hero-play-toggle {
+  border: 1px solid #b2c5a0;
+  width: 44px;
+  padding: 0;
+}
+.hero-play-toggle:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.immersive-hero :is(a, button):focus-visible {
+  outline: 2px solid #28573c;
+  outline-offset: 5px;
+}
+.immersive-hero .agency-button {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+.immersive-hero .agency-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px #153d2b24;
+}
+/* A light sweeps across the primary action on hover. */
+.immersive-hero .agency-button::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, #c2f57630, transparent);
+  transform: skewX(-18deg);
+  transition: translate 0.7s ease;
+}
+.immersive-hero .agency-button:hover::after {
+  translate: 380% 0;
+}
+.immersive-hero .agency-button > * {
+  position: relative;
+}
+.immersive-hero .agency-text-link svg {
+  transition: transform 0.25s ease;
+}
+.immersive-hero .agency-text-link:hover svg {
+  transform: translateY(3px);
+}
+/* The scroll cue keeps a slow beat so the fold reads as continuable. */
+.immersive-hero .ambition-copy .agency-text-link:hover svg {
+  animation: none;
+}
+/* The rule under "further." draws itself once the headline has landed. */
+.immersive-hero .ambition-copy h1 em::after {
+  transform-origin: left;
+  animation: hero-rule 0.85s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* The live frame drifts very slightly while its story is on screen. */
+.hero-story-image.is-current img {
+  animation: hero-pan 8.5s ease-out both;
+}
+.immersive-hero .ambition-orbit::after {
+  animation: hero-ring-spin 46s linear infinite;
+}
+.immersive-hero .ambition-ai-chip > span {
+  transition: transform 0.3s ease;
+}
+.immersive-hero .ambition-ai-chip:hover > span {
+  transform: scale(1.08);
+}
+.hero-story-controls button .hero-story-number {
+  transition: opacity 0.2s ease;
+}
+.hero-story-controls button.is-current .hero-story-number {
+  opacity: 1;
+}
+.immersive-hero.is-paused
+  :is(
+    .hero-atmosphere,
+    .hero-network circle,
+    .ambition-orbit,
+    .hero-story-progress,
+    .agency-eyebrow > span,
+    .hero-story-image img
+  ),
+.immersive-hero.is-paused .ambition-orbit::after {
+  animation-play-state: paused;
+}
+@keyframes hero-atmosphere-drift {
+  from {
+    transform: translate3d(-1%, 0, 0);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0);
+  }
+}
+@keyframes hero-node-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.35);
+  }
+}
+@keyframes hero-orbit-drift {
+  from {
+    transform: rotate(-24deg) scale(0.98);
+  }
+  to {
+    transform: rotate(-18deg) scale(1.025);
+  }
+}
+@keyframes hero-story-time {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes hero-rule {
+  from {
+    transform: rotate(-3deg) scaleX(0);
+  }
+  to {
+    transform: rotate(-3deg) scaleX(1);
+  }
+}
+@keyframes hero-chip-swap {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-pan {
+  from {
+    transform: scale(1.07) translate3d(1.2%, 0.8%, 0);
+  }
+  to {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+}
+@keyframes hero-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (min-width: 761px) and (max-height: 750px) {
+  .immersive-hero .ambition-grid {
+    padding-block: 26px 20px;
+  }
+  .refresh-site .immersive-hero .ambition-copy h1 {
+    font-size: clamp(2.3rem, 3.7vw, 4.7rem);
+  }
+  .immersive-hero .ambition-copy .agency-eyebrow {
+    margin-bottom: 18px !important;
+  }
+  .immersive-hero .ambition-description {
+    margin-top: 24px !important;
+  }
+}
+/* The Ask Aksen launcher is pinned bottom right and the story bar is the last
+   thing on the fold, so the products link keeps clear of it. */
+@media (min-width: 761px) {
+  .immersive-hero .ambition-bottom {
+    padding-right: calc(var(--agency-gutter) + 186px);
+  }
+}
+/* Mid widths leave no slack between the columns. */
+@media (min-width: 761px) and (max-width: 1250px) {
+  .immersive-hero .ambition-description {
+    max-width: 400px;
+  }
+}
+@media (max-width: 1050px) {
+  .hero-story-controls button {
+    padding-inline: 9px;
+  }
+  .hero-story-number {
+    display: none;
+  }
+  .immersive-hero .ambition-bottom > a > span {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .refresh-header.is-home .agency-nav,
+  .refresh-header.is-home.is-scrolled .agency-nav {
+    min-height: 72px;
+  }
+  .immersive-hero {
+    min-height: calc(100vh - var(--site-nav-h, 73px));
+    min-height: calc(100svh - var(--site-nav-h, 73px));
+  }
+  /* No spare height on a phone, so the clearance under the story bar is paid
+     for out of the grid padding and the frame below. */
+  .immersive-hero {
+    padding-bottom: 14px;
+  }
+  .immersive-hero .ambition-grid {
+    padding-block: 16px 8px;
+    gap: 12px;
+    align-content: center;
+  }
+  /* The guide launcher is pinned bottom right, where the story bar's play
+     toggle sits on the home page only. */
+  .aksen-guide-trigger.is-over-hero {
+    bottom: 80px;
+  }
+  .refresh-site .immersive-hero .ambition-copy h1 {
+    font-size: clamp(2.2rem, 7.8vw, 3.8rem);
+  }
+  .immersive-hero .ambition-copy .agency-eyebrow {
+    margin-bottom: 17px !important;
+    font-size: 0.65rem !important;
+  }
+  .immersive-hero .ambition-description {
+    margin-top: 21px !important;
+    font-size: 0.95rem !important;
+    line-height: 1.55;
+  }
+  .immersive-hero .ambition-copy .agency-actions {
+    margin-top: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .immersive-hero .ambition-copy .agency-button {
+    min-height: 48px;
+  }
+  .immersive-hero .ambition-scene {
+    min-height: 0;
+    width: min(100%, 38svh, 480px);
+    margin-inline: auto;
+  }
+  .immersive-hero .ambition-machine {
+    inset: auto;
+    margin: 10px 0 0;
+    width: 100%;
+    border-radius: 35% 35% 22% 22%;
+  }
+  .immersive-hero .ambition-machine figcaption {
+    font-size: 0.6rem;
+    padding: 30px 14px 15px;
+    min-height: 65px;
+  }
+  .immersive-hero .ambition-ai-chip {
+    display: none;
+  }
+  .hero-story-lines {
+    text-align: center;
+    padding-right: 0;
+  }
+  .hero-story-lines p {
+    font-size: 0.8rem;
+  }
+  .hero-network {
+    opacity: 0.2;
+    mask-image: linear-gradient(transparent 20%, #000 75%);
+  }
+  .immersive-hero .ambition-bottom {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0;
+    padding-block: 10px;
+  }
+  .immersive-hero .ambition-bottom > a {
+    display: none;
+  }
+  .hero-story-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 5px;
+  }
+  .hero-story-controls button {
+    font-size: 0.8rem;
+    padding-inline: 11px;
+  }
+}
+@media (max-width: 360px) {
+  .hero-story-controls button {
+    padding-inline: 7px;
+    font-size: 0.75rem;
+  }
+  .immersive-hero .ambition-copy .agency-actions {
+    gap: 8px;
+  }
+  .immersive-hero .ambition-copy .agency-button {
+    padding-inline: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .immersive-hero *,
+  .immersive-hero *::before,
+  .immersive-hero *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .hero-story-image {
+    transform: none;
+  }
+  .hero-network circle {
+    opacity: 0.5;
+  }
+  .immersive-hero .ambition-machine {
+    transform: none;
+  }
+}
+
+/* The three industry leads occupy one grid cell so the tallest sets the height
+   and the actions beneath never move as the copy swaps. */
+.ambition-leads {
+  display: grid;
+}
+.ambition-leads > .ambition-description {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ambition-leads > .ambition-description.is-current {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambition-leads > .ambition-description {
+    transition: none;
+  }
+}
+
+/* The three headlines share one grid cell, so the tallest sets the height and a
+   longer line cannot push the paragraph and buttons down as the copy swaps. */
+.ambition-headline {
+  display: grid;
+}
+.ambition-headline > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ambition-headline > span.is-current {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambition-headline > span {
+    transition: none;
+  }
+}

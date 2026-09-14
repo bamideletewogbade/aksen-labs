@@ -1,0 +1,482 @@
+/* Public agency theme. Legacy application and workspace styles remain scoped to their surfaces. */
+.agency-site {
+  --agency-paper: #f9faf7;
+  --agency-ink: #10261d;
+  --agency-green: #175b3b;
+  --agency-lime: #c2f576;
+  --agency-muted: #53635a;
+  /* Content is anchored to the viewport edges by a single fluid gutter rather
+     than a centred column, so every page shares one left and right line. */
+  --agency-gutter: clamp(18px, 3.6vw, 80px);
+  background: var(--agency-paper);
+  color: var(--agency-ink);
+  overflow-wrap: break-word;
+}
+.agency-site main {
+  min-width: 0;
+}
+.agency-container {
+  width: 100%;
+  padding-inline: var(--agency-gutter);
+}
+.agency-site h1,
+.agency-site h2,
+.agency-site h3,
+.agency-site p {
+  margin: 0;
+}
+.agency-site h1,
+.agency-site h2,
+.agency-site h3 {
+  font-weight: 540;
+}
+.agency-site h1 {
+  font-size: clamp(3.1rem, 5.65vw, 6.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.068em;
+}
+.agency-site h2 {
+  font-size: clamp(2.35rem, 4.1vw, 4.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+}
+.agency-site h3 {
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+.agency-site :is(h1, h2) em {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  color: var(--agency-green);
+  letter-spacing: -0.065em;
+}
+.agency-site p {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.agency-site :is(img, svg) {
+  max-width: 100%;
+}
+.agency-site img {
+  display: block;
+  height: auto;
+}
+.agency-site section[id],
+.agency-site article[id] {
+  scroll-margin-top: 100px;
+}
+.agency-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  color: #10261d;
+  background: rgba(249, 250, 247, 0.96);
+  border-bottom: 1px solid #10261d1a;
+  backdrop-filter: blur(16px);
+}
+.agency-nav {
+  display: flex;
+  align-items: center;
+  min-height: 88px;
+  gap: 36px;
+}
+.agency-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 29px;
+  font-weight: 750;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.agency-wordmark-labs {
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  font-weight: 450;
+  margin-left: 4px;
+}
+.agency-mark {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  font-size: 39px;
+  line-height: 1;
+  font-weight: 650;
+  border-radius: 9px 9px 9px 0;
+  background: #175b3b;
+  color: #c2f576;
+  padding-bottom: 8px;
+  font-family: Georgia, serif;
+}
+.agency-nav-links {
+  display: flex;
+  gap: 32px;
+  margin-left: auto;
+}
+.agency-nav-links a {
+  position: relative;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  /* A two-word entry must not wrap: it would make its pill taller than the rest. */
+  white-space: nowrap;
+}
+.agency-nav-links a::after {
+  position: absolute;
+  content: '';
+  height: 2px;
+  left: 0;
+  right: 0;
+  bottom: 5px;
+  background: #175b3b;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.agency-nav-links a:hover::after,
+.agency-nav-links a[aria-current]::after {
+  transform: scaleX(1);
+}
+.agency-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px 20px;
+  min-height: 46px;
+  color: #fff;
+  background: #175b3b;
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  /* A wrapped label doubled the height of the bar on a phone. */
+  white-space: nowrap;
+}
+.agency-nav-cta-short {
+  display: none;
+}
+.agency-nav-cta svg,
+.agency-text-link svg,
+.agency-button svg {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+.agency-nav-cta:hover svg,
+.agency-text-link:hover svg,
+.agency-button:hover svg {
+  transform: translate(3px, -3px);
+}
+.agency-menu-toggle {
+  display: none;
+  width: 46px;
+  height: 46px;
+  /* Without this the bar squeezed the button to 31px, under a usable target. */
+  flex-shrink: 0;
+  border: 1px solid #b9c6bd;
+  border-radius: 4px;
+  background: none;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  cursor: pointer;
+}
+.agency-mobile-nav {
+  display: grid;
+  padding: 8px 24px 24px;
+  max-height: calc(100dvh - 80px);
+  overflow: auto;
+  border-top: 1px solid #dce3dc;
+}
+.agency-mobile-nav a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 58px;
+  border-bottom: 1px solid #dce3dc;
+  font-size: 1.125rem;
+}
+.agency-mobile-nav a > span {
+  color: #637769;
+  font-size: 0.8125rem;
+}
+.agency-mobile-nav a > svg {
+  margin-left: auto;
+}
+.agency-mobile-nav a[aria-current] {
+  color: #175b3b;
+  font-weight: 650;
+}
+.agency-skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  padding: 12px 20px;
+  background: #c2f576;
+  color: #10261d;
+  z-index: 100;
+  transform: translateY(-180%);
+}
+.agency-skip:focus {
+  transform: none;
+}
+:is(.agency-site, .agency-header, .agency-footer)
+  :is(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid #39976c;
+  outline-offset: 5px;
+}
+.agency-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(32px, 4vw, 56px);
+  align-items: stretch;
+  padding-top: clamp(28px, 4.5vh, 48px);
+  padding-bottom: clamp(24px, 3.5vh, 38px);
+}
+.agency-eyebrow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.065em;
+  color: var(--agency-green, #175b3b);
+  font-weight: 500;
+  margin-bottom: 20px !important;
+}
+.agency-eyebrow > span:empty {
+  display: none;
+}
+.agency-hero h1 {
+  max-width: 760px;
+  font-size: clamp(2.9rem, 5.2vw, 5.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+}
+.agency-hero h1 em {
+  display: inline-block;
+}
+.agency-hero .agency-lead {
+  margin-top: 24px;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  max-width: 520px;
+  color: #1f3328;
+}
+.agency-hero-detail {
+  margin-top: 12px !important;
+  max-width: 520px;
+  color: var(--agency-muted);
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+}
+.agency-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-top: 28px;
+}
+.agency-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 52px;
+  padding: 13px 22px;
+  border-radius: 4px;
+  background: var(--agency-green, #175b3b);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 550;
+  border: 1px solid transparent;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+}
+.agency-button:hover {
+  background: #0f452c;
+  box-shadow: 0 6px 18px #0e382019;
+}
+.agency-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 550;
+  color: inherit;
+}
+.agency-location {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px !important;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem !important;
+  color: var(--agency-muted);
+  letter-spacing: 0.02em;
+}
+.agency-location > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #7e9688;
+}
+.agency-site .agent-gallery {
+  color: #e3ece3;
+}
+.agency-site .agents-gallery-section {
+  padding: 30px 0 80px;
+}
+.agency-agent-note {
+  padding: 25px;
+  border-left: 3px solid #175b3b;
+  background: #edf2e8;
+  margin-bottom: 35px;
+}
+.agency-contact-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  gap: 80px;
+  align-items: start;
+  padding-block: 75px 100px;
+}
+.agency-contact-copy h1 {
+  font-size: clamp(2.8rem, 4.2vw, 4.4rem);
+}
+.agency-contact-copy > p:not(.agency-eyebrow) {
+  margin-top: 26px;
+  color: var(--agency-muted);
+}
+.agency-contact-note {
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 1px solid #c7d4c5;
+}
+.agency-contact-note strong {
+  font-size: 1rem;
+}
+.agency-contact-note p {
+  margin-top: 10px;
+  color: var(--agency-muted);
+}
+
+@media (max-width: 1200px) {
+  .agency-nav-links {
+    gap: 22px;
+  }
+  .agency-nav {
+    gap: 25px;
+  }
+}
+/* The bar needs about 1195px to hold every entry with the call to action on one
+   line. Below that the menu button takes over, and it lists the same entries. */
+@media (max-width: 1200px) {
+  .agency-nav-links {
+    display: none;
+  }
+  .agency-nav-cta {
+    margin-left: auto;
+  }
+  .agency-menu-toggle {
+    display: flex;
+  }
+}
+@media (max-width: 1060px) {
+  .agency-contact-section {
+    gap: 35px;
+  }
+}
+@media (max-width: 800px) {
+  .agency-contact-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Below this the wordmark, the full label and a 46px menu button no longer fit
+   across the bar, so the action keeps its place under a shorter name. The menu
+   still lists it in full. */
+@media (max-width: 620px) {
+  .agency-nav-cta-long {
+    display: none;
+  }
+  .agency-nav-cta-short {
+    display: inline;
+  }
+}
+@media (max-width: 520px) {
+  .agency-nav {
+    gap: 12px;
+  }
+  .agency-wordmark {
+    font-size: 26px;
+  }
+  .agency-wordmark-labs {
+    font-size: 13px;
+  }
+  .agency-mark {
+    width: 33px;
+    height: 33px;
+    font-size: 35px;
+  }
+  .agency-nav-cta {
+    padding: 10px 12px;
+    min-height: 44px;
+    gap: 8px;
+    font-size: 0.875rem;
+  }
+  .agency-menu-toggle {
+    width: 44px;
+    height: 44px;
+  }
+  .agency-actions > .agency-button {
+    width: 100%;
+  }
+}
+@media (max-width: 360px) {
+  .agency-site {
+    --agency-gutter: 16px;
+  }
+  .agency-nav-cta {
+    padding: 10px 10px 10px 14px;
+    gap: 6px;
+  }
+  .agency-menu-toggle {
+    margin-left: auto;
+  }
+}
+/* The shorter label fits a small phone, so the enquiry action no longer
+   disappears there. Below this even that cannot share the bar with the
+   wordmark and a usable menu button, and the menu carries it instead. */
+@media (max-width: 330px) {
+  .agency-nav-cta {
+    display: none;
+  }
+}
+.agency-site .choice-grid button {
+  min-height: 52px;
+  line-height: 1.4;
+  text-align: left;
+  padding: 12px 14px;
+}
+@media (max-width: 680px) {
+  .agency-site .choice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agency-site *,
+  .agency-site *::before,
+  .agency-site *::after,
+  .agency-header * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

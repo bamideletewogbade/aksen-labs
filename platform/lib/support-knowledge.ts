@@ -1,0 +1,160 @@
+import { agencyDescription, services, approach } from './agency-content';
+import { stages, carePlans, pricingGroups, pricingFaqs } from './pricing';
+import { freeTools, products } from './product-catalog';
+
+export type SupportArticle = {
+  id: string;
+  title: string;
+  href: string;
+  keywords: string;
+  content: string;
+};
+export const knowledgeVersion = '2026-09-13';
+export function supportArticles(): SupportArticle[] {
+  return [
+    {
+      id: 'business-agents',
+      title: 'Free business agents',
+      href: '/business-agents',
+      keywords:
+        'free agent tools automation opportunity finder service product planner lead magnet business brief',
+      content:
+        'Visitors can run three AI drafting tools: Automation Opportunity Finder, Service-to-Product Planner and Lead-Magnet Planner. They work from a supplied brief and return a draft for review, with a shared hourly allowance. They do not browse, build software, send messages or execute workflows. The private admin Agent desk has nine assistants and saved drafts. No paid agent subscription is offered.',
+    },
+    {
+      id: 'agency',
+      title: 'About Aksen',
+      href: '/about',
+      keywords: 'aksen agency ghana nigeria africa location who company',
+      content:
+        agencyDescription +
+        ' Ghana is our base, not a restriction to Ghana-only clients. Other markets depend on project fit and delivery arrangements. No other office locations are confirmed.',
+    },
+    ...services.map((s) => ({
+      id: s.id,
+      title: s.title,
+      href: `/solutions#${s.id}`,
+      keywords: `${s.title} ${s.capabilities.join(' ')} ${s.exampleScope.join(' ')}`,
+      content: `${s.description} Capabilities: ${s.capabilities.join('; ')}. Deliverable: ${s.deliverable}. These are service capabilities subject to scoping, not integrations already installed for this visitor.`,
+    })),
+    {
+      id: 'pricing',
+      title: 'Service pricing in GHS',
+      href: '/pricing',
+      keywords:
+        'price pricing cost budget fee quote quotation cedi ghs assessment deposit payment care monthly support hours timeline delivery weeks credit refund',
+      content: `${stages.map((s) => `${s.title}: ${s.price} ${s.cadence}`).join('; ')}. Packages: ${pricingGroups.flatMap((g) => g.packages.map((p) => `${p.name}: ${p.price}; ${p.scope}; estimated ${p.timing}`)).join('\n')}. Care: ${carePlans.map((p) => `${p.name}: ${p.price}; ${p.coverage}`).join('\n')}. ${pricingFaqs.map((f) => `${f.question} ${f.answer}`).join('\n')}`,
+    },
+    {
+      id: 'process',
+      title: 'How we work',
+      href: '/how-it-works',
+      keywords:
+        'process start work build launch discovery scope timeline kickoff approach consultation',
+      content: approach
+        .map((a) => `${a.title}: ${a.detail} Output: ${a.output}`)
+        .join('\n'),
+    },
+    {
+      id: 'catalog',
+      title: 'Aksen products',
+      href: '/products',
+      keywords:
+        'cv forge folio resume optimizer reviewer ats workspace product trial subscription signup demo free tools agents',
+      content:
+        products
+          .map(
+            (p) =>
+              `${p.name}: ${p.status}. ${p.description} ${p.features.join('; ')}. ${p.href ? `Page: ${p.href}` : 'No public address yet; it cannot be used from this site.'}`,
+          )
+          .join('\n') +
+        '\nFree to use here now: ' +
+        freeTools
+          .map((t) => `${t.name} (${t.status}) at ${t.href}`)
+          .join('; ') +
+        '.\nThese agency service prices are not product subscriptions. No public paid launch or guaranteed ATS score or hiring outcome is established.',
+    },
+    {
+      id: 'examples',
+      title: 'Industry scenarios',
+      href: '/industries',
+      keywords:
+        'tfs frame shop examples case study client result portfolio proof furniture retail restaurant',
+      content:
+        'The Frame Shop (TFS) connected-commerce example is a proposed, illustrative system, not evidence of a completed client delivery. Examples explain how customer enquiries, custom sizing, checkout and workshop handoffs could connect. Do not claim measured savings, testimonials or past results.',
+    },
+    {
+      id: 'support',
+      title: 'Talk to the team',
+      href: '/agent-mapper',
+      keywords:
+        'human person contact support help broken login issue complaint refund urgent invoice order status existing project email',
+      content:
+        'Use the business enquiry form to give the team your goal and a reply address. This public assistant cannot view private accounts, invoices, orders or projects, book meetings, issue refunds, send emails, accept payments or make commitments. Do not ask for passwords, card details or credentials. An escalation note can be recorded for the team, but it does not guarantee a reply or a booked appointment. Existing clients should use their agreed project support channel. No public response SLA is established.',
+    },
+    {
+      id: 'demos',
+      title: 'Try a support demonstration',
+      href: '/support-demo',
+      keywords:
+        'demo demonstrate whatsapp chatbot agent assistant automate voice test',
+      content:
+        'The support demonstration uses fictional Cedar Home catalogue and order facts, or fictional Cedar Studio booking facts. It demonstrates answering from approved information, asking for missing information and handing off to a person. It does not send WhatsApp messages, create real orders, reserve appointments or connect a live phone number. A live WhatsApp deployment requires an agreed scope, business account/channel setup, approved knowledge, integration credentials, testing and handoff arrangements. This assistant is text based; voice and image input are not enabled here.',
+    },
+  ];
+}
+export function retrieveSupportArticles(
+  question: string,
+  history: string[] = [],
+): SupportArticle[] {
+  const terms =
+    `${question} ${history.slice(-2).join(' ')}`
+      .toLowerCase()
+      .match(/[a-z0-9]{3,}/g) || [];
+  return supportArticles()
+    .map((article) => ({
+      article,
+      score: [...new Set(terms)].reduce(
+        (sum, term) =>
+          sum +
+          (`${article.keywords} ${article.content}`.toLowerCase().includes(term)
+            ? 1
+            : 0),
+        0,
+      ),
+    }))
+    .sort((a, b) => b.score - a.score)
+    .filter((x) => x.score > 0)
+    .slice(0, 5)
+    .map((x) => x.article);
+}
+export const supportScenarios = {
+  commerce: {
+    title: 'Custom orders',
+    prompt: 'I want a shelf made to fit my room. What do you need?',
+    facts:
+      'FICTIONAL CEDAR HOME DEMO. Standard shelf: GHS 450, width 80 cm, natural oak finish. Custom dimensions and other finishes require a human quotation. Ask for width, height, finish and delivery area; no address or phone number is needed for this demo. Stock, lead time and delivery fee are unconfirmed. No customer-specific order lookup is available. Payment screenshots cannot verify a payment. No payment, order or refund can be processed in this demo.',
+  },
+  booking: {
+    title: 'Booking enquiries',
+    prompt: 'Can I book a design consultation tomorrow?',
+    facts:
+      'FICTIONAL CEDAR STUDIO DEMO. Offers 30-minute online design consultations. Ask for preferred day, timezone and topic. Calendar availability, fees and staff availability are unknown. Do not confirm a slot or create a booking. Summarize a proposed request for a human to confirm. No contact information is needed for this demo.',
+  },
+} as const;
+export type SupportScenario = keyof typeof supportScenarios;
+export function requestedHandoff(question: string) {
+  return /\b(human|person|speak to|talk to|complaint|refund|password|my (?:order|invoice|project|account)|charged|urgent)\b/i.test(
+    question,
+  );
+}
+export function supportFallback(articles: SupportArticle[]) {
+  const article = articles.find((a) => a.id === 'pricing') || articles[0];
+  if (article?.id === 'pricing')
+    // Every figure here is read from the published stages. A hard-coded build
+    // price had already fallen out of step with the pricing page once.
+    return `Our published assessment is ${stages[0].price}, additional to a build and not automatically credited. A clear brief may go directly to quotation. Builds start ${stages[1].price.toLowerCase()}; monthly care starts ${stages[2].price.toLowerCase()} per month. Scope, payment milestones, included support and dates are agreed in the proposal. Use the pricing page for the full ranges and exclusions.`;
+  if (article?.id === 'catalog')
+    return 'CV Forge is our own CV review and CV building product. It is built but has no public address yet, so it cannot be used from this site and there is nothing to sign up for. Ask to be told when it opens. The free business agents work here now with no account, and the order, support and workspace demonstrations use fictional businesses. None of these has a subscription price, and no paid plan is published.';
+  return 'Aksen builds websites and online shops, connects business systems, creates useful reports and develops digital products. We are based in Ghana and welcome suitable projects across Africa and beyond. Describe what you want to improve, try a business agent or send an enquiry to discuss the work.';
+}
