@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
-import { Loader2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { PendingButton, SkeletonRows } from '@/components/ui/activity';
 import {
   CHANNEL_LABEL,
   DIRECTIONS,
@@ -101,14 +102,14 @@ export function AdminLeadHistory({
             {days === null
               ? 'nothing recorded'
               : `last contact ${days === 0 ? 'today' : `${days}d ago`}`}
-            {waiting ? ' · awaiting reply' : ''}
+            {waiting ? ' Â· awaiting reply' : ''}
           </span>
         )}
       </summary>
       {loading && (
-        <p className="lead-history-line">
-          <Loader2 className="animate-spin" size={15} /> Loading…
-        </p>
+        <div className="lead-history-line">
+          <SkeletonRows rows={3} label="Loading contact history" />
+        </div>
       )}
       {error && (
         <p className="lead-history-line" role="alert">
@@ -182,14 +183,15 @@ export function AdminLeadHistory({
           onChange={(e) => setShared(e.target.value)}
           aria-label="What was shared"
         />
-        <button type="submit" disabled={busy || !summary.trim()}>
-          {busy ? (
-            <Loader2 className="animate-spin" size={15} />
-          ) : (
-            <Plus size={15} />
-          )}
+        <PendingButton
+          type="submit"
+          pending={busy}
+          pendingLabel="Recording"
+          disabled={!summary.trim()}
+        >
+          <Plus size={15} />
           Record
-        </button>
+        </PendingButton>
       </form>
     </details>
   );

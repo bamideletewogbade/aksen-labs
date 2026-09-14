@@ -1,8 +1,9 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
 import {cleanAiText} from '@/lib/ai-text';
 import {ResponseText} from '@/components/response-text';
 import { useEffect, useState } from 'react';
+import { PendingButton } from '@/components/ui/activity';
 import { operationTasks, demoScenarios } from '@/lib/operations-catalog';
 import { agencyTemplates, templateText } from '@/lib/agency-templates';
 
@@ -114,7 +115,7 @@ export function OperationsDesk({
       setContent(body.content);
       setAiDraft(true);
       setTitle(
-        `${mode === 'demos' ? demo.name : operationTasks.find((t) => t.id === task)!.name} — ${body.sourceLabel}`,
+        `${mode === 'demos' ? demo.name : operationTasks.find((t) => t.id === task)!.name} â€” ${body.sourceLabel}`,
       );
       setHandoff(body.handoff);
       setNotice('Draft saved to AI activity. Review before using.');
@@ -204,7 +205,7 @@ export function OperationsDesk({
               client-specific copy or download an editable Markdown document.
             </p>
             <Link href="/admin/workspaces">
-              Open Clients & billing for invoices and receipts →
+              Open Clients & billing for invoices and receipts â†’
             </Link>
           </>
         ) : mode === 'demos' ? (
@@ -229,7 +230,7 @@ export function OperationsDesk({
               </select>
             </label>
             <p className="ops-status">
-              {demo.channel} · Fictional data · No external messages
+              {demo.channel} Â· Fictional data Â· No external messages
             </p>
             <details>
               <summary>Approved demo knowledge</summary>
@@ -256,12 +257,14 @@ export function OperationsDesk({
                 onChange={(e) => setMessage(e.target.value)}
               />
             </label>
-            <button
-              disabled={busy || !message.trim() || !data?.aiConfigured}
+            <PendingButton
+              pending={busy}
+              pendingLabel="Preparing reply"
+              disabled={!message.trim() || !data?.aiConfigured}
               onClick={() => void generate()}
             >
-              {busy ? 'Preparing reply…' : 'Run service demo'}
-            </button>
+              Run service demo
+            </PendingButton>
           </>
         ) : (
           <>
@@ -315,13 +318,15 @@ export function OperationsDesk({
               multiple documents, use the source-selection assistant in Clients
               & billing.
             </p>
-            <button
-              disabled={busy || !sourceId || !data?.aiConfigured}
+            <PendingButton
+              pending={busy}
+              pendingLabel="Preparing draft"
+              disabled={!sourceId || !data?.aiConfigured}
               onClick={() => void generate()}
             >
-              {busy ? 'Preparing draft…' : 'Prepare AI draft'}
-            </button>
-            <Link href="/admin/email">Review and send service emails →</Link>
+              Prepare AI draft
+            </PendingButton>
+            <Link href="/admin/email">Review and send service emails â†’</Link>
           </>
         )}
         {data && !data.aiConfigured && mode !== 'templates' && (
@@ -341,7 +346,7 @@ export function OperationsDesk({
                   setContent(cleanAiText(d.trace.content || ''));
                   setAiDraft(true);
                   setTitle(
-                    `${d.agent_name} — ${d.trace.sourceLabel || 'Draft'}`,
+                    `${d.agent_name} â€” ${d.trace.sourceLabel || 'Draft'}`,
                   );
                   setNotice('Loaded a saved AI draft.');
                 }}

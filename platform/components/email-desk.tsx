@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
 import {cleanAiText} from '@/lib/ai-text';
 import { useEffect, useState } from 'react';
+import { PendingButton } from '@/components/ui/activity';
 type EmailItem = {
   id: string;
   recipient: string;
@@ -139,7 +140,7 @@ export function EmailDesk() {
         </p>
         <p className="ops-status">
           {data?.configured
-            ? `Provider configured · From ${data.from}`
+            ? `Provider configured Â· From ${data.from}`
             : 'Sending not configured'}
           <br />
           Reply-to: {data?.replyTo || 'bishoptewogbade@gmail.com'}
@@ -189,18 +190,16 @@ export function EmailDesk() {
             maxLength={12000}
           />
         </label>
-        <button
+        <PendingButton
+          pending={busy}
+          pendingLabel="Saving draft"
           disabled={
-            busy ||
-            !recipient ||
-            !subject.trim() ||
-            !body.trim() ||
-            !note.trim()
+            !recipient || !subject.trim() || !body.trim() || !note.trim()
           }
           onClick={() => void act('draft')}
         >
           Save draft
-        </button>
+        </PendingButton>
       </section>
       <section className="admin-panel ops-editor">
         <div className="ops-actions">
@@ -218,7 +217,7 @@ export function EmailDesk() {
             <article className="ops-email-row" key={item.id}>
               <strong>{item.subject}</strong>
               <p>
-                {item.recipient} ·{' '}
+                {item.recipient} Â·{' '}
                 {item.status === 'sent' ? 'Accepted by Resend' : item.status}
               </p>
               {item.provider_id && (
@@ -261,12 +260,14 @@ export function EmailDesk() {
                   I reviewed this exact recipient and message and want to send
                   it.
                 </label>
-                <button
-                  disabled={busy || !confirmed || !data?.configured}
+                <PendingButton
+                  pending={busy}
+                  pendingLabel="Sending"
+                  disabled={!confirmed || !data?.configured}
                   onClick={() => void act('send')}
                 >
-                  {busy ? 'Sending…' : 'Send this email via Resend'}
-                </button>
+                  Send this email via Resend
+                </PendingButton>
               </>
             )}
           </div>

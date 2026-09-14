@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
-import { AlertTriangle, Loader2, Plus } from 'lucide-react';
+import { AlertTriangle, Plus } from 'lucide-react';
+import { PendingButton, SkeletonRows } from '@/components/ui/activity';
 import {
   ITEM_KINDS,
   ITEM_STATUSES,
@@ -102,9 +103,9 @@ export function AdminProjectItems({ projectId }: { projectId: string }) {
         )}
       </summary>
       {loading && (
-        <p className="project-items-state">
-          <Loader2 className="animate-spin" size={15} /> Loading…
-        </p>
+        <div className="project-items-state">
+          <SkeletonRows rows={3} label="Loading project items" />
+        </div>
       )}
       {error && (
         <p className="project-items-state" role="alert">
@@ -172,14 +173,15 @@ export function AdminProjectItems({ projectId }: { projectId: string }) {
           onChange={(event) => setTitle(event.target.value)}
           aria-label="Item title"
         />
-        <button type="submit" disabled={busy || !title.trim()}>
-          {busy ? (
-            <Loader2 className="animate-spin" size={15} />
-          ) : (
-            <Plus size={15} />
-          )}
+        <PendingButton
+          type="submit"
+          pending={busy}
+          pendingLabel="Adding"
+          disabled={!title.trim()}
+        >
+          <Plus size={15} />
           Add
-        </button>
+        </PendingButton>
       </form>
     </details>
   );

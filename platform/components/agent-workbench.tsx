@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Download, Loader2, FilePenLine } from 'lucide-react';
+import { ArrowUpRight, Download, FilePenLine } from 'lucide-react';
+import { Spinner } from '@/components/ui/activity';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -130,7 +131,7 @@ export function AgentWorkbench({
     if (!draft) return;
     const blob = new Blob(
       [
-        `${draft.name}\nDraft for human review · ${draft.createdAt}\n\n${draft.content}`,
+        `${draft.name}\nDraft for human review Â· ${draft.createdAt}\n\n${draft.content}`,
       ],
       { type: 'text/plain;charset=utf-8' },
     );
@@ -231,24 +232,33 @@ export function AgentWorkbench({
               </label>
             )}
             <div className="agent-output-promise">
-              <strong>What you’ll get</strong>
+              <strong>What youâ€™ll get</strong>
               <p>{agent.output}</p>
               <p className="agent-boundary">{agent.boundary}</p>
             </div>
             <p id="agent-privacy" className="agent-privacy">
               {admin
                 ? 'Your brief goes to the AI provider. Completed drafts are saved in your admin history. Use authorised business information and remove credentials.'
-                : 'Use non-sensitive information. Your brief goes to the AI provider; Aksen’s public activity log stores run details, not your brief or result. Download anything you want to keep.'}
+                : 'Use non-sensitive information. Your brief goes to the AI provider; Aksenâ€™s public activity log stores run details, not your brief or result. Download anything you want to keep.'}
             </p>
             <Button
               type="submit"
-              className="agent-run"
+              className="agent-run pending-button"
+              aria-busy={busy}
               disabled={busy || brief.trim().length < 30}
             >
+              {/* The same sizing trick as PendingButton, applied by hand
+                  because this uses the shared Button component and would
+                  otherwise jump from "Run this agent" to the longer pending
+                  label mid-click. */}
+              <span className="pending-button-sizer" aria-hidden="true">
+                <span>Run this agent</span>
+                <span>Preparing your draftâ€¦</span>
+              </span>
               {busy ? (
                 <>
-                  <Loader2 className="animate-spin" size={17} />
-                  Preparing your draft…
+                  <Spinner size={17} />
+                  Preparing your draftâ€¦
                 </>
               ) : (
                 <>

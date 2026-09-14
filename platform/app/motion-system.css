@@ -54,14 +54,19 @@
 .pending-button[aria-busy='true'] > .pending-button-label {
   opacity: 0.75;
 }
-/* The label is measured at its widest state and held there, so a button does
-   not resize mid-click and shift whatever sits beside it. */
+/* Every label the button can show is laid out here, stacked and collapsed to
+   zero height, so the button is as wide as its widest state and does not
+   resize mid-click and shift whatever sits beside it. */
 .pending-button-sizer {
   display: block;
   height: 0;
   overflow: hidden;
   visibility: hidden;
   pointer-events: none;
+}
+.pending-button-sizer > span {
+  display: block;
+  white-space: nowrap;
 }
 
 /* ---------- skeleton ---------- */

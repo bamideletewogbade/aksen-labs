@@ -1,7 +1,8 @@
-'use client';
+﻿'use client';
 
 import { Download, ImagePlus, Loader2, Plus, Image, FilePenLine, Video, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { PendingButton } from '@/components/ui/activity';
 
 type Mode = 'image' | 'video';
 type Reference = { id: string; dataUrl: string };
@@ -171,14 +172,14 @@ export function AdminMediaStudio() {
           {mode === 'video' && <label>Duration<select value={duration} onChange={(event) => setDuration(Number(event.target.value))}>{DURATIONS.map((value) => <option key={value} value={value}>{value}s</option>)}</select></label>}
         </div>
         <div className="media-reference-field">
-          <span>Reference images (optional, up to 4) — style guides or examples to match</span>
+          <span>Reference images (optional, up to 4) â€” style guides or examples to match</span>
           <div className="media-reference-list">
             {references.map((ref) => <div className="media-reference-thumb" key={ref.id}><img src={ref.dataUrl} alt="Reference" /><button type="button" onClick={() => removeReference(ref.id)} aria-label="Remove reference"><X size={13} /></button></div>)}
             {references.length < 4 && <button type="button" className="media-reference-add" onClick={() => fileInputRef.current?.click()}><Plus size={16} /></button>}
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" multiple hidden onChange={(event) => addReferenceFiles(event.target.files)} />
         </div>
-        <button className="create-submit" disabled={status === 'working' || !prompt.trim()}>{status === 'working' ? <><Loader2 className="icon-spin" /> {progressNote || 'Working...'}</> : <>Generate {mode} <Image /></>}</button>
+        <PendingButton className="create-submit" pending={status === 'working'} pendingLabel={progressNote || 'Working'} disabled={!prompt.trim()}>Generate {mode} <Image /></PendingButton>
         {status === 'error' && <p className="form-error">{errorMessage}</p>}
       </form>
       {result && (

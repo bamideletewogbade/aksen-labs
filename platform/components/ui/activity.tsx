@@ -69,8 +69,14 @@ export function PendingButton({
       aria-busy={pending}
       disabled={disabled || pending}
     >
+      {/* Every label the button can show, stacked and unmeasured, so its width
+          is the widest of them. Reserving only the idle label still let the
+          button grow whenever the pending text was the longer one, which is
+          the usual case: "Save" becoming "Saving". */}
       <span className="pending-button-sizer" aria-hidden="true">
-        {children}
+        <span>{children}</span>
+        <span>{pendingLabel}</span>
+        {done !== undefined && <span>{doneLabel}</span>}
       </span>
       {pending && <Spinner />}
       {done && !pending && <Check size={14} aria-hidden="true" />}

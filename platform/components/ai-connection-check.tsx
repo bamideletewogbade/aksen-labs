@@ -1,5 +1,6 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
+import { PendingButton } from '@/components/ui/activity';
 import { AI_PROFILES, type AiProfile } from '@/lib/ai-routing';
 export function AiConnectionCheck() {
   const [profile, setProfile] = useState<AiProfile>('conversation');
@@ -62,9 +63,13 @@ export function AiConnectionCheck() {
           <option value="default">Default model + fallbacks</option>
         </select>
       </label>
-      <button disabled={busy} onClick={() => void check()}>
-        {busy ? 'Testing…' : 'Run a small AI test'}
-      </button>
+      <PendingButton
+        pending={busy}
+        pendingLabel="Testing"
+        onClick={() => void check()}
+      >
+        Run a small AI test
+      </PendingButton>
       <p>
         Uses fictional data and provider credits. Five tests per hour. This does
         not change the active configuration.
