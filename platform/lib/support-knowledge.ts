@@ -9,12 +9,23 @@ export type SupportArticle = {
   href: string;
   keywords: string;
   content: string;
+  /**
+   * Where this entry's words actually come from, for whoever has to change
+   * them later. Most of these are assembled from the same modules the public
+   * site renders, so editing the article means editing the source, and the
+   * knowledge screen previously gave no clue which one.
+   *
+   * Read by the admin only. The chat route sends the model id, title and
+   * content and nothing else, so a file path cannot reach a prompt.
+   */
+  source: string;
 };
 export const knowledgeVersion = '2026-09-13';
 export function supportArticles(): SupportArticle[] {
   return [
     {
       id: 'business-agents',
+      source: 'Written in lib/support-knowledge.ts. The tools themselves are in lib/agent-workbench.ts.',
       title: 'Free business agents',
       href: '/business-agents',
       keywords:
@@ -24,6 +35,7 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'agency',
+      source: 'agencyDescription in lib/agency-content.ts, plus a note written here.',
       title: 'About Aksen',
       href: '/about',
       keywords: 'aksen agency ghana nigeria africa location who company',
@@ -35,11 +47,13 @@ export function supportArticles(): SupportArticle[] {
       id: s.id,
       title: s.title,
       href: `/solutions#${s.id}`,
+      source: 'services in lib/agency-content.ts, one entry per service.',
       keywords: `${s.title} ${s.capabilities.join(' ')} ${s.exampleScope.join(' ')}`,
       content: `${s.description} Capabilities: ${s.capabilities.join('; ')}. Deliverable: ${s.deliverable}. These are service capabilities subject to scoping, not integrations already installed for this visitor.`,
     })),
     {
       id: 'pricing',
+      source: 'stages, pricingGroups, carePlans and pricingFaqs in lib/pricing.ts. The same figures the pricing page renders.',
       title: 'Service pricing in GHS',
       href: '/pricing',
       keywords:
@@ -48,6 +62,7 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'process',
+      source: 'approach in lib/agency-content.ts.',
       title: 'How we work',
       href: '/how-it-works',
       keywords:
@@ -58,6 +73,7 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'catalog',
+      source: 'products and freeTools in lib/product-catalog.ts.',
       title: 'Aksen products',
       href: '/products',
       keywords:
@@ -77,6 +93,7 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'examples',
+      source: 'Written in lib/support-knowledge.ts. Deliberately cautious: TFS is a proposal, not a delivered case study.',
       title: 'Industry scenarios',
       href: '/industries',
       keywords:
@@ -86,6 +103,7 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'support',
+      source: 'Written in lib/support-knowledge.ts. The WhatsApp number comes from lib/contact-channels.ts.',
       title: 'Talk to the team',
       href: '/agent-mapper',
       keywords:
@@ -95,6 +113,7 @@ export function supportArticles(): SupportArticle[] {
     },
     {
       id: 'demos',
+      source: 'Written in lib/support-knowledge.ts. The scenarios are supportScenarios, lower in the same file.',
       title: 'Try a support demonstration',
       href: '/support-demo',
       keywords:
@@ -104,29 +123,54 @@ export function supportArticles(): SupportArticle[] {
     },
   ];
 }
+/** How many entries the assistant is given for one question. */
+export const retrievedArticleLimit = 5;
+
+export type ArticleMatch = {
+  article: SupportArticle;
+  score: number;
+  /** The words from the question that this entry actually contains. */
+  matched: string[];
+};
+
+/**
+ * Scoring, exposed so the admin can show what the assistant would retrieve for
+ * a question and why.
+ *
+ * Retrieval was invisible: the only way to find out whether an entry would ever
+ * be reached was to ask the live assistant and infer it from the answer. That
+ * made a badly keyworded entry impossible to spot until a customer hit it.
+ *
+ * retrieveSupportArticles is built on this rather than beside it, so the
+ * preview cannot drift from the behaviour it claims to preview.
+ */
+export function scoreSupportArticles(
+  question: string,
+  history: string[] = [],
+): ArticleMatch[] {
+  const terms = [
+    ...new Set(
+      `${question} ${history.slice(-2).join(' ')}`
+        .toLowerCase()
+        .match(/[a-z0-9]{3,}/g) || [],
+    ),
+  ];
+  return supportArticles()
+    .map((article) => {
+      const haystack = `${article.keywords} ${article.content}`.toLowerCase();
+      const matched = terms.filter((term) => haystack.includes(term));
+      return { article, score: matched.length, matched };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
 export function retrieveSupportArticles(
   question: string,
   history: string[] = [],
 ): SupportArticle[] {
-  const terms =
-    `${question} ${history.slice(-2).join(' ')}`
-      .toLowerCase()
-      .match(/[a-z0-9]{3,}/g) || [];
-  return supportArticles()
-    .map((article) => ({
-      article,
-      score: [...new Set(terms)].reduce(
-        (sum, term) =>
-          sum +
-          (`${article.keywords} ${article.content}`.toLowerCase().includes(term)
-            ? 1
-            : 0),
-        0,
-      ),
-    }))
-    .sort((a, b) => b.score - a.score)
+  return scoreSupportArticles(question, history)
     .filter((x) => x.score > 0)
-    .slice(0, 5)
+    .slice(0, retrievedArticleLimit)
     .map((x) => x.article);
 }
 export const supportScenarios = {
