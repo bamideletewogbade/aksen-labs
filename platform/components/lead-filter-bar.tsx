@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
+import { LeadExportMenu } from '@/components/lead-export-menu';
 import {
   CONTACT_FILTERS,
   CONTACT_LABEL,
@@ -295,6 +296,9 @@ export function LeadFilterBar({
             Clear all
           </button>
         )}
+        {/* Beside the count, because what you can export is what the count
+            says, and the two should never be read separately. */}
+        <LeadExportMenu filter={filter} shown={shown} />
       </div>
     </div>
   );
