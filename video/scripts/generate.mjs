@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { loadEnv } from './load-env.mjs';
+import { trimBorders } from './trim-borders.mjs';
 import { assets, clips } from '../assets.config.mjs';
 
 loadEnv();
@@ -50,16 +51,18 @@ const fingerprint = (entry) =>
 
 mkdirSync(OUT, { recursive: true });
 
-let manifest = {};
-if (existsSync(MANIFEST)) {
+function readManifest() {
+  if (!existsSync(MANIFEST)) return {};
   try {
-    manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
+    return JSON.parse(readFileSync(MANIFEST, 'utf8'));
   } catch {
     // A corrupted manifest should not block a rebuild; the files are the truth
     // and the manifest is rewritten from them below.
-    manifest = {};
+    return {};
   }
 }
+
+let manifest = readManifest();
 
 const queue = [...assets, ...(withClips ? clips : [])].filter(
   (entry) => !filter || entry.key.includes(filter),
@@ -72,6 +75,8 @@ if (queue.length === 0) {
 
 let made = 0;
 let skipped = 0;
+/** Keys this run wrote, so the merge at the end knows what is genuinely ours. */
+const touched = new Set();
 
 for (const entry of queue) {
   const print = fingerprint(entry);
@@ -97,12 +102,23 @@ for (const entry of queue) {
     if (entry.kind === 'video') {
       const result = await video(entry);
       writeFileSync(file, result.buffer);
-      manifest[entry.key] = record(entry, print, file, result.model);
+      manifest[entry.key] = record(entry, print, file, result.model, result.cost);
     } else {
       const result = await image(entry);
-      writeFileSync(file, Buffer.from(result.base64, 'base64'));
+      // Trimmed before it is written, so everything downstream can assume the
+      // file has no painted-in letterbox. See trim-borders.mjs for why this is
+      // not solved in the prompt.
+      const { buffer, trimmed } = trimBorders(
+        Buffer.from(result.base64, 'base64'),
+      );
+      writeFileSync(file, buffer);
+      if (trimmed)
+        process.stdout.write(
+          `(trimmed ${trimmed.top}/${trimmed.bottom}/${trimmed.left}/${trimmed.right}) `,
+        );
       manifest[entry.key] = record(entry, print, file, result.model, result.cost);
     }
+    touched.add(entry.key);
     made += 1;
     process.stdout.write('done\n');
   } catch (error) {
@@ -129,7 +145,23 @@ function record(entry, print, file, model, cost) {
   };
 }
 
-writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
+/**
+ * Re-read before writing, and only overwrite the keys this run actually made.
+ *
+ * Generating clips takes minutes, so it is normal to start a long `--clips` run
+ * and then run the images in another terminal. With a copy of the manifest held
+ * from startup, whichever finished last wrote its stale copy over the other's
+ * work: the files were both correct on disk, and the manifest confidently
+ * described the wrong model, cost and prompt for half of them. That is worse
+ * than a crash, because a provenance record nobody can trust is not a
+ * provenance record.
+ *
+ * Merging on write rather than locking, because two runs touching the same key
+ * is the rare case and both would have produced the same picture anyway.
+ */
+const merged = { ...readManifest() };
+for (const key of touched) merged[key] = manifest[key];
+writeFileSync(MANIFEST, `${JSON.stringify(merged, null, 2)}\n`);
 console.log(`\n${made} generated, ${skipped} already cached. Manifest: ${MANIFEST}`);
 if (!dry && made > 0)
   console.log('Commit public/generated and the manifest so a render never has to pay for them again.');

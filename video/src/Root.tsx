@@ -2,6 +2,7 @@ import React from 'react';
 import { Composition } from 'remotion';
 import { formats, fps, type FormatName } from './brand';
 import { OrderStory, orderStoryDuration } from './compositions/OrderStory';
+import { LaunchFilm, launchFilmDuration } from './compositions/LaunchFilm';
 
 /**
  * One story, registered once per shape.
@@ -42,6 +43,21 @@ export function RemotionRoot() {
         height={formats.vertical.height}
         defaultProps={{ format: 'vertical' as FormatName, art: true }}
       />
+      {/* The launch film, in all three shapes. It runs about fifty seconds,
+          which is long for a feed and right for a launch: this is the one people
+          are sent, not the one they scroll past. */}
+      {cuts.map((format) => (
+        <Composition
+          key={`launch-${format}`}
+          id={`launch-film-${format}`}
+          component={LaunchFilm}
+          durationInFrames={launchFilmDuration}
+          fps={fps}
+          width={formats[format].width}
+          height={formats[format].height}
+          defaultProps={{ format }}
+        />
+      ))}
     </>
   );
 }

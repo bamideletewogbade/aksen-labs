@@ -13,7 +13,11 @@ export const MODELS = {
   // Writing scene copy is a judgement job, not a retrieval one, so it gets a
   // model that can hold a voice rather than the cheapest one available.
   script: 'anthropic/claude-sonnet-4.5',
-  image: 'openai/gpt-image-1',
+  // Measured on this account: 0.039 USD an image against 0.25 for
+  // openai/gpt-image-1, and it takes 9:16 natively instead of making a 2:3 and
+  // cropping the sides off. gpt-image-1 has also dropped off OpenRouter's model
+  // list, so the old default was pointing at something unlisted.
+  image: 'google/gemini-2.5-flash-image',
   video: 'bytedance/seedance-2.0-mini',
 };
 
@@ -68,8 +72,13 @@ export async function chat({ system, prompt, model = MODELS.script, maxTokens = 
  * imposes it. Backdrops are set with objectFit cover, so a 2:3 image fills a
  * 9:16 frame by cropping the sides, which for an abstract field costs nothing.
  */
+// Only models that refuse a ratio need an entry. Anything absent is assumed to
+// take what it is given, which is the case for the Gemini image models: they
+// produce 9:16 directly, so nothing is cropped.
 const SUPPORTED = {
   'openai/gpt-image-1': ['1:1', '3:2', '2:3'],
+  'openai/gpt-5-image': ['1:1', '3:2', '2:3'],
+  'openai/gpt-5-image-mini': ['1:1', '3:2', '2:3'],
 };
 const NEAREST = { '9:16': '2:3', '16:9': '3:2', '4:3': '3:2', '3:4': '2:3' };
 
@@ -114,6 +123,17 @@ export async function image({ prompt, model = MODELS.image, aspectRatio }) {
  * blocks until it finishes or gives up. That is the right shape here: the asset
  * pipeline is a build step somebody runs deliberately, not a request serving a
  * page, and a half-generated clip is no use to anyone.
+ *
+ * `generateAudio` defaults off, and that is not a preference. Seedance adds a
+ * soundtrack when you let it, and the first clip this workspace ever submitted
+ * came back failed with "the output audio may be related to copyright
+ * restrictions" after 52 seconds of generating. The picture was never the
+ * problem. Every clip here is scored in the edit anyway, so the audio is both
+ * useless and the thing most likely to fail the run.
+ *
+ * Note also that video models do not appear in OpenRouter's /models listing at
+ * all. Checking there will tell you video generation is unavailable; submitting
+ * to /videos tells you the truth.
  */
 export async function video({
   prompt,
@@ -158,12 +178,20 @@ export async function video({
     if (state.status === 'completed' || state.status === 'succeeded') {
       const url = state.unsigned_urls?.[0];
       if (!url) throw new Error('Video finished with no file.');
-      const file = await fetch(url);
+      // "unsigned" is the operative word: the URL points back at OpenRouter's
+      // own API rather than at a pre-signed object store link, so it needs the
+      // key like every other call. Fetching it bare returns 401 after the clip
+      // has already been generated and billed, which is the worst place to
+      // discover it.
+      const file = await fetch(url, {
+        headers: { Authorization: `Bearer ${key()}` },
+      });
       if (!file.ok) throw new Error(`Could not download the video: ${file.status}`);
       return {
         buffer: Buffer.from(await file.arrayBuffer()),
         mediaType: 'video/mp4',
         model,
+        cost: state.usage?.cost,
       };
     }
     if (state.status === 'failed' || state.error)

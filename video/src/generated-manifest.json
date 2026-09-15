@@ -2,34 +2,78 @@
   "backdrop-hero-vertical": {
     "file": "generated/backdrop-hero-vertical.png",
     "kind": "image",
-    "fingerprint": "5ad410516bd3",
-    "prompt": "An abstract backdrop for a title card. Soft pale sage green paper texture, a faint network of thin connected lines and small nodes drifting across it, deep forest green accents. No text, no letters, no logos, no people, no user interface. Calm, matte, print-like, heavily negative space in the upper two thirds.",
-    "model": "openai/gpt-image-1",
+    "fingerprint": "f167d460ae8f",
+    "prompt": "An abstract backdrop for a title card. Soft pale sage green paper texture, a faint network of thin connected lines and small nodes drifting across it, deep forest green accents. No text, no letters, no logos, no people, no user interface. Calm, matte, print-like, heavily negative space in the upper two thirds. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
     "label": null,
     "aspectRatio": "9:16",
-    "generatedAt": "2026-09-15T10:16:35.048Z",
-    "costUsd": 0.24996
+    "generatedAt": "2026-09-15T20:32:52.569Z",
+    "costUsd": 0.0387336
   },
   "backdrop-close-dark": {
     "file": "generated/backdrop-close-dark.png",
     "kind": "image",
-    "fingerprint": "479b633c066f",
-    "prompt": "An abstract backdrop for a closing card. Very dark forest green, almost black, with a faint dot grid and one soft pool of lime green light in the lower right. No text, no letters, no logos, no people. Matte, calm, heavily negative space.",
-    "model": "openai/gpt-image-1",
+    "fingerprint": "75bb78f54e4e",
+    "prompt": "An abstract backdrop for a closing card. Very dark forest green, almost black, with a faint dot grid and one soft pool of lime green light in the lower right. No text, no letters, no logos, no people. Matte, calm, heavily negative space. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
     "label": null,
     "aspectRatio": "9:16",
-    "generatedAt": "2026-09-15T10:19:12.477Z",
-    "costUsd": 0.06366
+    "generatedAt": "2026-09-15T20:33:00.002Z",
+    "costUsd": 0.0387597
   },
   "shopfront-texture": {
     "file": "generated/shopfront-texture.png",
     "kind": "image",
-    "fingerprint": "0e3aa7060dd5",
-    "prompt": "A warm illustrated interior of a small West African retail shop at dusk, shelves of stock, soft lamplight, seen from a distance, painterly and slightly abstract. No recognisable faces, no text, no signage, no logos.",
-    "model": "openai/gpt-image-1",
+    "fingerprint": "02d83df7ea31",
+    "prompt": "A warm illustrated interior of a small West African retail shop at dusk, shelves of stock, soft lamplight, seen from a distance, painterly and slightly abstract. No recognisable faces, no text, no signage, no logos. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
     "label": "Illustration",
     "aspectRatio": "9:16",
-    "generatedAt": "2026-09-15T10:20:04.948Z",
-    "costUsd": 0.24987
+    "generatedAt": "2026-09-15T20:33:08.857Z",
+    "costUsd": 0.0387426
+  },
+  "late-counter": {
+    "file": "generated/late-counter.png",
+    "kind": "image",
+    "fingerprint": "0d78ff937634",
+    "prompt": "A small shop counter at night after closing, seen from above at a slight angle. A phone face down, a notebook with handwriting, a calculator, a cold cup of tea. Warm lamplight, deep shadows, painterly illustration. No people, no faces, no hands, no text, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T20:33:21.899Z",
+    "costUsd": 0.0387336
+  },
+  "morning-counter": {
+    "file": "generated/morning-counter.png",
+    "kind": "image",
+    "fingerprint": "d3fcd7bd9388",
+    "prompt": "The same small shop counter in clear morning light, tidy and clear, one neat stack of packed orders ready to go, a plant, an open shutter behind. Painterly illustration, calm, warm, sage and cream tones. No people, no faces, no text, no logos. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T20:33:30.994Z",
+    "costUsd": 0.0387306
+  },
+  "opening-drift": {
+    "file": "generated/opening-drift.mp4",
+    "kind": "video",
+    "fingerprint": "5422d534d744",
+    "prompt": "Slow push in on an abstract field of pale sage green paper texture with faint thin connected lines and small softly glowing nodes. Gentle parallax, no camera shake, no cuts. No text, no people, no interface, no logos.",
+    "model": "bytedance/seedance-2.0-mini",
+    "label": null,
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T20:28:05.139Z",
+    "costUsd": 0.30555
+  },
+  "hands-phone": {
+    "file": "generated/hands-phone.mp4",
+    "kind": "video",
+    "fingerprint": "05fcb0a38d6e",
+    "prompt": "Close overhead shot of a single pair of hands setting a phone down on a wooden shop counter and sliding it away, warm evening light. Hands only, no face, no screen content visible, no text, no logos. Slow, calm, one continuous take.",
+    "model": "bytedance/seedance-2.0-mini",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T20:36:24.418Z",
+    "costUsd": 0.30555
   }
 }

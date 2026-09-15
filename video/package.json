@@ -4,13 +4,18 @@
   "private": true,
   "description": "Marketing video for Aksen Labs, rendered from code.",
   "scripts": {
+    "prestudio": "node scripts/scan-footage.mjs",
     "studio": "remotion studio",
     "render": "remotion render",
+    "prerender:all": "node scripts/scan-footage.mjs",
     "render:all": "node scripts/render-all.mjs",
-    "capture": "node scripts/capture.mjs"
+    "capture": "node scripts/capture.mjs",
+    "footage": "node scripts/scan-footage.mjs",
+    "generate": "node scripts/generate.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.524",
+    "pngjs": "^7.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "remotion": "4.0.524"

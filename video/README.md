@@ -106,6 +106,62 @@ Textures, backdrops, abstract fields. Never a picture of "a happy client".
 `video/.env`, then `../platform/.env`. Nothing is copied. A secret in two files
 is a secret that gets rotated in one of them.
 
+## The launch film
+
+`launch-film-vertical`, and the same film at 1:1 and 16:9. Fifty seconds, eight
+shots, problem to proof:
+
+| | | |
+|---|---|---|
+| 01 | the evening | generated clip |
+| 02 | the problem, named | generated still |
+| 03 | **a person** | **you, recorded in OBS** |
+| 04 | what happens instead | real product screen |
+| 05 | one place, not forty threads | real product screen |
+| 06 | where the line is | type only |
+| 07 | free on the site today | real product screen |
+| 08 | the morning after, and where to go | generated still |
+
+Shot 03 is empty until you record it, and that is the point. A launch film for a
+company with no customers yet could open on a generated shop owner saying the
+product changed their business. It would be the easiest frame in advertising and
+the only outright lie in the edit. The rest of the film is careful about this:
+the demos say "fictional business", the illustrations carry a label. So the film
+leaves a hole a real person fills.
+
+Until you record it, that shot renders a slate saying what is missing and how
+long it needs to be. You can send the slate to whoever is recording.
+
+### Recording shot 03
+
+```
+node scripts/make-obs-scenes.mjs
+```
+
+Then in OBS: **Scene Collection > Import**, choose `obs/Aksen-Labs.json`, and
+pick your camera on the Camera source. Device ids are specific to a machine, so
+that one field is deliberately left blank rather than guessed.
+
+Four scenes, canvas 1080x1920:
+
+- **01 To camera** — the shot the film needs. Head and shoulders, camera cropped
+  to 9:16 rather than letterboxed.
+- **02 Screen and camera** — talking over the product, camera low left.
+- **03 Screen only** — no face, just the product being used.
+- **04 Phone in hand** — point a phone at a phone. The WhatsApp side of the
+  story, which the headless capture cannot produce.
+
+Say who it is for and what you built. Fifteen seconds. Then:
+
+```
+# save the recording as public/footage/founder.mp4
+npm run render -- launch-film-vertical out/launch.mp4
+```
+
+The scan runs automatically before `studio` and `render:all`, so the film picks
+the file up with no other step. Anything else you record goes in the same folder
+and is available by filename.
+
 ## Screen footage
 
 ```
@@ -137,9 +193,41 @@ baked into the pipeline.
 Everything else in the stack is free: FFmpeg ships inside Remotion, Playwright is
 Apache 2.0, and OBS is GPL.
 
-## Cost
+## Cost, measured on this account
 
 Rendering costs nothing and runs offline. The only spend is generation, and only
-the first time, because the results are cached and committed. A backdrop image
-is a fraction of a cent. Video clips are the expensive part, which is why none
-are generated unless you pass `--clips`.
+the first time, because the results are cached and committed.
+
+| | |
+|---|---|
+| Image, `google/gemini-2.5-flash-image` | **0.039 USD** |
+| Image, `openai/gpt-image-1` | 0.25 USD, and it has no 9:16 |
+| Clip, 4s, `bytedance/seedance-2.0-mini` | **0.31 USD** |
+
+Gemini is the default for both reasons: six times cheaper, and it takes 9:16
+natively instead of making a 2:3 and cropping the sides off. Clips are excluded
+unless you pass `--clips`, because one clip costs what eight images cost.
+
+The whole asset set in this repo came to about 1.20 USD, once.
+
+## Three things about these models, learned the hard way
+
+**Video models do not appear in `/models`.** Ask OpenRouter for its model list,
+filter for video output, and you get nothing, which reads as "video generation is
+not available". Submit to `/videos` and it works fine. The list is not the truth.
+
+**Seedance scores your clip unless you stop it.** The first clip this workspace
+ever submitted came back `failed` after 52 seconds with "the output audio may be
+related to copyright restrictions". The picture was never the problem.
+`generate_audio` is hard-off here.
+
+**`unsigned_urls` needs the key.** The finished-clip payload hands back a URL
+that points at OpenRouter's own API, not a pre-signed object store link. Fetching
+it bare returns 401 after the clip has been generated and billed, which is the
+worst possible place to find out.
+
+And one about the pictures: gemini paints a black letterbox inside the frame,
+about a sixth of the height, whatever the prompt says. `scripts/trim-borders.mjs`
+measures and cuts it at generation time, so everything downstream can assume a
+clean edge. `scripts/retrim.mjs` does the same to images generated before that
+step existed, which beats paying to make them again.
