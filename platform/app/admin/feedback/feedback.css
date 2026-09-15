@@ -1,0 +1,382 @@
+/* The triage desk. Each row carries the suggestion, what the agent made of it,
+   and the three decisions a person can take, in that order: read, then judge,
+   then act. The admin surface is dark, so the public board's status palette is
+   restated here against it rather than inherited. */
+/* The triage panel. It sits above the queue rather than in settings, because
+   the question it answers ("has anything read these yet?") is the one you have
+   the moment you open this page. */
+.admin-refresh .admin-triage {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border: 1px solid rgba(189, 233, 151, 0.22);
+  border-radius: 12px;
+  background: rgba(189, 233, 151, 0.04);
+}
+.admin-refresh .admin-triage-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.admin-refresh .admin-triage small {
+  display: block;
+  margin-bottom: 6px;
+  color: #9dbd8c;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+}
+.admin-refresh .admin-triage h3 {
+  margin: 0;
+  color: #e7f0e8;
+  font-size: 1.0625rem;
+  font-weight: 550;
+}
+.admin-refresh .admin-triage-head p {
+  margin: 6px 0 0;
+  max-width: 48ch;
+  color: #9fb0a6;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+.admin-refresh .admin-triage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.admin-refresh .admin-triage-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #bde997;
+  border-radius: 7px;
+  background: rgba(189, 233, 151, 0.14);
+  color: #d8f0bc;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.admin-refresh .admin-triage-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.admin-refresh .admin-triage-actions label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #9fb0a6;
+  font-size: 0.8125rem;
+}
+.admin-refresh .admin-triage-switch input {
+  width: 17px;
+  height: 17px;
+  accent-color: #bde997;
+}
+.admin-refresh .admin-triage-actions input[type='number'] {
+  width: 68px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e7f0e8;
+  font: inherit;
+  font-size: 0.85rem;
+}
+/* Why it is not running, when it is not. A schedule that silently does nothing
+   is indistinguishable from a broken one. */
+.admin-refresh .admin-triage-reason {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9fb0a6;
+  font-size: 0.8125rem;
+}
+.admin-refresh .admin-triage-limit {
+  margin: 10px 0 0;
+  color: #7f9086;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.admin-refresh .admin-feedback-untriaged {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 99px;
+  color: #9fb0a6;
+  font-size: 0.75rem;
+}
+.admin-refresh .admin-feedback-merged {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #9a8fd0;
+}
+
+.admin-refresh .admin-feedback-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.admin-refresh .admin-feedback-views button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  background: transparent;
+  color: #9fb0a6;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.admin-refresh .admin-feedback-views button:hover {
+  color: #e7f0e8;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.admin-refresh .admin-feedback-views button.is-current {
+  border-color: #bde997;
+  background: rgba(189, 233, 151, 0.12);
+  color: #d8f0bc;
+}
+.admin-refresh .admin-feedback-views span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-refresh .admin-feedback-error {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-left: 2px solid #e2896f;
+  background: rgba(226, 137, 111, 0.1);
+  color: #f0b8a6;
+  font-size: 0.875rem;
+}
+
+.admin-refresh .admin-feedback-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-refresh .admin-feedback-list > li {
+  padding: 18px 4px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  /* The status reads down the left edge, as it does on the public board, so a
+     scan of the desk shows what is moving without reading every chip. */
+  border-left: 2px solid var(--desk-mark, transparent);
+  padding-left: 14px;
+}
+.admin-refresh .admin-feedback-list > li[data-status='planned'] {
+  --desk-mark: #6ea8d0;
+}
+.admin-refresh .admin-feedback-list > li[data-status='building'] {
+  --desk-mark: #d8a94a;
+}
+.admin-refresh .admin-feedback-list > li[data-status='shipped'] {
+  --desk-mark: #7cc98f;
+}
+.admin-refresh .admin-feedback-list > li[data-status='declined'] {
+  --desk-mark: #8d8079;
+}
+.admin-refresh .admin-feedback-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 0.8125rem;
+  color: #8d9a92;
+}
+.admin-refresh .admin-feedback-votes {
+  color: #d8f0bc;
+  font-variant-numeric: tabular-nums;
+}
+.admin-refresh .admin-feedback-top .board-status {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c3d4c8;
+}
+.admin-refresh .admin-feedback-live,
+.admin-refresh .admin-feedback-hidden {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.admin-refresh .admin-feedback-hidden {
+  color: #cfa98f;
+}
+.admin-refresh .admin-feedback-top time {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.admin-refresh .admin-feedback-list h3 {
+  margin: 0;
+  color: #e7f0e8;
+  font-size: 1.0625rem;
+  font-weight: 550;
+  line-height: 1.35;
+}
+.admin-refresh .admin-feedback-body {
+  margin: 8px 0 0;
+  color: #bfd3b6;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  /* Written by a stranger, so an unbroken string must not stretch the desk. */
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.admin-refresh .admin-feedback-from {
+  margin: 8px 0 0;
+  color: #8d9a92;
+  font-size: 0.8125rem;
+}
+.admin-refresh .admin-feedback-from a {
+  color: #bde997;
+}
+/* Marked as the agent's reading, not as a finding. It is a suggestion about
+   text a stranger wrote, and the border is there so it never reads as ours. */
+.admin-refresh .admin-feedback-triage {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(189, 233, 151, 0.28);
+  border-radius: 8px;
+  background: rgba(189, 233, 151, 0.05);
+}
+.admin-refresh .admin-feedback-triage small {
+  display: block;
+  margin-bottom: 6px;
+  color: #9dbd8c;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+}
+.admin-refresh .admin-feedback-triage p {
+  margin: 0;
+  color: #cfe0c4;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.admin-refresh .admin-feedback-note {
+  margin: 10px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid rgba(255, 255, 255, 0.12);
+  color: #9fb0a6;
+  font-size: 0.8125rem;
+}
+
+.admin-refresh .admin-feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.admin-refresh .admin-feedback-actions button,
+.admin-refresh .admin-feedback-ship button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  background: transparent;
+  color: #cfe0c4;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.admin-refresh .admin-feedback-actions button:hover:not(:disabled),
+.admin-refresh .admin-feedback-ship button:hover:not(:disabled) {
+  border-color: rgba(189, 233, 151, 0.5);
+  color: #e7f0e8;
+}
+.admin-refresh :is(.admin-feedback-actions, .admin-feedback-ship) .is-primary {
+  border-color: #bde997;
+  background: rgba(189, 233, 151, 0.14);
+  color: #d8f0bc;
+}
+.admin-refresh :is(.admin-feedback-actions, .admin-feedback-ship) button:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+.admin-refresh .admin-feedback-actions label,
+.admin-refresh .admin-feedback-ship label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8d9a92;
+  font-size: 0.8125rem;
+}
+.admin-refresh :is(.admin-feedback-actions, .admin-feedback-ship)
+  :is(select, input, textarea) {
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e7f0e8;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.admin-refresh .admin-feedback-ship {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(189, 233, 151, 0.25);
+  border-radius: 10px;
+  background: rgba(189, 233, 151, 0.04);
+}
+.admin-refresh .admin-feedback-ship > p {
+  margin: 0;
+  color: #9fb0a6;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+.admin-refresh .admin-feedback-ship label {
+  display: grid;
+  gap: 5px;
+  align-items: stretch;
+}
+.admin-refresh .admin-feedback-ship textarea {
+  resize: vertical;
+}
+.admin-refresh .admin-feedback-ship button {
+  justify-self: start;
+}
+
+@media (max-width: 700px) {
+  .admin-refresh .admin-feedback-top time {
+    margin-left: 0;
+    width: 100%;
+  }
+  .admin-refresh .admin-feedback-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-refresh .admin-feedback-actions button,
+  .admin-refresh .admin-feedback-actions label {
+    justify-content: space-between;
+  }
+  .admin-refresh .admin-feedback-actions select {
+    flex: 1;
+    min-width: 0;
+  }
+}

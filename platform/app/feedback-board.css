@@ -1,0 +1,511 @@
+/* The public feedback board and the changelog.
+   Both are reading pages with one action on them, so they borrow the site's
+   container and type and add only what a board needs: a vote control, a status
+   chip, and a way to tell the five statuses apart at a glance. */
+
+.opening-board-art {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  align-content: center;
+  min-height: 300px;
+}
+.opening-board-art > li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid #ccd5cc;
+  border-radius: 12px;
+  background: #fbfdf9;
+}
+.opening-board-art strong {
+  font-size: 1rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+}
+.opening-board-art small {
+  justify-self: end;
+  text-align: right;
+  color: #65765b;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.opening-board-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--board-mark, #8fa385);
+}
+/* One colour scale across the opening, the chips and the card edges, so a
+   status is recognisable before its label is read. */
+[data-status='open'] {
+  --board-mark: #8fa385;
+  --board-tint: #eef2e8;
+  --board-ink: #4a5c45;
+}
+[data-status='planned'] {
+  --board-mark: #3f7fae;
+  --board-tint: #e7f0f6;
+  --board-ink: #2c5f83;
+}
+[data-status='building'] {
+  --board-mark: #c08a2e;
+  --board-tint: #f8f1e2;
+  --board-ink: #8a6217;
+}
+[data-status='shipped'] {
+  --board-mark: #2f7d4f;
+  --board-tint: #e6f2e8;
+  --board-ink: #1d5b37;
+}
+[data-status='declined'] {
+  --board-mark: #9a8f88;
+  --board-tint: #f1efed;
+  --board-ink: #6b615b;
+}
+
+.board-section {
+  padding-block: clamp(34px, 4vw, 56px) clamp(48px, 6vw, 80px);
+}
+/* The form sits beside the board on a wide screen and above it on a narrow one.
+   It is the only action on the page, so it does not wait below the list. */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 48px);
+  align-items: start;
+}
+.board-submit {
+  position: sticky;
+  top: calc(var(--site-nav-h, 76px) + 20px);
+  padding: 26px;
+  border: 1px solid #ccd5cc;
+  border-radius: 14px;
+  background: #fbfdf9;
+}
+.board-submit h2 {
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+  margin-bottom: 18px;
+}
+.board-submit form {
+  display: grid;
+  gap: 15px;
+}
+.board-submit label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.87rem;
+  color: #3c4b42;
+}
+.board-submit label > span {
+  color: #7d8c82;
+  font-size: 0.78rem;
+  font-style: italic;
+}
+.board-submit :is(input, textarea) {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #cfdac6;
+  border-radius: 7px;
+  background: #fff;
+  color: #10261d;
+  font: inherit;
+  font-size: 0.93rem;
+  /* A textarea that grows sideways breaks the column it sits in. */
+  resize: vertical;
+}
+.board-submit :is(input, textarea):focus-visible {
+  outline: 2px solid #4f7840;
+  outline-offset: 1px;
+}
+.board-submit .agency-button {
+  justify-self: start;
+}
+.board-privacy {
+  color: #7d8c82;
+  font-size: 0.78rem !important;
+  line-height: 1.55;
+}
+.board-sent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 18px;
+  border-left: 2px solid #4f7840;
+  background: #eef2e8;
+  color: #47554d;
+  font-size: 0.93rem !important;
+  line-height: 1.65;
+}
+.board-sent svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #4f7840;
+}
+
+.board-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d6ded2;
+}
+.board-filter button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  background: transparent;
+  color: #53635a;
+  font: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+.board-filter button:hover {
+  background: #eaf0e4;
+  color: #10261d;
+}
+.board-filter button.is-current {
+  background: #153d2b;
+  border-color: #153d2b;
+  color: #f2f7ec;
+}
+.board-filter button:focus-visible {
+  outline: 2px solid #175b3b;
+  outline-offset: 2px;
+}
+
+.board-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 14px;
+  font-size: 1.05rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+}
+.board-group-title > span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 99px;
+  background: rgba(16, 38, 29, 0.08);
+  color: #53635a;
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+.board-list {
+  display: grid;
+  gap: 12px;
+}
+.board-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  padding: 20px 22px;
+  border: 1px solid #ccd5cc;
+  /* The status colour reads down the left edge, so a scan of the list shows
+     which cards are moving without reading a single chip. */
+  border-left: 3px solid var(--board-mark, #8fa385);
+  border-radius: 10px;
+  background: #fbfdf9;
+}
+.board-card h3 {
+  font-size: 1.12rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  margin-top: 8px;
+}
+.board-card-body > p {
+  margin-top: 8px;
+  color: #53635a;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  /* Submissions are written by strangers and a single unbroken string would
+     otherwise push the card past its column. */
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.board-card .board-note {
+  padding-left: 12px;
+  border-left: 2px solid #ccd5cc;
+  color: #66756c;
+  font-size: 0.87rem;
+}
+.board-card .agency-text-link {
+  margin-top: 12px;
+  font-size: 0.86rem;
+}
+.board-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: var(--board-tint, #eef2e8);
+  color: var(--board-ink, #4a5c45);
+  font:
+    0.62rem var(--font-geist-mono),
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.board-vote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  align-self: start;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 8px;
+  border: 1px solid #cfdac6;
+  border-radius: 9px;
+  background: #fff;
+  color: #3d6b45;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+.board-vote strong {
+  font-size: 1rem;
+  font-weight: 620;
+  font-variant-numeric: tabular-nums;
+}
+.board-vote:hover:not(:disabled) {
+  border-color: #8fae83;
+  background: #f2f7ec;
+  transform: translateY(-2px);
+}
+.board-vote[aria-pressed='true'] {
+  border-color: #4f7840;
+  background: #e8f1df;
+}
+/* A closed vote is a number, not a control. It must not read as clickable, and
+   it must not read as an error either. */
+.board-vote:disabled {
+  cursor: default;
+}
+/* A vote in flight. Distinct from a closed one: this button is doing something
+   and the answer is coming, so it says so rather than going quietly dead. */
+.board-vote[aria-busy='true'] {
+  cursor: progress;
+  border-color: #8fae83;
+  animation: board-vote-waiting 1s ease-in-out infinite alternate;
+}
+@keyframes board-vote-waiting {
+  to {
+    opacity: 0.55;
+  }
+}
+.board-vote:disabled[aria-pressed='false'] {
+  color: #7d8c82;
+  background: #f4f6f1;
+}
+.board-vote:focus-visible {
+  outline: 2px solid #175b3b;
+  outline-offset: 2px;
+}
+.board-error:empty {
+  display: none;
+}
+.board-error {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-left: 2px solid #8a3b2c;
+  background: #f7eeec;
+  color: #8a3b2c;
+  font-size: 0.88rem;
+}
+.board-empty {
+  padding: 28px 0;
+  color: #66756c;
+}
+.board-footnote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 44px;
+  padding-top: 26px;
+  border-top: 1px solid #ccd5cc;
+}
+.board-footnote p:not(.agency-eyebrow) {
+  max-width: 560px;
+  color: #53635a;
+  font-size: 0.93rem;
+}
+
+/* ---- changelog ---- */
+.changelog-section {
+  padding-block: clamp(34px, 4vw, 56px) clamp(48px, 6vw, 80px);
+}
+.changelog-month + .changelog-month {
+  margin-top: 44px;
+}
+.changelog-month > h2 {
+  position: sticky;
+  top: calc(var(--site-nav-h, 76px) + 8px);
+  z-index: 1;
+  padding-block: 10px;
+  background: var(--agency-paper);
+  font-size: 1.05rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  color: #53635a;
+}
+.changelog-entries {
+  display: grid;
+  gap: 14px;
+  margin-top: 8px;
+}
+.changelog-entry {
+  position: relative;
+  padding: 24px 26px;
+  border: 1px solid #ccd5cc;
+  border-radius: 12px;
+  background: #fbfdf9;
+}
+/* The anchor sits above the card so a link from the board does not land with
+   the heading under the sticky header. */
+.changelog-anchor {
+  position: absolute;
+  top: calc((var(--site-nav-h, 76px) + 26px) * -1);
+}
+.changelog-entry-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.changelog-entry-top time {
+  color: #7d8c82;
+  font:
+    0.7rem var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.05em;
+}
+.changelog-kind {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: #eef2e8;
+  color: #4a5c45;
+  font:
+    0.62rem var(--font-geist-mono),
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.changelog-kind[data-kind='new'] {
+  background: #e6f2e8;
+  color: #1d5b37;
+}
+.changelog-kind[data-kind='fix'] {
+  background: #f8f1e2;
+  color: #8a6217;
+}
+.changelog-entry h3 {
+  font-size: 1.3rem;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+}
+.changelog-entry > p {
+  margin-top: 10px;
+  color: #53635a;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+.changelog-asked {
+  margin-top: 16px !important;
+  padding-top: 14px;
+  border-top: 1px solid #e0e6db;
+  color: #66756c;
+  font-size: 0.86rem !important;
+}
+.changelog-asked > span {
+  color: #1d3f2c;
+}
+
+@media (max-width: 1000px) {
+  .board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .board-submit {
+    position: static;
+  }
+  .opening-board-art > li {
+    grid-template-columns: auto auto 1fr;
+    row-gap: 2px;
+  }
+  .opening-board-art strong,
+  .opening-board-art small {
+    grid-column: 3;
+    justify-self: start;
+    text-align: left;
+  }
+}
+@media (max-width: 760px) {
+  .board-card {
+    gap: 14px;
+    padding: 18px;
+  }
+  .board-vote {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  .board-submit {
+    padding: 20px;
+  }
+  .board-footnote {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .changelog-entry {
+    padding: 20px;
+  }
+  .changelog-entry h3 {
+    font-size: 1.15rem;
+  }
+  .opening-board-art {
+    min-height: 0;
+    max-width: 460px;
+    margin-inline: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .board-vote {
+    transition: none;
+  }
+  .board-vote:hover:not(:disabled) {
+    transform: none;
+  }
+  /* The waiting state still has to be visible without the pulse. */
+  .board-vote[aria-busy='true'] {
+    animation: none;
+    opacity: 0.6;
+  }
+}

@@ -123,6 +123,67 @@ export const blogPosts = pgTable(
     ),
   ],
 );
+export const editorialSettings = pgTable('editorial_settings', {
+  ownerId: text('owner_id').primaryKey(),
+  enabled: boolean('enabled').notNull().default(false),
+  cadence: text('cadence').notNull().default('manual'),
+  runHour: integer('run_hour').notNull().default(8),
+  autoDraft: boolean('auto_draft').notNull().default(false),
+  lastScheduledAt: timestamp('last_scheduled_at', { withTimezone: true }),
+  runningUntil: timestamp('running_until', { withTimezone: true }),
+  updatedAt,
+});
+export const editorialRuns = pgTable(
+  'editorial_runs',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id').notNull(),
+    createdAt,
+    finishedAt: timestamp('finished_at', { withTimezone: true }),
+    status: text('status').notNull().default('running'),
+    scheduled: boolean('scheduled').notNull().default(false),
+    found: integer('found').notNull().default(0),
+    model: text('model'),
+    costMicros: integer('cost_micros'),
+    note: text('note'),
+  },
+  (table) => [
+    index('idx_editorial_runs_owner_created').on(
+      table.ownerId,
+      table.createdAt,
+    ),
+  ],
+);
+export const editorialIdeas = pgTable(
+  'editorial_ideas',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id').notNull(),
+    createdAt,
+    updatedAt,
+    fingerprint: text('fingerprint').notNull(),
+    title: text('title').notNull(),
+    angle: text('angle').notNull(),
+    whyNow: text('why_now').notNull(),
+    category: text('category').notNull(),
+    score: integer('score').notNull().default(0),
+    sources: jsonb('sources').notNull().default([]),
+    status: text('status').notNull().default('inbox'),
+    postId: text('post_id'),
+  },
+  (table) => [
+    unique('editorial_ideas_owner_fingerprint').on(
+      table.ownerId,
+      table.fingerprint,
+    ),
+    index('idx_editorial_ideas_owner_status_score').on(
+      table.ownerId,
+      table.status,
+      table.score,
+      table.createdAt,
+    ),
+  ],
+);
 export const conversations = pgTable('conversations', {
   id: text('id').primaryKey(),
   opportunityId: text('opportunity_id'),
@@ -368,6 +429,33 @@ export const folioSessions = pgTable(
   },
   (table) => [index('idx_folio_sessions_expiry').on(table.expiresAt)],
 );
+// People waiting on a product that has no public address yet. Until this, the
+// only thing the products page could offer someone who wanted CV Forge was the
+// B2B enquiry form, which asks a jobseeker what business problem they want
+// solved. One row per person per product: signing up twice updates what they
+// wrote rather than adding a second row to read.
+export const productWaitlist = pgTable(
+  'product_waitlist',
+  {
+    id: text('id').primaryKey(),
+    createdAt,
+    updatedAt,
+    productSlug: text('product_slug').notNull(),
+    email: text('email').notNull(),
+    // Optional, and the reason a row is worth more than a count: it says what
+    // the person expected the product to do before they had ever used it.
+    hopedFor: text('hoped_for'),
+    source: text('source').notNull().default('products_page'),
+  },
+  (table) => [
+    unique('product_waitlist_product_email').on(table.productSlug, table.email),
+    index('idx_product_waitlist_created').on(
+      table.productSlug,
+      table.createdAt,
+    ),
+  ],
+);
+
 export const folioCvs = pgTable(
   'folio_cvs',
   {
@@ -382,3 +470,127 @@ export const folioCvs = pgTable(
   },
   (table) => [index('idx_folio_cvs_user').on(table.userId, table.updatedAt)],
 );
+
+/**
+ * The public feedback board.
+ *
+ * Two decisions worth stating, because both are arguable.
+ *
+ * Nothing appears publicly until a person publishes it. A board is a page on the
+ * marketing site that strangers write, and there is no moderation rota here; the
+ * form says a submission is read first, usually within a day. It also gives the
+ * triage agent somewhere to work before anyone sees the result.
+ *
+ * `voteCount` is stored rather than counted. Sorting a public list by a COUNT
+ * over the votes table on every request is the kind of thing that is fine until
+ * the board works, and the votes table stays the record of who voted.
+ */
+export const feedbackIdeas = pgTable(
+  'feedback_ideas',
+  {
+    id: text('id').primaryKey(),
+    createdAt,
+    updatedAt,
+    title: text('title').notNull(),
+    body: text('body'),
+    /** Optional. The only way to tell someone the thing they asked for shipped. */
+    authorEmail: text('author_email'),
+    /** open | planned | building | shipped | declined */
+    status: text('status').notNull().default('open'),
+    /** Why it was declined, or what shipped. A status with no reason is a shrug. */
+    statusNote: text('status_note'),
+    voteCount: integer('vote_count').notNull().default(0),
+    published: boolean('published').notNull().default(false),
+    /** Visitor hash of whoever submitted it, for tracing a flood to its source. */
+    submitterKey: text('submitter_key').notNull(),
+    /** Set when triage finds this is a restatement of an idea already on the
+     *  board. The duplicate stays as a row so its votes can be moved. */
+    mergedInto: text('merged_into').references(
+      (): AnyPgColumn => feedbackIdeas.id,
+    ),
+    /** What the triage agent made of it. Never shown publicly, and never acted
+     *  on without the approval row it raises alongside. */
+    triageSummary: text('triage_summary'),
+    triageSize: text('triage_size'),
+    triagedAt: timestamp('triaged_at', { withTimezone: true }),
+  },
+  (table) => [
+    index('idx_feedback_ideas_board').on(
+      table.published,
+      table.status,
+      table.voteCount,
+    ),
+    index('idx_feedback_ideas_triage').on(table.triagedAt, table.createdAt),
+  ],
+);
+
+// One vote per visitor per idea. The key is the same hashed address the rate
+// limiter uses, so a vote is as identifiable as a request and no more: people
+// behind one office connection share it. The board says so rather than
+// presenting the number as a headcount.
+export const feedbackVotes = pgTable(
+  'feedback_votes',
+  {
+    ideaId: text('idea_id')
+      .notNull()
+      .references(() => feedbackIdeas.id),
+    voterKey: text('voter_key').notNull(),
+    createdAt,
+  },
+  (table) => [
+    unique('feedback_votes_idea_voter').on(table.ideaId, table.voterKey),
+    index('idx_feedback_votes_idea').on(table.ideaId),
+  ],
+);
+
+// What actually shipped. Kept apart from blog_posts, which is article-shaped:
+// an entry here is short, dated, typed, and points back at the request that
+// asked for it, which is the whole reason a changelog is worth publishing.
+export const changelogEntries = pgTable(
+  'changelog_entries',
+  {
+    id: text('id').primaryKey(),
+    createdAt,
+    updatedAt,
+    slug: text('slug').notNull().unique(),
+    title: text('title').notNull(),
+    body: text('body').notNull(),
+    releasedOn: date('released_on').notNull(),
+    /** new | improvement | fix */
+    kind: text('kind').notNull().default('improvement'),
+    published: boolean('published').notNull().default(false),
+    /** The request this answers, when there was one. */
+    ideaId: text('idea_id').references(() => feedbackIdeas.id),
+  },
+  (table) => [
+    index('idx_changelog_published').on(table.published, table.releasedOn),
+  ],
+);
+
+/**
+ * Whether the triage agent runs, and how much of it is allowed per day.
+ *
+ * One row, id 'default'. Every other automation in here is keyed by owner
+ * because a campaign belongs to somebody; there is one feedback board for the
+ * company, and pretending otherwise would mean deciding whose triage settings
+ * win the first time two people have them.
+ *
+ * On by default, with a switch. That is the pattern worth copying: the helpful
+ * behaviour is the behaviour you get, and turning it off is one click rather
+ * than a thing you have to discover you need to turn on.
+ *
+ * The ceiling counts ideas reviewed rather than runs started, because what it is
+ * protecting is model spend, and one run over a flood of submissions costs the
+ * same as forty runs over one each.
+ */
+export const feedbackTriageSettings = pgTable('feedback_triage_settings', {
+  id: text('id').primaryKey(),
+  enabled: boolean('enabled').notNull().default(true),
+  maxPerDay: integer('max_per_day').notNull().default(40),
+  lastRunAt: timestamp('last_run_at', { withTimezone: true }),
+  /** What the last run did, in a sentence, for the admin to read back. */
+  lastNote: text('last_note'),
+  /** Held by a run in flight, so two heartbeats cannot overlap. */
+  runningUntil: timestamp('running_until', { withTimezone: true }),
+  updatedAt,
+});

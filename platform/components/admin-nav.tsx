@@ -12,11 +12,13 @@ import {
   Receipt,
   ScrollText,
   ClipboardList,
+  Lightbulb,
   Search,
   SlidersHorizontal,
   Image,
   MonitorPlay,
   Mail,
+  MailPlus,
   ArrowUpRight,
   ChevronDown,
 } from 'lucide-react';
@@ -59,6 +61,10 @@ const groups = [
     items: [
       { href: '/admin/prospects', label: 'Find leads', icon: Search },
       { href: '/admin/support', label: 'Messages', icon: MessageSquareText },
+      // People waiting on a product rather than asking about a service. They
+      // arrive through the products page, not the enquiry funnel, so they never
+      // appear in the pipeline and would otherwise have nowhere to be read.
+      { href: '/admin/waitlist', label: 'Product waitlist', icon: MailPlus },
       {
         href: '/admin/pipeline',
         label: 'Sales pipeline',
@@ -84,6 +90,11 @@ const groups = [
       // Not "Products": the page covers everything public, and there is one
       // product against four free tools.
       { href: '/admin/products', label: 'Public site', icon: Package },
+      // Suggestions from the public board. It sits under Marketing rather than
+      // Sales because a suggestion is not a lead: most of the people who leave
+      // one are already using something, and the decision it needs is what to
+      // build, not who to call.
+      { href: '/admin/feedback', label: 'Feature requests', icon: Lightbulb },
       { href: '/admin/content', label: 'Articles', icon: BookOpen },
       { href: '/admin/studio', label: 'Create media', icon: Image },
       { href: '/admin/demos', label: 'Demos', icon: MonitorPlay },

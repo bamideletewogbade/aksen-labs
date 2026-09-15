@@ -5,6 +5,8 @@ import { withRequestLog } from '@/lib/request-log';
 import { runProspecting } from '@/lib/prospecting';
 import { isDue, type Cadence } from '@/lib/automation-schedule';
 import { auditEvents } from '@/db/schema';
+import { runEditorialScout } from '@/lib/editorial-agent';
+import { runFeedbackTriage, triageDue } from '@/lib/feedback-triage';
 
 /**
  * The heartbeat. Something outside calls this on a timer and asks whether
@@ -160,11 +162,131 @@ async function POSTHandler(request: Request) {
       .catch(() => null);
   }
 
+  const editorialOutcomes: {
+    owner: string;
+    ran: boolean;
+    reason?: string;
+    added?: number;
+  }[] = [];
+  const editorialSettings = await db.execute(sql`
+    SELECT owner_id,enabled,cadence,run_hour,auto_draft,last_scheduled_at,running_until
+      FROM editorial_settings`);
+  for (const row of editorialSettings.rows) {
+    const ownerId = String(row.owner_id);
+    const [today] = (
+      await db.execute(sql`
+        SELECT count(*)::int AS n FROM editorial_runs
+         WHERE owner_id=${ownerId} AND scheduled=true
+           AND created_at >= date_trunc('day', now() AT TIME ZONE 'UTC')`)
+    ).rows;
+    const verdict = isDue(
+      {
+        cadence: String(row.cadence) as Cadence,
+        runHour: Number(row.run_hour),
+        maxPerDay: 1,
+        enabled: Boolean(row.enabled),
+      },
+      now,
+      {
+        lastScheduledAt: asDate(row.last_scheduled_at),
+        runsToday: Number(today?.n ?? 0),
+        runningUntil: asDate(row.running_until),
+      },
+    );
+    if (!verdict.due) {
+      editorialOutcomes.push({
+        owner: ownerId,
+        ran: false,
+        reason: verdict.reason,
+      });
+      continue;
+    }
+    await db.execute(
+      sql`UPDATE editorial_settings SET last_scheduled_at=now() WHERE owner_id=${ownerId}`,
+    );
+    try {
+      const result = await runEditorialScout(ownerId, {
+        scheduled: true,
+        autoDraft: Boolean(row.auto_draft),
+      });
+      editorialOutcomes.push({
+        owner: ownerId,
+        ran: !result.skipped,
+        added: result.added,
+        reason: result.skipped ? result.note : undefined,
+      });
+    } catch (error) {
+      editorialOutcomes.push({
+        owner: ownerId,
+        ran: true,
+        reason:
+          error instanceof Error ? error.message : 'Editorial research failed.',
+      });
+    }
+    await db
+      .insert(auditEvents)
+      .values({
+        id: crypto.randomUUID(),
+        actorId: ownerId,
+        actorType: 'system',
+        action: 'automation.editorial_run',
+        entityType: 'editorial_settings',
+        entityId: ownerId,
+      })
+      .catch(() => null);
+  }
+
+  // Feedback triage. Unlike the two above it has no cadence, because it is
+  // event-shaped rather than clock-shaped: it runs when somebody has written in
+  // and nobody has read it yet. Its own gate carries the off switch and the
+  // daily ceiling.
+  let triage: { ran: boolean; reason?: string; reviewed?: number } = {
+    ran: false,
+    reason: 'Not checked.',
+  };
+  try {
+    const verdict = await triageDue();
+    if (!verdict.due) {
+      triage = { ran: false, reason: verdict.reason };
+    } else {
+      const result = await runFeedbackTriage({ scheduled: true });
+      triage = {
+        ran: !result.skipped,
+        reviewed: result.reviewed,
+        reason: result.note,
+      };
+      await db
+        .insert(auditEvents)
+        .values({
+          id: crypto.randomUUID(),
+          actorType: 'system',
+          action: 'automation.feedback_triage',
+          entityType: 'feedback_triage',
+          entityId: 'default',
+        })
+        .catch(() => null);
+    }
+  } catch (error) {
+    // A missing table on a deployment that has not run the migration must not
+    // take the whole heartbeat down with it. Lead searching and editorial
+    // research have nothing to do with the feedback board.
+    triage = {
+      ran: false,
+      reason: error instanceof Error ? error.message : 'Triage failed.',
+    };
+  }
+
   // Always 200 when authorised, including when nothing was due. A timer that
   // sees a failure status for the ordinary case of "not yet" will eventually
   // be muted or removed by whoever is watching it.
   return NextResponse.json(
-    { checked: campaigns.rows.length, outcomes, at: now.toISOString() },
+    {
+      checked: campaigns.rows.length + editorialSettings.rows.length,
+      outcomes,
+      editorialOutcomes,
+      triage,
+      at: now.toISOString(),
+    },
     { headers: { 'Cache-Control': 'no-store' } },
   );
 }

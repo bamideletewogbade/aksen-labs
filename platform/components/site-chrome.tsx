@@ -204,12 +204,18 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             <br />
             through technology.
           </p>
+          {/* The board sits here rather than in the main nav, which was cut to
+              six on purpose. This group is the "things you can do" list, and
+              asking for something is one of them. */}
           <div>
             <Link href="/business-agents">
               Try business agents <ArrowUpRight size={15} />
             </Link>
             <Link href="/products#ai-examples">
               AI in practice <ArrowUpRight size={15} />
+            </Link>
+            <Link href="/feedback">
+              Ask for a feature <ArrowUpRight size={15} />
             </Link>
             <Link href="/workspace-demo">
               Workspace demo <ArrowUpRight size={15} />
