@@ -1,0 +1,35 @@
+{
+  "backdrop-hero-vertical": {
+    "file": "generated/backdrop-hero-vertical.png",
+    "kind": "image",
+    "fingerprint": "5ad410516bd3",
+    "prompt": "An abstract backdrop for a title card. Soft pale sage green paper texture, a faint network of thin connected lines and small nodes drifting across it, deep forest green accents. No text, no letters, no logos, no people, no user interface. Calm, matte, print-like, heavily negative space in the upper two thirds.",
+    "model": "openai/gpt-image-1",
+    "label": null,
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T10:16:35.048Z",
+    "costUsd": 0.24996
+  },
+  "backdrop-close-dark": {
+    "file": "generated/backdrop-close-dark.png",
+    "kind": "image",
+    "fingerprint": "479b633c066f",
+    "prompt": "An abstract backdrop for a closing card. Very dark forest green, almost black, with a faint dot grid and one soft pool of lime green light in the lower right. No text, no letters, no logos, no people. Matte, calm, heavily negative space.",
+    "model": "openai/gpt-image-1",
+    "label": null,
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T10:19:12.477Z",
+    "costUsd": 0.06366
+  },
+  "shopfront-texture": {
+    "file": "generated/shopfront-texture.png",
+    "kind": "image",
+    "fingerprint": "0e3aa7060dd5",
+    "prompt": "A warm illustrated interior of a small West African retail shop at dusk, shelves of stock, soft lamplight, seen from a distance, painterly and slightly abstract. No recognisable faces, no text, no signage, no logos.",
+    "model": "openai/gpt-image-1",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-15T10:20:04.948Z",
+    "costUsd": 0.24987
+  }
+}

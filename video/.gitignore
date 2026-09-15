@@ -1,0 +1,12 @@
+node_modules
+out
+.env
+
+# Captures are re-made by the script from a running site, so they are build
+# output rather than source.
+public/captures
+
+# public/generated is deliberately NOT ignored. Those files cost money to make
+# and the cache only works if they travel with the repo. Committing them means a
+# render on another machine, or in CI, pays nothing and produces the identical
+# video.

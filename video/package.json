@@ -1,0 +1,22 @@
+{
+  "name": "aksen-video",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marketing video for Aksen Labs, rendered from code.",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render",
+    "render:all": "node scripts/render-all.mjs",
+    "capture": "node scripts/capture.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.524",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.524"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.0",
+    "typescript": "5.9.2"
+  }
+}
