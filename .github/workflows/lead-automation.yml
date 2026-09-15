@@ -1,4 +1,4 @@
-# The timer behind unattended lead searching.
+# The timer behind Aksen's unattended research agents.
 #
 # This calls /api/automation/tick and nothing else. It knows nothing about
 # cadence, start hour or daily limits: those live in the database and are edited
@@ -14,7 +14,7 @@
 # a busy queue can delay a run by several minutes. Both are acceptable here: a
 # search that starts at 08:40 instead of 08:00 is still that morning's search,
 # and the endpoint runs a missed hour late rather than skipping the day.
-name: Lead automation heartbeat
+name: Aksen automation heartbeat
 
 on:
   schedule:
@@ -25,7 +25,7 @@ on:
 concurrency:
   # A delayed run must not overlap the next hour's. The endpoint holds its own
   # lock as well, but two callers waiting on the same long search is wasted.
-  group: lead-automation
+  group: aksen-automation
   cancel-in-progress: false
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Ask whether a search is due
+      - name: Ask whether any automation is due
         env:
           TICK_URL: ${{ secrets.AUTOMATION_TICK_URL }}
           TICK_SECRET: ${{ secrets.AUTOMATION_SECRET }}

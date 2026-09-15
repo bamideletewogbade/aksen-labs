@@ -8,6 +8,7 @@ import {
 } from '@/components/admin-content-panel';
 import { AdminCreateArticle } from '@/components/admin-create-article';
 import { ApprovalActions } from '@/components/admin-approval-actions';
+import { EditorialDesk } from '@/components/editorial-desk';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,6 +68,7 @@ export default async function AdminContentPage() {
           </p>
         </div>
       </header>
+      <EditorialDesk />
       {/* Absent when nothing is waiting, which is almost always. A queue that
           is empty by design should not occupy space by default, which is the
           argument for it not being in the sidebar either. */}
