@@ -332,8 +332,11 @@
 .agency-site .agent-gallery {
   color: #e3ece3;
 }
+/* Vertical rhythm only. The inline padding used to be zeroed here because the
+   examples band ran full bleed with its own gutter; it is an inset panel now, so
+   the shared container gutter has to survive. */
 .agency-site .agents-gallery-section {
-  padding: 30px 0 80px;
+  padding-block: 30px 80px;
 }
 .agency-agent-note {
   padding: 25px;

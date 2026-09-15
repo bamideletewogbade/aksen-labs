@@ -87,12 +87,14 @@ export function supportArticles(): SupportArticle[] {
       title: 'Aksen products',
       href: '/products',
       keywords:
-        'cv forge folio resume optimizer reviewer ats workspace product trial subscription signup demo free tools agents',
+        'cv forge folio resume optimizer reviewer ats cover letter job search jobs application applications interview workspace product trial subscription signup demo free tools agents',
       content:
         products
           .map(
             (p) =>
-              `${p.name}: ${p.status}. ${p.description} ${p.features.join('; ')}. ${p.href ? `Page: ${p.href}` : 'No public address yet; it cannot be used from this site.'}`,
+              `${p.name}: ${p.status}. ${p.description} ${p.stages
+                .map((s) => `${s.title}: ${s.items.join('; ')}`)
+                .join('. ')}. ${p.limits || ''} ${p.href ? `Page: ${p.href}` : 'No public address yet; it cannot be used from this site.'}`,
           )
           .join('\n') +
         '\nFree to use here now: ' +
@@ -212,6 +214,6 @@ export function supportFallback(articles: SupportArticle[]) {
     // price had already fallen out of step with the pricing page once.
     return `Our published assessment is ${cedis(stages[0].price)}, additional to a build and not automatically credited. A clear brief may go directly to quotation. Builds start ${cedis(stages[1].price).toLowerCase()}; monthly care starts ${cedis(stages[2].price).toLowerCase()}. All figures are in Ghana cedis, the currency of the contract. Scope, payment milestones, included support and dates are agreed in the proposal. Use the pricing page for the full ranges and exclusions.`;
   if (article?.id === 'catalog')
-    return 'CV Forge is our own CV review and CV building product. It is built but has no public address yet, so it cannot be used from this site and there is nothing to sign up for. Ask to be told when it opens. The free business agents work here now with no account, and the order, support and workspace demonstrations use fictional businesses. None of these has a subscription price, and no paid plan is published.';
+    return 'CV Forge is our own job search product. It builds or reviews a CV, finds roles, prepares each application against the real advert and records what happened next, and it only sends an application you have approved. It is built but has no public address yet, so it cannot be used from this site and there is nothing to sign up for. Ask to be told when it opens. The free business agents work here now with no account, and the order, support and workspace demonstrations use fictional businesses. None of these has a subscription price, and no paid plan is published.';
   return 'Aksen builds websites and online shops, connects business systems, creates useful reports and develops digital products. We are based in Ghana and welcome suitable projects across Africa and beyond. Describe what you want to improve, try a business agent or send an enquiry to discuss the work.';
 }

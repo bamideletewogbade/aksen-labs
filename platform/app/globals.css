@@ -4107,8 +4107,16 @@ footer > span {
   font-size: 0.9rem;
   font-weight: 750;
 }
+/* The section itself only supplies the page gutter and the vertical rhythm; the
+   dark surface is the panel inside it, so the heading starts on the same left
+   line as every other section on the page. */
 .agents-gallery-section {
-  padding: 95px clamp(24px, 7vw, 110px) 125px;
+  padding-block: clamp(26px, 3vw, 40px) clamp(44px, 6vw, 76px);
+}
+.agents-gallery-panel {
+  padding: clamp(30px, 3.6vw, 54px) clamp(22px, 2.6vw, 44px)
+    clamp(36px, 4vw, 58px);
+  border-radius: 20px;
   color: white;
   background: #062319;
   background-image: radial-gradient(
@@ -4118,31 +4126,42 @@ footer > span {
   background-size: 48px 48px;
 }
 .agents-gallery-heading {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
   justify-content: space-between;
-  gap: 30px;
-  align-items: baseline;
-  margin-bottom: 42px;
+  gap: 24px 48px;
+  align-items: end;
+  margin-bottom: 34px;
 }
-.agents-gallery-heading span {
-  font-size: clamp(1.8rem, 3vw, 3rem);
-  font-weight: 620;
-  letter-spacing: -0.04em;
+.agents-gallery-heading .agency-eyebrow {
+  color: #8fb47f !important;
+  margin-bottom: 14px !important;
 }
-.agents-gallery-heading p {
-  color: #8ca097;
+.agents-gallery-panel h2 {
+  font-size: clamp(1.9rem, 3vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+/* The shared heading em is the light-surface green, which disappears here. */
+.agents-gallery-panel :is(h2, h3) em {
+  color: #c2f576;
+}
+.agents-gallery-heading > p {
+  color: #a9bcb2;
+  font-size: 0.97rem;
+  line-height: 1.65;
 }
 .agent-filter {
   position: sticky;
   z-index: 10;
-  top: 74px;
+  top: calc(var(--site-nav-h, 76px) + 10px);
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 14px;
-  background: rgba(6, 35, 25, 0.86);
+  background: rgba(6, 35, 25, 0.92);
   backdrop-filter: blur(18px);
   scrollbar-width: none;
 }
@@ -4166,19 +4185,26 @@ footer > span {
   background: var(--signal);
   font-weight: 720;
 }
+/* Three, then two, then one. auto-fit found four columns on a wide screen and
+   left the six cards as a row of four and a row of two; an explicit ladder keeps
+   the set as 3x2 or 2x3, which is the shape the catalogue actually has. */
 .agent-card-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-top: 28px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+@media (max-width: 1150px) {
+  .agent-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .agent-card {
-  min-height: 475px;
   display: flex;
   flex-direction: column;
-  padding: 26px;
+  padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 20px;
+  border-radius: 18px;
   background: rgba(17, 75, 62, 0.88);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   transition:
@@ -4199,42 +4225,45 @@ footer > span {
 .agent-card-icon {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border: 1px solid rgba(124, 255, 98, 0.25);
-  border-radius: 13px;
+  border-radius: 12px;
   color: var(--signal);
   background: rgba(124, 255, 98, 0.07);
 }
 .agent-number {
   color: #719085;
   font:
-    0.72rem var(--font-geist-mono),
+    0.7rem var(--font-geist-mono),
     monospace;
 }
+/* Tags sit under the promise, not above the name: they qualify a card the
+   reader has already identified, and at the top they pushed the name a third of
+   the way down a card that was mostly empty space. */
 .agent-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 34px;
+  gap: 6px;
+  margin-top: 16px;
 }
 .agent-tags > span {
   display: inline-flex;
   align-items: center;
-  min-height: 27px;
-  padding: 4px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  min-height: 24px;
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 99px;
-  color: #b6c8c0;
+  color: #a9bcb2;
   font:
-    0.82rem var(--font-geist-mono),
+    0.63rem var(--font-geist-mono),
     monospace;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
 }
 .agent-tags .live-tag {
   gap: 6px;
-  border-color: rgba(124, 255, 98, 0.25);
+  border-color: rgba(124, 255, 98, 0.3);
   color: var(--signal);
 }
 .live-tag i {
@@ -4244,22 +4273,22 @@ footer > span {
   background: var(--signal);
   animation: livePulse 1.8s ease-in-out infinite;
 }
-.agent-card h2 {
-  margin: 18px 0 10px;
-  font-size: 2rem;
-  line-height: 1.02;
-  letter-spacing: -0.042em;
+.agent-card h3 {
+  margin: 18px 0 8px;
+  font-size: 1.4rem;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
 }
 .agent-card > p {
   margin: 0;
   color: #b3c2bb;
-  font-size: 0.94rem;
-  line-height: 1.6;
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 .agent-card ul {
   display: grid;
-  gap: 8px;
-  margin: 25px 0;
+  gap: 7px;
+  margin: 20px 0;
   padding: 0;
   list-style: none;
 }
@@ -4267,26 +4296,26 @@ footer > span {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  color: #8fa39a;
+  color: #93a79e;
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 .agent-card li svg {
   flex: 0 0 auto;
-  margin-top: 2px;
+  margin-top: 3px;
   color: var(--signal);
 }
 .agent-card > a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 48px;
+  min-height: 46px;
   margin-top: auto;
-  padding-top: 18px;
+  padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.11);
   color: white;
-  font-size: 0.92rem;
-  font-weight: 730;
+  font-size: 0.9rem;
+  font-weight: 680;
 }
 .agent-card > a svg {
   color: var(--signal);
@@ -4294,6 +4323,39 @@ footer > span {
 }
 .agent-card > a:hover svg {
   transform: translateX(4px);
+}
+/* The panel's own closing line. The light-surface mini CTA carried a grey rule
+   and grey text that both vanished against this background. */
+.agents-gallery-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 32px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+.agents-gallery-cta .agency-eyebrow {
+  color: #8fb47f !important;
+  margin-bottom: 8px !important;
+}
+.agents-gallery-cta p:not(.agency-eyebrow) {
+  color: #cddcd4;
+  font-size: 0.98rem;
+}
+.agents-gallery-cta .agency-text-link {
+  color: #ffffff;
+  white-space: nowrap;
+}
+.agents-gallery-cta .agency-text-link svg {
+  color: var(--signal);
+}
+@media (max-width: 760px) {
+  .agents-gallery-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
 }
 
 .agent-detail-hero {
@@ -4676,8 +4738,10 @@ footer > span {
 }
 
 @media (max-width: 1020px) {
-  .agent-card-grid {
-    grid-template-columns: 1fr 1fr;
+  .agents-gallery-heading {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 16px;
   }
   .agent-detail-intro,
   .agent-detail-body {
@@ -4704,20 +4768,19 @@ footer > span {
     width: 100%;
     justify-content: center;
   }
-  .agents-gallery-section {
-    padding: 70px 18px 90px;
+  .agents-gallery-panel {
+    padding: 26px 18px 32px;
+    border-radius: 16px;
   }
   .agents-gallery-heading {
-    display: grid;
-    gap: 8px;
+    gap: 12px;
   }
-  .agents-gallery-heading p {
+  .agents-gallery-heading > p {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
   }
   .agent-filter {
-    top: 64px;
-    margin-inline: -8px;
+    margin-inline: -6px;
   }
   .agent-filter button {
     min-height: 44px;
@@ -4728,11 +4791,10 @@ footer > span {
     gap: 12px;
   }
   .agent-card {
-    min-height: 440px;
     padding: 22px;
   }
-  .agent-card h2 {
-    font-size: 1.85rem;
+  .agent-card h3 {
+    font-size: 1.32rem;
   }
   .agent-card > p {
     font-size: 0.95rem;

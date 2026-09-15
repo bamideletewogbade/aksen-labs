@@ -52,6 +52,9 @@ export function AgentGallery() {
           </button>
         ))}
       </fieldset>
+      {/* The heading level matters here: the panel above owns the h2, so every
+          card is an h3 under it. They were h2s, which read back as six sibling
+          sections with no parent. */}
       <div className="agent-card-grid">
         {agents.map((agent, index) => {
           const Icon = icons[agent.slug as keyof typeof icons] || Headphones;
@@ -59,12 +62,14 @@ export function AgentGallery() {
             <article className="agent-card" key={agent.slug}>
               <div className="agent-card-top">
                 <span className="agent-card-icon">
-                  <Icon size={22} />
+                  <Icon size={20} />
                 </span>
                 <span className="agent-number">
                   A{String(index + 1).padStart(2, '0')}
                 </span>
               </div>
+              <h3>{agent.name}</h3>
+              <p>{agent.promise}</p>
               <div className="agent-tags">
                 <span>{agent.category}</span>
                 <span>{agent.industry}</span>
@@ -74,8 +79,6 @@ export function AgentGallery() {
                   </span>
                 )}
               </div>
-              <h2>{agent.name}</h2>
-              <p>{agent.promise}</p>
               <ul>
                 {agent.work.slice(0, 3).map((item) => (
                   <li key={item}>

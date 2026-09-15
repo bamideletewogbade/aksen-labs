@@ -1,6 +1,9 @@
-/* Compact product collection: one summary per product, details on demand. */
+/* The products tab. One product is laid out as one product: identity and
+   availability on the left, the steps it covers on the right. The old two-column
+   collection put a single card in half the width with nothing beside it. */
 .products-collection {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
 }
 .products-collection > div {
@@ -8,40 +11,200 @@
   display: flex;
 }
 .product-showcase {
-  grid-template-columns: 1fr;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
   width: 100%;
   align-content: start;
-  display: flex;
-  flex-direction: column;
 }
+/* The button and the text link size to their own content; everything else runs
+   the full column, so the small print's rule reaches both edges. */
 .product-showcase .product-copy {
-  padding: 28px;
-  flex: 1;
+  padding: 32px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  border-right: 1px solid #dde4d9;
 }
-.product-copy h2 {
+.product-copy > p,
+.product-copy > .product-topline {
+  align-self: stretch;
+}
+.product-copy h3 {
+  margin-top: 0;
   font-size: 2.1rem;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
 }
 .product-topline {
   margin-bottom: 17px;
+  width: 100%;
 }
 .product-copy > p {
-  font-size: 0.93rem;
-  margin-bottom: 18px;
+  font-size: 0.95rem;
 }
 .product-copy > .agency-button {
   margin-top: auto;
-  align-self: flex-start;
 }
-@media (max-width: 760px) {
-  .products-collection {
-    grid-template-columns: 1fr;
+/* The waitlist for a product with no public address. It sits in the column that
+   would otherwise hold the button, so it stretches like the paragraphs above it
+   rather than shrinking to its own content. */
+.product-copy > .product-waitlist,
+.product-copy > .product-waitlist-done {
+  align-self: stretch;
+  max-width: 560px;
+}
+.product-waitlist {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #dde4d9;
+  background: #f6f9f2;
+}
+.product-waitlist-lead {
+  margin: 0;
+  font-size: 0.95rem !important;
+  color: #1d3f2c;
+}
+.product-waitlist label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #53635a;
+}
+/* The optional field has to read as optional before it is filled in, or the
+   short version of this form looks like the only version. */
+.product-waitlist label > span {
+  color: #7d8c82;
+  font-style: italic;
+}
+.product-waitlist input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #cfdac6;
+  background: #fff;
+  color: #1d3f2c;
+  font: inherit;
+  font-size: 0.93rem;
+}
+.product-waitlist input:focus-visible {
+  outline: 2px solid #4f7840;
+  outline-offset: 1px;
+}
+.product-waitlist button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  background: #1d3f2c;
+  color: #f2f7ec;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+.product-waitlist button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.product-waitlist-privacy {
+  color: #7d8c82;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.product-waitlist-error {
+  color: #8a3b2c;
+  font-size: 0.82rem;
+}
+.product-waitlist-done {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-left: 2px solid #4f7840;
+  background: #eef2e8;
+}
+.product-waitlist-done svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #4f7840;
+}
+.product-waitlist-done p {
+  margin: 0;
+  color: #47554d;
+  font-size: 0.93rem !important;
+  line-height: 1.65;
+}
+/* Honest small print about what the product cannot do, set apart from the
+   description so it is not mistaken for a feature. */
+.product-limits {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #dde4d9;
+  color: #66756c;
+  font-size: 0.83rem !important;
+  line-height: 1.6;
+}
+.product-stages {
+  list-style: none;
+  margin: 0;
+  padding: 32px;
+  display: grid;
+  gap: 26px;
+  background: #f6f9f2;
+}
+.product-stage-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem !important;
+  font-weight: 600;
+  color: #1d3f2c;
+}
+.product-stage-head > span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #e2ecd6;
+  color: #3d6b45;
+  font:
+    0.62rem var(--font-geist-mono),
+    monospace;
+}
+.product-stages .product-feature-list {
+  margin-top: 12px;
+  gap: 8px;
+  max-width: none;
+}
+.product-stages .product-feature-list li {
+  font-size: 0.89rem;
+  line-height: 1.55;
+}
+@media (max-width: 900px) {
+  .product-showcase {
+    grid-template-columns: minmax(0, 1fr);
   }
   .product-showcase .product-copy {
+    border-right: 0;
+    border-bottom: 1px solid #dde4d9;
+  }
+}
+@media (max-width: 760px) {
+  .product-showcase .product-copy,
+  .product-stages {
     padding: 24px;
   }
-  .product-copy h2 {
-    font-size: 2rem;
+  .product-copy h3 {
+    font-size: 1.9rem;
+  }
+  .product-stages {
+    gap: 22px;
   }
 }

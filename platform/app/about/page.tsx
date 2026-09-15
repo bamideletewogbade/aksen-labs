@@ -73,9 +73,10 @@ export default function AboutPage() {
                 <em>Open to new ideas.</em>
               </h2>
               <p>
-                Alongside client projects, we build our own. CV Forge reviews a
-                CV, explains what to strengthen, and writes one with you if you
-                do not have one yet.
+                Alongside client projects, we build our own. CV Forge started as
+                a CV reviewer and builder and now covers the rest of a job
+                search: finding roles, preparing each application against the
+                real advert, and keeping track of what happened next.
               </p>
               <p>
                 CV Forge is built and we use it ourselves; it does not have a

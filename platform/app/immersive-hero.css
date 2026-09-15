@@ -83,14 +83,30 @@
   animation: hero-node-breathe 6s ease-in-out infinite;
 }
 /* The source photographs are 3:2. The scene takes its width from the height budget
-   (78svh ~= 52svh x 1.5) so the frame can hold that ratio without object-fit
-   stretching the crop, and it hugs the right gutter. Sizing the scene rather than
-   the frame keeps the orbit, the photo card and the AI chip anchored to the image. */
+   (82svh ~= 55svh x 1.5) so the frame can hold that ratio without object-fit
+   stretching the crop. Sizing the scene rather than the frame keeps the orbit,
+   the photo card and the AI chip anchored to the image.
+   The old fixed 800px cap stranded space on wide screens: the scene stopped
+   growing while its column kept growing, and the leftover sat in the middle of
+   the fold as a gap nobody asked for. The only cap that has to stay is the
+   height budget, so the frame now fills its column at ordinary widths and the
+   svh limit takes over only on a short or very wide screen, where the frame
+   stays on the right gutter line the rest of the page uses. */
 .immersive-hero .ambition-scene {
   align-self: center;
   min-height: 0;
-  width: min(100%, 78svh, 800px);
+  width: min(100%, 88svh);
   margin-left: auto;
+  margin-right: 0;
+}
+/* Two equal columns put the slack between the copy and the photograph, because
+   the copy runs out well before its half does. Capping the copy column instead
+   hands that slack to the scene, which can use it. */
+@media (min-width: 761px) {
+  .immersive-hero .ambition-grid {
+    grid-template-columns: minmax(0, min(46%, 700px)) minmax(0, 1fr);
+    gap: clamp(12px, 1.5vw, 26px);
+  }
 }
 .immersive-hero .ambition-machine {
   position: relative;
@@ -151,7 +167,7 @@
    of its own column, not because the grid gap is large. Letting the measure run
    closer to the column edge closes the space without moving the scene. */
 .immersive-hero .ambition-description {
-  max-width: 560px;
+  max-width: 640px;
 }
 /* Fixed width so the per-story copy swaps without the chip resizing under it. */
 .immersive-hero .ambition-ai-chip {
@@ -391,7 +407,7 @@
 /* Mid widths leave no slack between the columns. */
 @media (min-width: 761px) and (max-width: 1250px) {
   .immersive-hero .ambition-description {
-    max-width: 400px;
+    max-width: 470px;
   }
 }
 @media (max-width: 1050px) {

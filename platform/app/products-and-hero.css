@@ -299,14 +299,6 @@
   color: #496039;
   white-space: nowrap;
 }
-.product-copy h2 {
-  font-size: 2.8rem;
-}
-.product-copy h3 {
-  font-size: 1.2rem;
-  margin-top: 18px;
-  line-height: 1.4;
-}
 .product-copy > p {
   font-size: 0.96rem;
   color: #53635a;
@@ -328,8 +320,6 @@
 }
 .product-copy li svg {
   flex-shrink: 0;
-}
-@media (max-width: 760px) {
 }
 .product-enquiry {
   background: white;
@@ -468,15 +458,6 @@
   .products-intro-mark {
     display: none;
   }
-  .product-showcase {
-    grid-template-columns: 1fr;
-  }
-  .product-copy {
-    padding: 26px;
-  }
-  .product-copy h2 {
-    font-size: 2.35rem;
-  }
   .product-topline {
     margin-bottom: 20px;
   }
@@ -611,6 +592,30 @@
   line-height: 1.65;
   max-width: 560px;
 }
+/* The free tools come in two kinds and are grouped by kind, so each group needs
+   a label that says which kind without shouting over the section heading. */
+.tool-group + .tool-group {
+  margin-top: 40px;
+}
+.tool-group-head {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d6ded2;
+}
+.tool-group-head > h3 {
+  font-size: 1.15rem;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+.tool-group-head > span {
+  font:
+    0.6rem var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.11em;
+  color: #5d7a56;
+}
 .tool-list {
   list-style: none;
   padding: 0;
@@ -618,6 +623,14 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+}
+.tool-list-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+/* A group with one thing in it takes the whole row rather than sitting in a
+   column with an empty one beside it. */
+.tool-list > li:only-child {
+  grid-column: 1 / -1;
 }
 .tool-list > li > a {
   display: grid;
@@ -643,10 +656,12 @@
   text-transform: uppercase;
   color: #5d7a56;
 }
-.tool-list h3 {
+.tool-list h4 {
   font-size: 1.2rem;
+  font-weight: 560;
   letter-spacing: -0.02em;
   margin: 0;
+  line-height: 1.25;
 }
 .tool-list p {
   color: #53635a;
@@ -663,9 +678,18 @@
   font-weight: 550;
   color: #175b3b;
 }
-@media (max-width: 860px) {
-  .tool-list {
+@media (max-width: 1000px) {
+  .tool-list-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .tool-list,
+  .tool-list-3 {
     grid-template-columns: 1fr;
+  }
+  .tool-group + .tool-group {
+    margin-top: 30px;
   }
 }
 

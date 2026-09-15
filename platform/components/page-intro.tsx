@@ -7,11 +7,14 @@ import {
   FileText,
   Layers,
   ScanText,
-  FilePenLine,
+  Sparkles,
 } from 'lucide-react';
 import { Reveal } from './agency-motion';
 import { stages } from '@/lib/pricing';
 import { formatPrice, type Currency } from '@/lib/currency';
+import { freeTools, products } from '@/lib/product-catalog';
+import { agentCatalog } from '@/lib/agent-catalog';
+import { ideaStatuses } from '@/lib/feedback-board';
 type Opening =
   | 'services'
   | 'approach'
@@ -22,6 +25,7 @@ type Opening =
   | 'blog'
   | 'workspace'
   | 'pricing'
+  | 'board'
   | 'minimal';
 const captions: Partial<Record<Opening, string>> = {
   services: 'CUSTOMER EXPERIENCE / OPERATIONS / GROWTH',
@@ -107,23 +111,54 @@ function OpeningArt({
         </figure>
       </div>
     );
+  // The opening used to float two cards, one of them naming a product nobody can
+  // open yet. The page is three tabs, so the opening is now a contents list for
+  // them: what is on the page, how much of it, and which tab holds it. The counts
+  // come from the same catalogues the panels render, so they cannot drift.
   if (variant === 'products')
     return (
-      <div className="opening-products-art" aria-hidden="true">
-        <div>
-          <ScanText size={31} />
-          <strong>CV Forge</strong>
-          <span>CAREER CLARITY</span>
-        </div>
-        <div>
-          <Layers size={31} />
-          <strong>Free tools</strong>
-          <span>USABLE TODAY</span>
-        </div>
-        <span className="opening-art-end">
-          PRODUCTS RUN ON THEIR OWN. TOOLS RUN HERE.
-        </span>
-      </div>
+      <ul className="opening-products-art" aria-hidden="true">
+        {[
+          {
+            icon: Layers,
+            name: 'Free tools',
+            note: `${freeTools.length} · USE THEM HERE`,
+          },
+          {
+            icon: Sparkles,
+            name: 'AI in practice',
+            note: `${agentCatalog.length} WORKED EXAMPLES`,
+          },
+          {
+            icon: ScanText,
+            name: 'Our products',
+            note: `${products.length} · BUILT AND RUN BY US`,
+          },
+        ].map((row, index) => (
+          <li key={row.name}>
+            <span className="opening-products-index">0{index + 1}</span>
+            <span className="opening-products-icon">
+              <row.icon size={20} />
+            </span>
+            <strong>{row.name}</strong>
+            <small>{row.note}</small>
+          </li>
+        ))}
+      </ul>
+    );
+  // The board needs a legend anyway, so the opening is the legend rather than a
+  // second decorative thing beside it. Read from the same list the cards use.
+  if (variant === 'board')
+    return (
+      <ul className="opening-board-art" aria-hidden="true">
+        {ideaStatuses.map((status) => (
+          <li key={status.id} data-status={status.id}>
+            <span className="opening-board-dot" />
+            <strong>{status.label}</strong>
+            <small>{status.meaning}</small>
+          </li>
+        ))}
+      </ul>
     );
   if (variant === 'blog')
     return (
