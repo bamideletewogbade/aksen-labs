@@ -21,6 +21,7 @@ import {
   MailPlus,
   ArrowUpRight,
   ChevronDown,
+  Share2,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -96,6 +97,7 @@ const groups = [
       // build, not who to call.
       { href: '/admin/feedback', label: 'Feature requests', icon: Lightbulb },
       { href: '/admin/content', label: 'Articles', icon: BookOpen },
+      { href: '/admin/social', label: 'Social hub', icon: Share2 },
       { href: '/admin/studio', label: 'Create media', icon: Image },
       { href: '/admin/demos', label: 'Demos', icon: MonitorPlay },
     ],

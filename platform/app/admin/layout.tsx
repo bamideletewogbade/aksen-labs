@@ -8,6 +8,7 @@ import './editor.css';
 import './destructive.css';
 import './activity.css';
 import './settings.css';
+import './social.css';
 import './knowledge.css';
 export const metadata = {
   title: 'Aksen Workspace',
