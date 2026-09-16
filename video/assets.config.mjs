@@ -75,6 +75,33 @@ export const assets = [
     prompt:
       'The same small shop counter in clear morning light, tidy and clear, one neat stack of packed orders ready to go, a plant, an open shutter behind. Painterly illustration, calm, warm, sage and cream tones. No people, no faces, no text, no logos.',
   },
+  // Nigeria friends kit, September 2026. One room per industry, lit and empty,
+  // so a post can say "what we could build for a place like this" without
+  // implying the place is a client. Every one is labelled and has no faces.
+  ...[
+    ['ng-boutique', 'a small Lagos fashion boutique, colourful ankara fabrics on rails, folded parcels tied for dispatch on the counter, a ring light switched off'],
+    ['ng-restaurant', 'a busy small Nigerian restaurant kitchen pass at lunchtime, takeaway packs of jollof rice lined up with order tickets, steam and warm light'],
+    ['ng-pharmacy', 'a clean neighbourhood pharmacy counter in Abuja, neat shelves of medicine boxes without readable labels, a small prescription tray'],
+    ['ng-realestate', 'a bright empty modern apartment living room in Lekki being prepared for a viewing, keys and a folder on a kitchen island, city light through tall windows'],
+    ['ng-school', 'an empty private school classroom in Nigeria in morning light, wooden desks, a whiteboard with no writing, school bags on hooks'],
+    ['ng-salon', 'a small hair and beauty salon interior, styling chairs, mirrors, braiding hair extensions arranged on a shelf, soft afternoon light'],
+    ['ng-logistics', 'a dispatch rider bay at dawn in Lagos, delivery motorcycles with boxes parked in a row, parcels stacked on a table, orange sky'],
+    ['ng-events', 'an elegant event hall being set up for a Nigerian wedding reception, round tables with gold chairs and flowers, soft uplighting, no guests'],
+    ['ng-minimart', 'a tidy supermarket aisle in a Nigerian mini mart, stocked shelves of groceries without readable brands, a stock clipboard on a crate'],
+  ].map(([key, scene]) => ({
+    key,
+    kind: 'image',
+    aspectRatio: '9:16',
+    label: 'Illustration',
+    prompt: `A rich editorial illustration of ${scene}. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing.`,
+  })),
+  {
+    key: 'ng-backdrop-lime',
+    kind: 'image',
+    aspectRatio: '9:16',
+    prompt:
+      'An abstract backdrop. Deep forest green, almost black, with flowing thin lime green light lines like a circuit that curve into the shape of a river delta, faint dot grid, one bright glow at the lower centre. No text, no letters, no logos, no people. Matte, bold, heavily negative space in the top half.',
+  },
 ].map((asset) => ({ ...asset, prompt: asset.prompt + HOUSE }));
 
 /**

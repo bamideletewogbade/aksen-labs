@@ -75,5 +75,115 @@
     "aspectRatio": "9:16",
     "generatedAt": "2026-09-15T20:36:24.418Z",
     "costUsd": 0.30555
+  },
+  "ng-boutique": {
+    "file": "generated/ng-boutique.png",
+    "kind": "image",
+    "fingerprint": "a6fc16bdf399",
+    "prompt": "A rich editorial illustration of a small Lagos fashion boutique, colourful ankara fabrics on rails, folded parcels tied for dispatch on the counter, a ring light switched off. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:10:25.232Z",
+    "costUsd": 0.0387396
+  },
+  "ng-restaurant": {
+    "file": "generated/ng-restaurant.png",
+    "kind": "image",
+    "fingerprint": "d1108b4a186d",
+    "prompt": "A rich editorial illustration of a busy small Nigerian restaurant kitchen pass at lunchtime, takeaway packs of jollof rice lined up with order tickets, steam and warm light. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:10:32.949Z",
+    "costUsd": 0.0387571
+  },
+  "ng-pharmacy": {
+    "file": "generated/ng-pharmacy.png",
+    "kind": "image",
+    "fingerprint": "228fab701b52",
+    "prompt": "A rich editorial illustration of a clean neighbourhood pharmacy counter in Abuja, neat shelves of medicine boxes without readable labels, a small prescription tray. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:10:40.847Z",
+    "costUsd": 0.0387378
+  },
+  "ng-realestate": {
+    "file": "generated/ng-realestate.png",
+    "kind": "image",
+    "fingerprint": "f2f887519a44",
+    "prompt": "A rich editorial illustration of a bright empty modern apartment living room in Lekki being prepared for a viewing, keys and a folder on a kitchen island, city light through tall windows. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:10:48.193Z",
+    "costUsd": 0.0388105
+  },
+  "ng-school": {
+    "file": "generated/ng-school.png",
+    "kind": "image",
+    "fingerprint": "b138ec33ba11",
+    "prompt": "A rich editorial illustration of an empty private school classroom in Nigeria in morning light, wooden desks, a whiteboard with no writing, school bags on hooks. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:10:57.773Z",
+    "costUsd": 0.0387837
+  },
+  "ng-salon": {
+    "file": "generated/ng-salon.png",
+    "kind": "image",
+    "fingerprint": "d26e5696ca45",
+    "prompt": "A rich editorial illustration of a small hair and beauty salon interior, styling chairs, mirrors, braiding hair extensions arranged on a shelf, soft afternoon light. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:11:06.069Z",
+    "costUsd": 0.0390712
+  },
+  "ng-logistics": {
+    "file": "generated/ng-logistics.png",
+    "kind": "image",
+    "fingerprint": "4d18c83fab45",
+    "prompt": "A rich editorial illustration of a dispatch rider bay at dawn in Lagos, delivery motorcycles with boxes parked in a row, parcels stacked on a table, orange sky. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:11:14.628Z",
+    "costUsd": 0.0387668
+  },
+  "ng-events": {
+    "file": "generated/ng-events.png",
+    "kind": "image",
+    "fingerprint": "5b9b2e8560c6",
+    "prompt": "A rich editorial illustration of an elegant event hall being set up for a Nigerian wedding reception, round tables with gold chairs and flowers, soft uplighting, no guests. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:11:25.946Z",
+    "costUsd": 0.0387396
+  },
+  "ng-minimart": {
+    "file": "generated/ng-minimart.png",
+    "kind": "image",
+    "fingerprint": "e2decc090751",
+    "prompt": "A rich editorial illustration of a tidy supermarket aisle in a Nigerian mini mart, stocked shelves of groceries without readable brands, a stock clipboard on a crate. Painterly, warm, slightly stylised, deep forest green and warm amber tones with lime highlights, strong depth, room for a headline in the top third. No people, no faces, no hands, no text, no signage, no logos, no readable writing. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": "Illustration",
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:11:34.054Z",
+    "costUsd": 0.0387412
+  },
+  "ng-backdrop-lime": {
+    "file": "generated/ng-backdrop-lime.png",
+    "kind": "image",
+    "fingerprint": "6bfc0ee86ab2",
+    "prompt": "An abstract backdrop. Deep forest green, almost black, with flowing thin lime green light lines like a circuit that curve into the shape of a river delta, faint dot grid, one bright glow at the lower centre. No text, no letters, no logos, no people. Matte, bold, heavily negative space in the top half. Fills the entire frame edge to edge with no border, no white margin, no inner frame and no vignette. No signature, no watermark, no artist mark, no caption, no letters or numbers anywhere in the image.",
+    "model": "google/gemini-2.5-flash-image",
+    "label": null,
+    "aspectRatio": "9:16",
+    "generatedAt": "2026-09-16T12:11:42.641Z",
+    "costUsd": 0.0387336
   }
 }

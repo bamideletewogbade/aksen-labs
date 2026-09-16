@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Check, Loader2, Mail } from 'lucide-react';
+import { ArrowRight, Check, Loader2, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { urgency } from '@/lib/pipeline-order';
 import { AdminLeadHistory } from '@/components/admin-lead-history';
@@ -27,6 +27,13 @@ const STAGE_LABEL: Record<string, string> = {
   proposal: 'Proposal out',
   won: 'Won',
   lost: 'Lost',
+};
+// The stage used to be a two pixel stripe down the left edge, which is a legend
+// you have to be told about. Said in words beside the name it needs no legend,
+// and the date only earns a badge when it is asking for something today.
+const DUE_LABEL: Record<string, string> = {
+  overdue: 'Overdue',
+  today: 'Due today',
 };
 
 export function AdminPipelineList({
@@ -208,7 +215,8 @@ export function AdminPipelineList({
         </label>
       </div>
       <output className="admin-filter-count">
-        {visible.length} matching enquiries
+        {visible.length} matching{' '}
+        {visible.length === 1 ? 'enquiry' : 'enquiries'}
       </output>
       {visible.length === 0 && (
         <div className="empty-admin">
@@ -233,127 +241,164 @@ export function AdminPipelineList({
         )}
       </p>
       <div className="pipeline-list">
-        {visible.map((lead) => (
-          <article
-            key={lead.id}
-            className={`lead-row stage-${lead.status} due-${urgency(lead, today)}`}
-          >
-            <div className="company-mark">{lead.company.slice(0, 1)}</div>
-            <div className="lead-who">
-              <strong>{lead.company}</strong>
-              <Link
-                href={`/admin/operations?lead=${encodeURIComponent(lead.id)}`}
-              >
-                Prepare with AI →
-              </Link>
-              {lead.status === 'won' && (
-                <button
-                  disabled={busyId === lead.id}
-                  onClick={() => void startProject(lead)}
-                >
-                  Create / open project
-                </button>
-              )}
-              <span>
-                {lead.name} · {lead.recommendation}
-              </span>
-              <a className="lead-mail" href={`mailto:${lead.email}`}>
-                <Mail size={13} /> {lead.email}
-              </a>
-            </div>
-            <div className="lead-controls">
-              <label className="lead-stage">
-                <span className="sr-only">Stage for {lead.company}</span>
-                <select
-                  value={lead.status}
-                  disabled={busyId === lead.id}
-                  onChange={(event) =>
-                    void save(lead, { status: event.target.value })
-                  }
-                >
-                  {STAGES.map((stage) => (
-                    <option key={stage} value={stage}>
-                      {STAGE_LABEL[stage]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="lead-next">
-                <span className="sr-only">Next action for {lead.company}</span>
-                <input
-                  key={lead.nextAction}
-                  defaultValue={lead.nextAction || ''}
-                  placeholder="What happens next?"
-                  disabled={busyId === lead.id}
-                  onBlur={(event) => {
-                    const value = event.target.value.trim();
-                    if (!value || value === lead.nextAction) {
-                      event.target.value = lead.nextAction || '';
-                      return;
-                    }
-                    void save(lead, { nextAction: value });
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') event.currentTarget.blur();
-                  }}
-                />
-              </label>
-              <label className="lead-when">
-                <span className="sr-only">
-                  Follow up date for {lead.company}
+        {visible.map((lead) => {
+          const due = urgency(lead, today);
+          return (
+            <article
+              key={lead.id}
+              className={`lead-row stage-${lead.status} due-${due}`}
+            >
+              <div className="company-mark">{lead.company.slice(0, 1)}</div>
+              <div className="lead-who">
+                <div className="lead-title">
+                  <strong>{lead.company}</strong>
+                  <span className="lead-tag" data-stage={lead.status}>
+                    {STAGE_LABEL[lead.status]}
+                  </span>
+                  {DUE_LABEL[due] && (
+                    <span className="lead-tag" data-due={due}>
+                      {DUE_LABEL[due]}
+                    </span>
+                  )}
+                </div>
+                <span className="lead-person">
+                  {lead.name} · {lead.recommendation}
                 </span>
-                <input
-                  type="date"
-                  value={lead.followUpAt || ''}
-                  disabled={busyId === lead.id}
-                  onChange={(event) =>
-                    void save(lead, { followUpAt: event.target.value || null })
-                  }
-                />
-              </label>
-              <span className="lead-state" aria-live="polite">
-                {busyId === lead.id && (
-                  <Loader2 size={14} className="icon-spin" />
+                {lead.email && (
+                  <a className="lead-mail" href={`mailto:${lead.email}`}>
+                    <Mail size={13} /> {lead.email}
+                  </a>
                 )}
-                {savedId === lead.id && <Check size={14} />}
-                {failedId === lead.id && <em>Not saved</em>}
-              </span>
-            </div>
-            <AdminLeadHistory leadId={lead.id} today={today} />
-            {/* Two different acts, kept visibly apart. Erasing is what we do
-                when a person asks, and the privacy notice promises it. Removing
-                is for a test row or a duplicate and destroys the record. A
-                single "delete" would have quietly made one of those do the
-                other's job. */}
-            <div className="lead-destructive">
-              <ConfirmAction
-                className="lead-erase"
-                label="Erase their details"
-                confirmLabel="Erase"
-                pendingLabel="Erasing"
-                title="Remove name, email and conversation history. Keeps that this company enquired."
-                pending={erasingId === lead.id}
-                disabled={erasingId !== null}
-                onConfirm={() => void destroy(lead, 'erase')}
-              />
-              <ConfirmAction
-                className="lead-remove"
-                label="Delete the record"
-                confirmLabel="Delete"
-                pendingLabel="Deleting"
-                title="Remove the row entirely. For test rows and duplicates."
-                pending={erasingId === lead.id}
-                disabled={erasingId !== null}
-                onConfirm={() => void destroy(lead, 'remove')}
-              />
-              {destroyNote?.id === lead.id && (
-                <StatusNote tone={destroyNote.failed ? 'error' : 'done'}>
-                  {destroyNote.message}
-                </StatusNote>
-              )}
-            </div>
-          </article>
-        ))}
+              </div>
+              <div className="lead-controls">
+                <label className="lead-stage">
+                  {/* The short caption is what you read; the company keeps the
+                    control's accessible name unique across thirty rows. */}
+                  <span className="lead-field-label">
+                    Stage<span className="sr-only"> for {lead.company}</span>
+                  </span>
+                  <select
+                    value={lead.status}
+                    disabled={busyId === lead.id}
+                    onChange={(event) =>
+                      void save(lead, { status: event.target.value })
+                    }
+                  >
+                    {STAGES.map((stage) => (
+                      <option key={stage} value={stage}>
+                        {STAGE_LABEL[stage]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="lead-next">
+                  <span className="lead-field-label">
+                    Next action
+                    <span className="sr-only"> for {lead.company}</span>
+                  </span>
+                  <input
+                    key={lead.nextAction}
+                    defaultValue={lead.nextAction || ''}
+                    placeholder="What happens next?"
+                    disabled={busyId === lead.id}
+                    onBlur={(event) => {
+                      const value = event.target.value.trim();
+                      if (!value || value === lead.nextAction) {
+                        event.target.value = lead.nextAction || '';
+                        return;
+                      }
+                      void save(lead, { nextAction: value });
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') event.currentTarget.blur();
+                    }}
+                  />
+                </label>
+                <label className="lead-when">
+                  <span className="lead-field-label">
+                    Follow up
+                    <span className="sr-only"> date for {lead.company}</span>
+                  </span>
+                  <input
+                    type="date"
+                    value={lead.followUpAt || ''}
+                    disabled={busyId === lead.id}
+                    onChange={(event) =>
+                      void save(lead, {
+                        followUpAt: event.target.value || null,
+                      })
+                    }
+                  />
+                </label>
+                <span className="lead-state" aria-live="polite">
+                  {busyId === lead.id && (
+                    <Loader2 size={14} className="icon-spin" />
+                  )}
+                  {savedId === lead.id && <Check size={14} />}
+                  {failedId === lead.id && <em>Not saved</em>}
+                </span>
+              </div>
+              <AdminLeadHistory leadId={lead.id} today={today} />
+              {/* What you came to do, then what you rarely do. The prepare link
+                used to sit inside the name block, where it rendered larger than
+                the company it belonged to and read as a heading.
+
+                A div rather than a <footer>: globals.css styles the bare
+                `footer` element for the public site, dark background and all,
+                and .project-list already carries an override undoing it. */}
+              <div className="lead-footer">
+                <Link
+                  className="lead-prepare"
+                  href={`/admin/operations?lead=${encodeURIComponent(lead.id)}`}
+                >
+                  Prepare with AI
+                  <ArrowRight size={14} />
+                </Link>
+                {lead.status === 'won' && (
+                  <button
+                    className="lead-project"
+                    disabled={busyId === lead.id}
+                    onClick={() => void startProject(lead)}
+                  >
+                    Create / open project
+                  </button>
+                )}
+                {/* Two different acts, kept visibly apart. Erasing is what we do
+                  when a person asks, and the privacy notice promises it.
+                  Removing is for a test row or a duplicate and destroys the
+                  record. A single "delete" would have quietly made one of those
+                  do the other's job. */}
+                <div className="lead-destructive">
+                  <ConfirmAction
+                    className="lead-erase"
+                    label="Erase their details"
+                    confirmLabel="Erase"
+                    pendingLabel="Erasing"
+                    title="Remove name, email and conversation history. Keeps that this company enquired."
+                    pending={erasingId === lead.id}
+                    disabled={erasingId !== null}
+                    onConfirm={() => void destroy(lead, 'erase')}
+                  />
+                  <ConfirmAction
+                    className="lead-remove"
+                    label="Delete the record"
+                    confirmLabel="Delete"
+                    pendingLabel="Deleting"
+                    title="Remove the row entirely. For test rows and duplicates."
+                    pending={erasingId === lead.id}
+                    disabled={erasingId !== null}
+                    onConfirm={() => void destroy(lead, 'remove')}
+                  />
+                  {destroyNote?.id === lead.id && (
+                    <StatusNote tone={destroyNote.failed ? 'error' : 'done'}>
+                      {destroyNote.message}
+                    </StatusNote>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </>
   );

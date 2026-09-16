@@ -1,4 +1,4 @@
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
    White admin: the parts a palette conversion cannot reach.
 
    The stylesheets beside this one are rewritten wholesale by
@@ -145,6 +145,311 @@
   .admin-refresh .media-preset-row button:is(:hover, .active) {
     color: #1d5b3c;
     border-color: #175b3b;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   The pipeline row
+
+   The row is a two column grid: a 34px company mark, then everything else.
+   Only .lead-controls ever said which column it wanted, so the history and the
+   destructive pair were auto placed and the first free cell was under the
+   mark. That is why "Conversation history" drew one character per line: a 34px
+   box being asked to hold nineteen characters, with the erase and delete
+   buttons beside it in the wide column.
+
+   Everything below the mark now shares column two, which fixes the squeeze and
+   gives the row one left edge for the name, the fields, the history and the
+   footer to line up on.
+   ---------------------------------------------------------------------- */
+
+@media screen {
+  .admin-refresh .pipeline-list .lead-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 14px;
+    row-gap: 14px;
+    padding: 20px;
+  }
+  .admin-refresh .pipeline-list .company-mark {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .admin-refresh .pipeline-list .lead-row > :not(.company-mark) {
+    grid-column: 2;
+  }
+
+  /* ---- who it is ---- */
+
+  .admin-refresh .lead-who {
+    gap: 6px;
+  }
+  .admin-refresh .lead-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .admin-refresh .pipeline-list .lead-title strong {
+    font-size: 16px;
+    line-height: 1.3;
+    color: #11241a;
+  }
+  .admin-refresh .pipeline-list .lead-person {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #56685c;
+    /* readability.css truncates .lead-who > span to one line, which cut the
+       recommendation mid word. There is room for two. */
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
+  }
+
+  /* The stage, as a word rather than the two pixel stripe it was.
+     Scoped through .pipeline-list because `.admin-refresh .pipeline-list span`
+     sets a size and a colour for every span in the list and would otherwise
+     outrank a plain .lead-tag on specificity. */
+  .admin-refresh .pipeline-list .lead-tag {
+    padding: 3px 9px;
+    border: 1px solid #dde7d8;
+    border-radius: 999px;
+    background: #eef3ea;
+    color: #3d5245;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .admin-refresh .pipeline-list .lead-tag[data-stage='qualified'] {
+    border-color: #c5dcf0;
+    background: #e8f1fa;
+    color: #1d4f7a;
+  }
+  .admin-refresh .pipeline-list .lead-tag[data-stage='proposal'] {
+    border-color: #c3e2a4;
+    background: #e9f5dc;
+    color: #3c6b1c;
+  }
+  .admin-refresh .pipeline-list .lead-tag[data-stage='won'] {
+    border-color: #aedcc2;
+    background: #dff3e6;
+    color: #146c42;
+  }
+  .admin-refresh .pipeline-list .lead-tag[data-stage='lost'] {
+    border-color: #dfe4dc;
+    background: #f0f2ef;
+    color: #5b6660;
+  }
+  .admin-refresh .pipeline-list .lead-tag[data-due='overdue'] {
+    border-color: #eebcaf;
+    background: #fbe6e0;
+    color: #a8372a;
+  }
+  .admin-refresh .pipeline-list .lead-tag[data-due='today'] {
+    border-color: #ecd9a8;
+    background: #fbf1d9;
+    color: #7a5a12;
+  }
+
+  /* ---- the three fields ---- */
+
+  /* Two rows, at every width. The old template put all three fields on one
+     line and let the free text one absorb what was left, which inside a panel
+     that is 0.65 of the page meant typing a sentence through a 180px window.
+     The stage and the date have fixed, knowable widths; the next action is the
+     field people actually write in, so it gets the full row. */
+  .admin-refresh .lead-controls {
+    grid-template-columns:
+      minmax(120px, 190px) minmax(140px, 185px) minmax(0, 1fr)
+      22px;
+    gap: 12px;
+    align-items: end;
+  }
+  .admin-refresh .lead-stage {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .admin-refresh .lead-when {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .admin-refresh .lead-state {
+    grid-column: 4;
+    grid-row: 1;
+  }
+  .admin-refresh .lead-next {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  /* Three inputs whose only labels were screen reader text, so a stage select,
+     a free text box and a date sat in a row explaining nothing. */
+  .admin-refresh .pipeline-list .lead-field-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #56685c;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .admin-refresh .lead-state {
+    align-self: end;
+    min-height: 42px;
+  }
+
+  /* readability.css tints an overdue or due-today date for a dark panel. On
+     white, #f0a78f measures about 1.9:1 and the gold is worse, so the one
+     field that is trying to raise its hand is the hardest to read on the page.
+     The border keeps carrying the signal; the text goes back to readable. */
+  .admin-refresh .lead-row.due-overdue .lead-when input {
+    border-color: #c2553c;
+    color: #11241a;
+    background: #fdf3f0;
+  }
+  .admin-refresh .lead-row.due-today .lead-when input {
+    border-color: #a8872f;
+    color: #11241a;
+    background: #fdf8ec;
+  }
+
+  /* ---- the footer ---- */
+
+  .admin-refresh .lead-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #e6ede2;
+  }
+  /* This was a bare anchor inside the name block, inheriting 17px, which made
+     it larger than the company it sat under and read as the row's heading. */
+  .admin-refresh .lead-prepare,
+  .admin-refresh .lead-project {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid #cddcc5;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1d4a33;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .admin-refresh .lead-prepare:is(:hover, :focus-visible),
+  .admin-refresh .lead-project:hover:not(:disabled) {
+    border-color: #175b3b;
+    background: #f2f7ed;
+  }
+  .admin-refresh .lead-prepare svg {
+    flex: none;
+  }
+
+  /* The pair moves into the footer, so it drops the dashed rule it used to
+     draw for itself and sits at the far end instead. */
+  .admin-refresh .lead-footer .lead-destructive {
+    margin: 0 0 0 auto;
+    padding-top: 0;
+    border-top: 0;
+    gap: 6px;
+  }
+  /* Quiet is the point, but a transparent border on a white card is invisible
+     rather than quiet: both of these read as captions until you happen to
+     hover one. A resting outline makes them findable; the red still waits. */
+  .admin-refresh .lead-destructive .confirm-action-arm {
+    min-height: 38px;
+    padding: 8px 13px;
+    border-color: #e2e9dd;
+    background: #ffffff;
+  }
+  .admin-refresh .lead-footer .lead-destructive .status-note {
+    flex-basis: 100%;
+    margin-top: 8px;
+  }
+
+  /* ---- history ---- */
+
+  .admin-refresh .lead-history {
+    margin-top: 0;
+    padding-top: 12px;
+    border-top-color: #e6ede2;
+  }
+  .admin-refresh .lead-history > summary {
+    font-weight: 600;
+    color: #1d4a33;
+  }
+
+  /* ---- the summary strip above the list ---- */
+
+  /* Two stacked lines of small print saying adjacent things. Pulled together
+     so the list starts higher and the counts read as one strip. */
+  .admin-filter-count {
+    padding-bottom: 10px;
+  }
+  .admin-refresh .content-count {
+    gap: 8px;
+  }
+  .admin-refresh .content-count b {
+    margin-left: 0;
+  }
+  .admin-refresh .content-count .tag-overdue {
+    color: #a8372a;
+    background: #fbe6e0;
+  }
+  .admin-refresh .content-count .tag-today {
+    color: #7a5a12;
+    background: #fbf1d9;
+  }
+  .admin-refresh .content-count .tag-unset {
+    color: #3d5245;
+    background: #eef3ea;
+  }
+
+  @media (max-width: 640px) {
+    /* On a phone the 34px mark column is 48px of indent that every field pays
+       for. The name keeps it, because that is what it labels; everything under
+       it reclaims the full width. */
+    .admin-refresh .pipeline-list .lead-row {
+      column-gap: 10px;
+      padding: 18px 16px;
+    }
+    .admin-refresh .lead-controls,
+    .admin-refresh .lead-history,
+    .admin-refresh .lead-footer {
+      grid-column: 1 / -1;
+    }
+    /* Stage and date stop sharing a line once neither can hold its own label
+       and its value at the same time. */
+    .admin-refresh .lead-controls {
+      grid-template-columns: minmax(0, 1fr) 22px;
+    }
+    .admin-refresh .lead-stage {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .admin-refresh .lead-state {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .admin-refresh .lead-when {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .admin-refresh .lead-next {
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+    /* Stacked, the destructive pair stops being a right hand corner and
+       becomes the last thing in the column, which is where it belongs. */
+    .admin-refresh .lead-footer .lead-destructive {
+      margin-left: 0;
+      width: 100%;
+    }
   }
 }
 

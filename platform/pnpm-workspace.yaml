@@ -1,4 +1,27 @@
+# One package, named explicitly. pnpm treats this file's presence as "there is
+# a workspace here", and a workspace with no `packages` is what the deploy host
+# reported as "packages field missing or empty".
+packages:
+  - '.'
+
+# The same three approvals, written twice, because the two pnpm versions in play
+# read different keys and each ignores the other's without saying so.
+#
+# `allowBuilds` arrived in pnpm 10.26 and is what pnpm 11 reads; local dev runs
+# 11.11.0. The deploy host provides pnpm 10.11.1, which predates it, so it read
+# a file it understood nothing in and skipped all three builds silently:
+# "Ignored build scripts: esbuild, sharp, workerd". A deployed bundle with no
+# esbuild binary, no sharp and no workerd runtime is the result.
+#
+# Verified on both: 10.11.1 and 11.11.0 each install clean from this file with
+# no ignored-builds warning. Drop `onlyBuiltDependencies` once the host ships
+# pnpm 10.26 or newer, and not before.
 allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd

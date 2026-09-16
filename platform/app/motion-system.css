@@ -68,6 +68,26 @@
   justify-content: center;
   gap: 8px;
 }
+/* The sizer measures itself with nowrap. The face did not, so a button was
+   measured for one line and drawn as two: "Add to pipeline" with its arrow
+   wrapped underneath, on every caller that passes an icon beside the text. */
+.pending-button-face,
+.pending-button-label {
+  white-space: nowrap;
+}
+.pending-button-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+/* An icon handed in as a child arrives at lucide's 24px default, which is
+   taller than the 13px label it sits beside. Sized from the text instead, so
+   one rule covers every button rather than each caller remembering a prop. */
+.pending-button-label > svg {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
 .pending-button[aria-busy='true'] {
   cursor: progress;
 }
