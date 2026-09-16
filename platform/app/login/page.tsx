@@ -1,8 +1,10 @@
 'use client';
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [reveal, setReveal] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   async function signIn(event: React.SubmitEvent<HTMLFormElement>) {
@@ -69,21 +71,52 @@ export default function Login() {
         </label>
         <label>
           Password
-          <input
-            required
-            type="password"
-            autoComplete="current-password"
-            maxLength={200}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              display: 'block',
-              border: '1px solid #9cac9e',
-              borderRadius: 8,
-              padding: 12,
-              width: '100%',
-            }}
-          />
+          {/* The toggle sits inside the field's box rather than beside it, so
+              the input keeps the full width the email field has. Right padding
+              is reserved for it so a long password never runs underneath. */}
+          <span style={{ display: 'block', position: 'relative' }}>
+            <input
+              required
+              type={reveal ? 'text' : 'password'}
+              autoComplete="current-password"
+              maxLength={200}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                display: 'block',
+                border: '1px solid #9cac9e',
+                borderRadius: 8,
+                padding: 12,
+                paddingRight: 48,
+                width: '100%',
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setReveal((shown) => !shown)}
+              // Not aria-pressed: the label already changes to say what the
+              // next press does, and announcing both states twice is worse
+              // than announcing it once clearly.
+              aria-label={reveal ? 'Hide password' : 'Show password'}
+              title={reveal ? 'Hide password' : 'Show password'}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 0,
+                width: 44,
+                display: 'grid',
+                placeItems: 'center',
+                border: 0,
+                borderRadius: 8,
+                background: 'transparent',
+                color: '#4a6152',
+                cursor: 'pointer',
+              }}
+            >
+              {reveal ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </span>
         </label>
         <button
           disabled={busy}

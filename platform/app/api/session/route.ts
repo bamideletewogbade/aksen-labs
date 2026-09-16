@@ -18,6 +18,17 @@ async function post(request: Request) {
   const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
   const cookie = (value: string, age: number) =>
     `${ADMIN_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secure}`;
+  // Every branch below needs the database, and getDb() throws when the URL is
+  // absent. Thrown, that becomes withRequestLog's generic "could not be
+  // completed", which is why a Worker deployed with no secrets at all looked
+  // like a rejected password: the 503 below never ran, because this line threw
+  // first. Named as configuration here, and kept distinguishable from the
+  // ADMIN_* check further down so the two can be told apart from the outside.
+  if (!process.env.DATABASE_URL)
+    return Response.json(
+      { error: 'Admin sign-in is unavailable: storage is not configured.' },
+      { status: 503 },
+    );
   const db = getDb();
   if (new URL(request.url).searchParams.get('action') === 'logout') {
     const token = sessionToken(request.headers.get('cookie'));
