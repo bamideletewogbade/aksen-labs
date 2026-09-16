@@ -42,7 +42,8 @@ export type TriageOutcome = {
  * triage forever.
  */
 export function asDate(value: unknown): Date | null {
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (value instanceof Date)
+    return Number.isNaN(value.getTime()) ? null : value;
   if (typeof value !== 'string' || !value) return null;
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
@@ -251,7 +252,10 @@ export async function runFeedbackTriage(
       .select({ id: feedbackIdeas.id, title: feedbackIdeas.title })
       .from(feedbackIdeas)
       .where(
-        and(eq(feedbackIdeas.published, true), isNull(feedbackIdeas.mergedInto)),
+        and(
+          eq(feedbackIdeas.published, true),
+          isNull(feedbackIdeas.mergedInto),
+        ),
       )
       .limit(150);
 
@@ -276,8 +280,7 @@ export async function runFeedbackTriage(
             .update(feedbackIdeas)
             .set({
               triagedAt: new Date(),
-              triageSummary:
-                'Triage could not read this one. Needs a person.',
+              triageSummary: 'Triage could not read this one. Needs a person.',
               triageSize: null,
               updatedAt: new Date(),
             })
@@ -389,7 +392,9 @@ async function raise(
         idea.title,
         reading.summary,
         reading.reason,
-        reading.duplicateOf ? `Possible duplicate of ${reading.duplicateOf}` : '',
+        reading.duplicateOf
+          ? `Possible duplicate of ${reading.duplicateOf}`
+          : '',
       ]
         .filter(Boolean)
         .join('\n'),
@@ -454,7 +459,8 @@ export async function triageDue(): Promise<
   // starts spending model credits.
   if (!settings)
     return { due: false, reason: 'Triage is not set up on this deployment.' };
-  if (!settings.enabled) return { due: false, reason: 'Triage is switched off.' };
+  if (!settings.enabled)
+    return { due: false, reason: 'Triage is switched off.' };
 
   if (settings.running)
     return { due: false, reason: 'Triage is already running.' };

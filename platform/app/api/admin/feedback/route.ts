@@ -96,7 +96,12 @@ async function POSTHandler(request: Request) {
       .update(feedbackIdeas)
       .set({ published, updatedAt: new Date() })
       .where(eq(feedbackIdeas.id, id));
-    await record(db, gate.email, published ? 'feedback.published' : 'feedback.hidden', id);
+    await record(
+      db,
+      gate.email,
+      published ? 'feedback.published' : 'feedback.hidden',
+      id,
+    );
     return NextResponse.json({ status: 'ok', published });
   }
 
@@ -149,7 +154,8 @@ async function POSTHandler(request: Request) {
       .set({
         mergedInto: targetId,
         published: false,
-        statusNote: note || 'Merged into an earlier request asking the same thing.',
+        statusNote:
+          note || 'Merged into an earlier request asking the same thing.',
         updatedAt: new Date(),
       })
       .where(eq(feedbackIdeas.id, id));
@@ -172,7 +178,11 @@ async function POSTHandler(request: Request) {
       );
     await db
       .update(feedbackIdeas)
-      .set({ status, statusNote: note || idea.statusNote, updatedAt: new Date() })
+      .set({
+        status,
+        statusNote: note || idea.statusNote,
+        updatedAt: new Date(),
+      })
       .where(eq(feedbackIdeas.id, id));
     await record(db, gate.email, 'feedback.status', id, { status });
     return NextResponse.json({ status: 'ok' });
@@ -188,8 +198,7 @@ async function POSTHandler(request: Request) {
         { error: 'Write a line about what actually shipped.' },
         { status: 400 },
       );
-    const kind =
-      typeof input.kind === 'string' ? input.kind : 'improvement';
+    const kind = typeof input.kind === 'string' ? input.kind : 'improvement';
     if (!changelogKinds.some((entry) => entry.id === kind))
       return NextResponse.json({ error: 'Unknown kind.' }, { status: 400 });
 

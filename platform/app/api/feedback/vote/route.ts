@@ -73,7 +73,10 @@ async function POSTHandler(request: Request) {
 
   const [updated] = await db
     .update(feedbackIdeas)
-    .set({ voteCount: sql`${feedbackIdeas.voteCount} + 1`, updatedAt: new Date() })
+    .set({
+      voteCount: sql`${feedbackIdeas.voteCount} + 1`,
+      updatedAt: new Date(),
+    })
     .where(eq(feedbackIdeas.id, idea.id))
     .returning({ votes: feedbackIdeas.voteCount });
 

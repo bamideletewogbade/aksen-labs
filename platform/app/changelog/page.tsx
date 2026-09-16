@@ -13,8 +13,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Changelog | Aksen Labs',
-  description:
-    'What we shipped, when, and which request asked for it.',
+  description: 'What we shipped, when, and which request asked for it.',
 };
 
 type Entry = {
@@ -37,10 +36,11 @@ function byMonth(entries: Entry[]) {
     // as a local Date would shift it a day west of Greenwich, so the label is
     // built from the string itself.
     const [year, month] = entry.releasedOn.split('-');
-    const label = new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(
-      'en-GB',
-      { month: 'long', year: 'numeric' },
-    );
+    const label = new Date(
+      Number(year),
+      Number(month) - 1,
+      1,
+    ).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     const existing = groups.find((group) => group.label === label);
     if (existing) existing.entries.push(entry);
     else groups.push({ label, entries: [entry] });
@@ -110,10 +110,7 @@ export default async function ChangelogPage() {
                       {/* The id is the anchor a shipped board card links to. */}
                       <span id={entry.slug} className="changelog-anchor" />
                       <div className="changelog-entry-top">
-                        <span
-                          className="changelog-kind"
-                          data-kind={entry.kind}
-                        >
+                        <span className="changelog-kind" data-kind={entry.kind}>
                           {changelogKindLabel(entry.kind)}
                         </span>
                         <time dateTime={entry.releasedOn}>

@@ -9,6 +9,7 @@ import {
   PenLine,
 } from 'lucide-react';
 import { PendingButton, StatusNote } from '@/components/ui/activity';
+import { AdminTabs } from '@/components/admin-tabs';
 import {
   socialProviders,
   type SocialContext,
@@ -203,235 +204,264 @@ export function SocialHub({
         <div>
           <strong>Your password does not belong in this workspace.</strong>
           <p>
-            Profile links work now. Direct publishing will use each
-            network&apos;s official OAuth consent when its developer app is
-            configured. AI can draft; you remain the publisher and final
-            approver.
+            Profile links work now. Publishing uses each network&apos;s official
+            sign-in once it is set up. AI drafts; you publish.
           </p>
         </div>
       </section>
 
-      <section className="admin-panel">
-        <div className="panel-head">
-          <div>
-            <small>CONNECTIONS</small>
-            <h2>Your social front doors</h2>
-          </div>
-        </div>
-        <p className="social-intro">
-          Add the public profile for each channel. A saved profile gives you a
-          one-click route to the account; API readiness tells us whether secure
-          publishing can be wired next.
-        </p>
-        <div className="social-provider-grid">
-          {providers.map((provider) => {
-            const profile = workspace.profiles[provider.id];
-            return (
-              <article className="social-provider" key={provider.id}>
-                <div className="social-provider-head">
-                  <span className={`social-mark social-mark-${provider.id}`}>
-                    {provider.id === 'x' ? 'X' : provider.label.slice(0, 2)}
-                  </span>
+      {/* Drafting is what this screen is opened for; channels and context are
+          set once and revisited rarely, so they moved behind their own tabs
+          instead of sitting above the studio on every visit. */}
+      <AdminTabs
+        label="Social Hub"
+        tabs={[
+          {
+            id: 'studio',
+            label: 'Draft studio',
+            panel: (
+              <form className="admin-panel" onSubmit={createDrafts}>
+                <div className="panel-head">
                   <div>
-                    <h3>{provider.label}</h3>
-                    <span data-ready={Boolean(profile)}>
-                      {profile ? 'Profile linked' : 'Profile needed'}
-                    </span>
+                    <small>DRAFT STUDIO</small>
+                    <h2>One idea, shaped for each channel</h2>
                   </div>
+                  <PenLine />
                 </div>
-                <label>
-                  Public profile URL
-                  <input
-                    type="url"
-                    inputMode="url"
-                    placeholder={`https://${provider.id}.com/...`}
-                    value={profile}
-                    onChange={(event) =>
-                      setProfile(provider.id, event.target.value)
-                    }
-                  />
-                </label>
-                <div className="social-provider-actions">
-                  {profile && (
-                    <a href={profile} target="_blank" rel="noreferrer">
-                      Open profile <ExternalLink size={14} />
-                    </a>
-                  )}
-                  <a
-                    className="quiet-link"
-                    href={provider.developerUrl}
-                    target="_blank"
-                    rel="noreferrer"
+                <div className="social-draft-form">
+                  <label>
+                    Topic or rough thought
+                    <textarea
+                      rows={5}
+                      required
+                      value={topic}
+                      placeholder="Example: Why we are building Aksen as a service business first, and what that teaches us about useful AI."
+                      onChange={(event) => setTopic(event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    What should this post achieve? <span>(optional)</span>
+                    <input
+                      value={goal}
+                      placeholder="Start conversations with owners losing time to repetitive admin"
+                      onChange={(event) => setGoal(event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Verified proof or source notes <span>(optional)</span>
+                    <textarea
+                      rows={3}
+                      value={proof}
+                      placeholder="Only include facts, links, tested capabilities or results we can defend."
+                      onChange={(event) => setProof(event.target.value)}
+                    />
+                  </label>
+                  <fieldset>
+                    <legend>Channels</legend>
+                    <div className="social-channel-choices">
+                      {providers.map((provider) => (
+                        <label key={provider.id}>
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(provider.id)}
+                            onChange={() => toggleProvider(provider.id)}
+                          />
+                          {provider.label}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                </div>
+                <div className="settings-actions">
+                  <PendingButton
+                    type="submit"
+                    pending={drafting}
+                    pendingLabel="Shaping drafts"
+                    disabled={!topic.trim() || !selected.length}
                   >
-                    Developer setup <ExternalLink size={14} />
-                  </a>
+                    <PenLine size={15} /> Create review drafts
+                  </PendingButton>
+                  {draftNote && (
+                    <StatusNote tone={draftNote.failed ? 'error' : 'done'}>
+                      {draftNote.text}
+                    </StatusNote>
+                  )}
                 </div>
-                <div
-                  className="social-api-status"
-                  data-ready={provider.credentialReady}
-                >
-                  <strong>
-                    {provider.credentialReady
-                      ? 'Developer credentials present'
-                      : 'OAuth setup not configured'}
-                  </strong>
-                  <small>{provider.credentialNames}</small>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <form className="admin-panel" onSubmit={save}>
-        <div className="panel-head">
-          <div>
-            <small>AI CONTEXT</small>
-            <h2>What every draft should understand</h2>
-          </div>
-        </div>
-        <p className="social-intro">
-          This is reusable company context, not a one-off prompt. Edit it as the
-          business learns, wins real proof, or narrows an offer.
-        </p>
-        <div className="social-context-grid">
-          {contextFields.map((field) => (
-            <label key={field.key}>
-              {field.label}
-              <textarea
-                rows={field.rows}
-                value={workspace.context[field.key]}
-                onChange={(event) => setContext(field.key, event.target.value)}
-              />
-              <small>{field.help}</small>
-            </label>
-          ))}
-        </div>
-        <div className="settings-actions">
-          <PendingButton
-            type="submit"
-            pending={saving}
-            pendingLabel="Saving context"
-            disabled={!changed}
-          >
-            <Save size={15} /> Save profiles and context
-          </PendingButton>
-          {saveNote && (
-            <StatusNote tone={saveNote.failed ? 'error' : 'done'}>
-              {saveNote.text}
-            </StatusNote>
-          )}
-        </div>
-      </form>
-
-      <form className="admin-panel" onSubmit={createDrafts}>
-        <div className="panel-head">
-          <div>
-            <small>DRAFT STUDIO</small>
-            <h2>One idea, shaped for each channel</h2>
-          </div>
-          <PenLine />
-        </div>
-        <div className="social-draft-form">
-          <label>
-            Topic or rough thought
-            <textarea
-              rows={5}
-              required
-              value={topic}
-              placeholder="Example: Why we are building Aksen as a service business first, and what that teaches us about useful AI."
-              onChange={(event) => setTopic(event.target.value)}
-            />
-          </label>
-          <label>
-            What should this post achieve? <span>(optional)</span>
-            <input
-              value={goal}
-              placeholder="Start conversations with owners losing time to repetitive admin"
-              onChange={(event) => setGoal(event.target.value)}
-            />
-          </label>
-          <label>
-            Verified proof or source notes <span>(optional)</span>
-            <textarea
-              rows={3}
-              value={proof}
-              placeholder="Only include facts, links, tested capabilities or results we can defend."
-              onChange={(event) => setProof(event.target.value)}
-            />
-          </label>
-          <fieldset>
-            <legend>Channels</legend>
-            <div className="social-channel-choices">
-              {providers.map((provider) => (
-                <label key={provider.id}>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(provider.id)}
-                    onChange={() => toggleProvider(provider.id)}
-                  />
-                  {provider.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        </div>
-        <div className="settings-actions">
-          <PendingButton
-            type="submit"
-            pending={drafting}
-            pendingLabel="Shaping drafts"
-            disabled={!topic.trim() || !selected.length}
-          >
-            <PenLine size={15} /> Create review drafts
-          </PendingButton>
-          {draftNote && (
-            <StatusNote tone={draftNote.failed ? 'error' : 'done'}>
-              {draftNote.text}
-            </StatusNote>
-          )}
-        </div>
-        {Object.keys(drafts).length > 0 && (
-          <div className="social-draft-results">
-            {socialProviders.flatMap((provider) => {
-              const draft = drafts[provider];
-              if (!draft) return [];
-              const label = providers.find(
-                (item) => item.id === provider,
-              )?.label;
-              return [
-                <article key={provider}>
-                  <div>
-                    <h3>{label}</h3>
-                    <button
-                      type="button"
-                      onClick={() => copyDraft(provider, draft)}
-                    >
-                      {copied === provider ? (
-                        <Check size={14} />
-                      ) : (
-                        <Copy size={14} />
-                      )}
-                      {copied === provider ? 'Copied' : 'Copy'}
-                    </button>
+                {Object.keys(drafts).length > 0 && (
+                  <div className="social-draft-results">
+                    {socialProviders.flatMap((provider) => {
+                      const draft = drafts[provider];
+                      if (!draft) return [];
+                      const label = providers.find(
+                        (item) => item.id === provider,
+                      )?.label;
+                      return [
+                        <article key={provider}>
+                          <div>
+                            <h3>{label}</h3>
+                            <button
+                              type="button"
+                              onClick={() => copyDraft(provider, draft)}
+                            >
+                              {copied === provider ? (
+                                <Check size={14} />
+                              ) : (
+                                <Copy size={14} />
+                              )}
+                              {copied === provider ? 'Copied' : 'Copy'}
+                            </button>
+                          </div>
+                          <textarea
+                            rows={provider === 'tiktok' ? 9 : 7}
+                            value={draft}
+                            onChange={(event) =>
+                              setDrafts((current) => ({
+                                ...current,
+                                [provider]: event.target.value,
+                              }))
+                            }
+                            aria-label={`${label} draft`}
+                          />
+                        </article>,
+                      ];
+                    })}
                   </div>
-                  <textarea
-                    rows={provider === 'tiktok' ? 9 : 7}
-                    value={draft}
-                    onChange={(event) =>
-                      setDrafts((current) => ({
-                        ...current,
-                        [provider]: event.target.value,
-                      }))
-                    }
-                    aria-label={`${label} draft`}
-                  />
-                </article>,
-              ];
-            })}
-          </div>
-        )}
-      </form>
+                )}
+              </form>
+            ),
+          },
+          {
+            id: 'channels',
+            label: 'Channels',
+            panel: (
+              <section className="admin-panel">
+                <div className="panel-head">
+                  <div>
+                    <small>CONNECTIONS</small>
+                    <h2>Your social front doors</h2>
+                  </div>
+                </div>
+                <p className="social-intro">
+                  Add the public profile for each channel. A saved profile gives
+                  you a one-click route to the account; API readiness tells us
+                  whether secure publishing can be wired next.
+                </p>
+                <div className="social-provider-grid">
+                  {providers.map((provider) => {
+                    const profile = workspace.profiles[provider.id];
+                    return (
+                      <article className="social-provider" key={provider.id}>
+                        <div className="social-provider-head">
+                          <span
+                            className={`social-mark social-mark-${provider.id}`}
+                          >
+                            {provider.id === 'x'
+                              ? 'X'
+                              : provider.label.slice(0, 2)}
+                          </span>
+                          <div>
+                            <h3>{provider.label}</h3>
+                            <span data-ready={Boolean(profile)}>
+                              {profile ? 'Profile linked' : 'Profile needed'}
+                            </span>
+                          </div>
+                        </div>
+                        <label>
+                          Public profile URL
+                          <input
+                            type="url"
+                            inputMode="url"
+                            placeholder={`https://${provider.id}.com/...`}
+                            value={profile}
+                            onChange={(event) =>
+                              setProfile(provider.id, event.target.value)
+                            }
+                          />
+                        </label>
+                        <div className="social-provider-actions">
+                          {profile && (
+                            <a href={profile} target="_blank" rel="noreferrer">
+                              Open profile <ExternalLink size={14} />
+                            </a>
+                          )}
+                          <a
+                            className="quiet-link"
+                            href={provider.developerUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Developer setup <ExternalLink size={14} />
+                          </a>
+                        </div>
+                        <div
+                          className="social-api-status"
+                          data-ready={provider.credentialReady}
+                        >
+                          <strong>
+                            {provider.credentialReady
+                              ? 'Developer credentials present'
+                              : 'OAuth setup not configured'}
+                          </strong>
+                          <small>{provider.credentialNames}</small>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ),
+          },
+          {
+            id: 'context',
+            label: 'AI context',
+            panel: (
+              <form className="admin-panel" onSubmit={save}>
+                <div className="panel-head">
+                  <div>
+                    <small>AI CONTEXT</small>
+                    <h2>What every draft should understand</h2>
+                  </div>
+                </div>
+                <p className="social-intro">
+                  This is reusable company context, not a one-off prompt. Edit
+                  it as the business learns, wins real proof, or narrows an
+                  offer.
+                </p>
+                <div className="social-context-grid">
+                  {contextFields.map((field) => (
+                    <label key={field.key}>
+                      {field.label}
+                      <textarea
+                        rows={field.rows}
+                        value={workspace.context[field.key]}
+                        onChange={(event) =>
+                          setContext(field.key, event.target.value)
+                        }
+                      />
+                      <small>{field.help}</small>
+                    </label>
+                  ))}
+                </div>
+                <div className="settings-actions">
+                  <PendingButton
+                    type="submit"
+                    pending={saving}
+                    pendingLabel="Saving context"
+                    disabled={!changed}
+                  >
+                    <Save size={15} /> Save profiles and context
+                  </PendingButton>
+                  {saveNote && (
+                    <StatusNote tone={saveNote.failed ? 'error' : 'done'}>
+                      {saveNote.text}
+                    </StatusNote>
+                  )}
+                </div>
+              </form>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

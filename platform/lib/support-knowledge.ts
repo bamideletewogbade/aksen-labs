@@ -94,7 +94,9 @@ export function supportArticles(): SupportArticle[] {
             (p) =>
               `${p.name}: ${p.status}. ${p.description} ${p.stages
                 .map((s) => `${s.title}: ${s.items.join('; ')}`)
-                .join('. ')}. ${p.limits || ''} ${p.href ? `Page: ${p.href}` : 'No public address yet; it cannot be used from this site.'}`,
+                .join(
+                  '. ',
+                )}. ${p.limits || ''} ${p.href ? `Page: ${p.href}` : 'No public address yet; it cannot be used from this site.'}`,
           )
           .join('\n') +
         '\nFree to use here now: ' +

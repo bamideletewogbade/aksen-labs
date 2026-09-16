@@ -1383,7 +1383,8 @@ footer > span {
 }
 .admin-main {
   padding: 38px clamp(24px, 4vw, 64px) 70px;
-  background: radial-gradient(circle at 70% 0%, rgba(30, 143, 90, 0.08), transparent 27%),
+  background:
+    radial-gradient(circle at 70% 0%, rgba(30, 143, 90, 0.08), transparent 27%),
     #ffffff;
 }
 .admin-header {

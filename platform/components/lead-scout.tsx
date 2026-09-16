@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { SkeletonRows, Spinner } from '@/components/ui/activity';
 import { LeadFilterBar } from '@/components/lead-filter-bar';
 import { LeadSchedule } from '@/components/lead-schedule';
+import { AdminTabs } from '@/components/admin-tabs';
 import {
   EMPTY_FILTER,
   filterLeads,
@@ -115,6 +116,7 @@ export function LeadScout() {
     box.style.height = `${Math.min(box.scrollHeight + 2, 520)}px`;
   }, [target]);
   const visible = filterLeads(data?.leads || [], filter);
+  const [tab, setTab] = useState('search');
   const unsaved = target.trim() !== data?.campaign?.target;
   const validTarget = target.trim().length >= 10;
   const running =
@@ -265,367 +267,456 @@ export function LeadScout() {
       setBusy(false);
     }
   }
+  const newLeads = (data?.leads || []).filter(
+    (lead) => lead.status === 'new',
+  ).length;
   return (
     <div className="scout">
-      <section className="scout-panel">
-        <h2>Find businesses worth a conversation</h2>
-        <p>
-          Search public company information, review the evidence and move
-          suitable prospects into Enquiries. No outreach is sent.
-        </p>
-        <div className="scout-target-head">
-          <label htmlFor="scout-target">Target market</label>
-          <span
-            className={
-              target.length > maxTarget * 0.9
-                ? 'scout-counter is-near'
-                : 'scout-counter'
-            }
-          >
-            {target.length.toLocaleString()} / {maxTarget.toLocaleString()}
-          </span>
-        </div>
-        <textarea
-          id="scout-target"
-          ref={targetBox}
-          className="scout-target"
-          value={target}
-          maxLength={maxTarget}
-          spellCheck={false}
-          disabled={busy || loading}
-          aria-describedby="scout-target-hint"
-          placeholder={
-            'Describe who you want to reach. Markdown is fine.\n\n## Objective\nFind ...\n\n## Good fit\n- ...\n\n## Avoid\n- ...'
-          }
-          onKeyDown={(e) => {
-            // A prompt is written as an outline, so Tab should indent rather
-            // than jump to the next control and lose the writer's place.
-            // Shift+Tab still moves focus, which keeps keyboard navigation out.
-            if (e.key !== 'Tab' || e.shiftKey) return;
-            e.preventDefault();
-            const box = e.currentTarget;
-            const { selectionStart: from, selectionEnd: to } = box;
-            const next = target.slice(0, from) + '  ' + target.slice(to);
-            if (next.length > maxTarget) return;
-            dirty.current = true;
-            setTarget(next);
-            requestAnimationFrame(() => {
-              box.selectionStart = box.selectionEnd = from + 2;
-            });
-          }}
-          onChange={(e) => {
-            dirty.current = true;
-            setTarget(e.target.value);
-          }}
-        />
-        <p id="scout-target-hint" className="scout-small">
-          Headings and lists are kept as written. Tab indents; Shift+Tab leaves
-          the field.
-        </p>
-        <div className="scout-actions">
-          <button
-            disabled={busy || loading || !data || !validTarget || !unsaved}
-            onClick={() => act('configure')}
-          >
-            Save target
-          </button>
-          <button
-            className="scout-primary"
-            disabled={busy || loading || researchBlocked || unsaved}
-            aria-describedby="scout-search-status"
-            onClick={() => act('discover')}
-          >
-            Find up to 5 businesses
-          </button>
-          {data?.campaign && (
-            <button
-              disabled={busy}
-              onClick={() => act(data.campaign?.enabled ? 'pause' : 'resume')}
-            >
-              {data.campaign.enabled ? 'Pause searches' : 'Resume searches'}
-            </button>
-          )}
-          <button disabled={busy || loading} onClick={() => act('refresh')}>
-            Refresh
-          </button>
-        </div>
-        <p id="scout-search-status" className="scout-search-status">
-          {reason}
-        </p>
-        <p className="scout-small">
-          {/* Read from the server rather than written here, so the number
-              shown is the number actually enforced. */}
-          {data
-            ? data.remainingRuns === null
-              ? 'Research runs are not capped for this workspace. '
-              : `${data.remainingRuns} of ${data.dailyRuns} research runs remaining today. `
-            : ''}
-          Sources and contact details need human review. A saved target controls
-          searches; recurring execution requires the connected scheduler.
-        </p>
-        {busy && (
-          <output aria-live="polite" className="scout-working">
-            <Spinner size={15} />
-            <span>
-              {pending.startsWith('enrich')
-                ? 'Enriching the selected business…'
-                : pending === 'discover'
-                  ? 'Researching businesses…'
-                  : 'Saving or refreshing…'}{' '}
-              Research can take about a minute.
-            </span>
-          </output>
-        )}
-        {message && <output aria-live="polite">{message}</output>}
-        {error && <p role="alert">{error}</p>}
-      </section>
-      <section
-        className="scout-agent-board"
-        aria-labelledby="research-team-heading"
-      >
-        <div className="scout-agent-head">
-          <div>
-            <span className="scout-eyebrow">RESEARCH TEAM</span>
-            <h2 id="research-team-heading">
-              From market search to review queue
-            </h2>
-          </div>
-          <span
-            className={
-              busy &&
-              ['discover', 'enrich'].some((value) => pending.startsWith(value))
-                ? 'scout-live'
-                : 'scout-idle'
-            }
-          >
-            {busy &&
-            ['discover', 'enrich'].some((value) => pending.startsWith(value))
-              ? 'Agents working'
-              : shownEvents.length
-                ? 'Latest run'
-                : 'Ready'}
-          </span>
-        </div>
-        <ol className="scout-agent-flow">
-          {researchAgents.map((agent, index) => {
-            const event = [...shownEvents]
-              .reverse()
-              .find((item) => item.stage === agent.stage);
-            return (
-              <li
-                key={agent.stage}
-                className={event ? `is-${event.status}` : ''}
-              >
-                <span className="scout-agent-number">{index + 1}</span>
-                <div>
-                  <strong>{agent.name}</strong>
-                  <p>{event?.message || agent.job}</p>
-                </div>
-                <span className="scout-agent-state">
-                  {event?.status || 'waiting'}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-        <p className="scout-agent-note">
-          Agents only use public business information. Nothing here contacts a
-          prospect; you decide what enters Enquiries.
-        </p>
-      </section>
-      {ready && (
-        <details className="scout-panel">
-          <summary>
-            Business readiness ·{' '}
-            {ready.database && !ready.missingTables.length
-              ? 'database connected'
-              : 'database needs attention'}
-          </summary>
-          <ul>
-            <li>AI key: {ready.openrouter ? 'configured' : 'missing'}</li>
-            <li>
-              Resend sender and key:{' '}
-              {ready.resend ? 'configured' : 'not configured'}
-            </li>
-            <li>
-              Production admin allowlist:{' '}
-              {ready.adminAllowlist
-                ? 'configured'
-                : 'not configured; production access stays closed'}
-            </li>
-            {ready.missingTables.length > 0 && (
-              <li>Missing tables: {ready.missingTables.join(', ')}</li>
-            )}
-            {ready.notes.map((note) => (
-              <li key={note}>{note}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-      <LeadSchedule
-        campaign={data?.campaign ?? null}
-        busy={busy}
-        pending={pending}
-        onSave={(schedule) => void act('schedule', undefined, schedule)}
-      />
-      <section>
-        <h2>Prospect review queue</h2>
-        <LeadFilterBar
-          leads={data?.leads || []}
-          filter={filter}
-          onChange={setFilter}
-          shown={visible.length}
-        />
-        {!data && !error && (
-          <SkeletonRows rows={5} label="Loading saved leads" />
-        )}
-        {/* An empty list has two quite different causes, and saying which one
-            it is saves someone re-running a search they did not need. */}
-        {data && !visible.length && (
-          <p>
-            {data.leads.length
-              ? 'No leads match these filters. Clear one, or widen the status.'
-              : 'Nothing saved yet. Run a search, or set a schedule above and let one run overnight.'}
-          </p>
-        )}
-        <div className="scout-grid">
-          {visible.map((lead) => (
-            <article className="scout-panel" key={lead.id}>
-              <span className="scout-small">
-                {lead.status} · Public research, not verified buying intent
-              </span>
-              <h3>{lead.company}</h3>
-              <a href={lead.website} target="_blank" rel="noreferrer">
-                Company website ↗
-              </a>
-              <p>{lead.data.description}</p>
-              <h4>Possible fit — AI hypothesis</h4>
-              <p>{lead.data.opportunity}</p>
-              <h4>Public business contacts</h4>
-              {lead.data.contacts.length ? (
-                <ul>
-                  {lead.data.contacts.map((c, i) => (
-                    <li key={i}>
-                      <strong>{c.kind}: </strong>
-                      {c.value}{' '}
-                      <a href={c.source} target="_blank" rel="noreferrer">
-                        Source ↗
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No contact details supported by the returned evidence.</p>
-              )}
-              <p className="scout-small">
-                Checked {new Date(lead.data.checkedAt).toLocaleDateString()}.
-                Public availability does not establish consent to marketing.
-              </p>
-              <details>
-                <summary>
-                  Review source evidence ({lead.data.sources.length})
-                </summary>
-                {lead.data.sources.map((s, i) => (
-                  <div key={i}>
-                    <a href={s.url} target="_blank" rel="noreferrer">
-                      {s.title || s.url} ↗
-                    </a>
-                    <p className="scout-excerpt">
-                      {s.content ||
-                        'No excerpt returned. Open the source to verify.'}
-                    </p>
+      {/* Four jobs on one screen became a two-thousand pixel scroll: search,
+          review, schedule and history. Tabs keep each one a screen high, and
+          every panel stays mounted, so a half-written brief survives a look
+          at the queue. */}
+      <AdminTabs
+        label="Lead Scout"
+        active={tab}
+        onChange={setTab}
+        tabs={[
+          {
+            id: 'search',
+            label: 'Search',
+            panel: (
+              <>
+                <section className="scout-panel">
+                  <h2>Find businesses worth a conversation</h2>
+                  <p>
+                    Search public company information, review the evidence and
+                    move suitable prospects into Enquiries. No outreach is sent.
+                  </p>
+                  <div className="scout-target-head">
+                    <label htmlFor="scout-target">Target market</label>
+                    <span
+                      className={
+                        target.length > maxTarget * 0.9
+                          ? 'scout-counter is-near'
+                          : 'scout-counter'
+                      }
+                    >
+                      {target.length.toLocaleString()} /{' '}
+                      {maxTarget.toLocaleString()}
+                    </span>
                   </div>
-                ))}
-              </details>
-              <div className="scout-actions">
-                {['new', 'shortlisted'].includes(lead.status) && (
-                  <>
+                  <textarea
+                    id="scout-target"
+                    ref={targetBox}
+                    className="scout-target"
+                    value={target}
+                    maxLength={maxTarget}
+                    spellCheck={false}
+                    disabled={busy || loading}
+                    aria-describedby="scout-target-hint"
+                    placeholder={
+                      'Describe who you want to reach. Markdown is fine.\n\n## Objective\nFind ...\n\n## Good fit\n- ...\n\n## Avoid\n- ...'
+                    }
+                    onKeyDown={(e) => {
+                      // A prompt is written as an outline, so Tab should indent rather
+                      // than jump to the next control and lose the writer's place.
+                      // Shift+Tab still moves focus, which keeps keyboard navigation out.
+                      if (e.key !== 'Tab' || e.shiftKey) return;
+                      e.preventDefault();
+                      const box = e.currentTarget;
+                      const { selectionStart: from, selectionEnd: to } = box;
+                      const next =
+                        target.slice(0, from) + '  ' + target.slice(to);
+                      if (next.length > maxTarget) return;
+                      dirty.current = true;
+                      setTarget(next);
+                      requestAnimationFrame(() => {
+                        box.selectionStart = box.selectionEnd = from + 2;
+                      });
+                    }}
+                    onChange={(e) => {
+                      dirty.current = true;
+                      setTarget(e.target.value);
+                    }}
+                  />
+                  <p id="scout-target-hint" className="scout-small">
+                    Headings and lists are kept as written. Tab indents;
+                    Shift+Tab leaves the field.
+                  </p>
+                  <div className="scout-actions">
                     <button
-                      disabled={busy || researchBlocked}
-                      onClick={() => act('enrich', lead.id)}
+                      disabled={
+                        busy || loading || !data || !validTarget || !unsaved
+                      }
+                      onClick={() => act('configure')}
                     >
-                      {pending === 'enrich:' + lead.id
-                        ? 'Enriching…'
-                        : 'Enrich public details'}
+                      Save target
                     </button>
-                    {lead.status === 'new' && (
+                    <button
+                      className="scout-primary"
+                      disabled={busy || loading || researchBlocked || unsaved}
+                      aria-describedby="scout-search-status"
+                      onClick={() => act('discover')}
+                    >
+                      Find up to 5 businesses
+                    </button>
+                    {data?.campaign && (
                       <button
                         disabled={busy}
-                        onClick={() => act('shortlist', lead.id)}
+                        onClick={() =>
+                          act(data.campaign?.enabled ? 'pause' : 'resume')
+                        }
                       >
-                        Shortlist
-                      </button>
-                    )}
-                    {lead.status === 'shortlisted' && (
-                      <button
-                        disabled={busy}
-                        onClick={() => act('promote', lead.id)}
-                      >
-                        Move to Enquiries
+                        {data.campaign.enabled
+                          ? 'Pause searches'
+                          : 'Resume searches'}
                       </button>
                     )}
                     <button
-                      disabled={busy}
-                      onClick={() => act('dismiss', lead.id)}
+                      disabled={busy || loading}
+                      onClick={() => act('refresh')}
                     >
-                      Dismiss
+                      Refresh
                     </button>
-                  </>
-                )}
-                {lead.status === 'dismissed' && (
+                  </div>
+                  <p id="scout-search-status" className="scout-search-status">
+                    {reason}
+                  </p>
+                  <p className="scout-small">
+                    {/* Read from the server rather than written here, so the number
+                      shown is the number actually enforced. */}
+                    {data
+                      ? data.remainingRuns === null
+                        ? 'Research runs are not capped for this workspace. '
+                        : `${data.remainingRuns} of ${data.dailyRuns} research runs remaining today. `
+                      : ''}
+                    Sources and contact details need human review. A saved
+                    target controls searches; recurring execution requires the
+                    connected scheduler.
+                  </p>
+                  {busy && (
+                    <output aria-live="polite" className="scout-working">
+                      <Spinner size={15} />
+                      <span>
+                        {pending.startsWith('enrich')
+                          ? 'Enriching the selected business…'
+                          : pending === 'discover'
+                            ? 'Researching businesses…'
+                            : 'Saving or refreshing…'}{' '}
+                        Research can take about a minute.
+                      </span>
+                    </output>
+                  )}
+                  {message && <output aria-live="polite">{message}</output>}
+                  {error && <p role="alert">{error}</p>}
+                </section>
+                <section
+                  className="scout-agent-board"
+                  aria-labelledby="research-team-heading"
+                >
+                  <div className="scout-agent-head">
+                    <div>
+                      <span className="scout-eyebrow">RESEARCH TEAM</span>
+                      <h2 id="research-team-heading">
+                        From market search to review queue
+                      </h2>
+                    </div>
+                    <span
+                      className={
+                        busy &&
+                        ['discover', 'enrich'].some((value) =>
+                          pending.startsWith(value),
+                        )
+                          ? 'scout-live'
+                          : 'scout-idle'
+                      }
+                    >
+                      {busy &&
+                      ['discover', 'enrich'].some((value) =>
+                        pending.startsWith(value),
+                      )
+                        ? 'Agents working'
+                        : shownEvents.length
+                          ? 'Latest run'
+                          : 'Ready'}
+                    </span>
+                  </div>
+                  <ol className="scout-agent-flow">
+                    {researchAgents.map((agent, index) => {
+                      const event = [...shownEvents]
+                        .reverse()
+                        .find((item) => item.stage === agent.stage);
+                      return (
+                        <li
+                          key={agent.stage}
+                          className={event ? `is-${event.status}` : ''}
+                        >
+                          <span className="scout-agent-number">
+                            {index + 1}
+                          </span>
+                          <div>
+                            <strong>{agent.name}</strong>
+                            <p>{event?.message || agent.job}</p>
+                          </div>
+                          <span className="scout-agent-state">
+                            {event?.status || 'waiting'}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                  <p className="scout-agent-note">
+                    Agents only use public business information. Nothing here
+                    contacts a prospect; you decide what enters Enquiries.
+                  </p>
+                </section>
+                {newLeads > 0 && !busy && (
                   <button
-                    disabled={busy}
-                    onClick={() => act('restore', lead.id)}
+                    type="button"
+                    className="scout-to-queue"
+                    onClick={() => setTab('queue')}
                   >
-                    Restore to new leads
+                    Review {newLeads} new {newLeads === 1 ? 'lead' : 'leads'} in
+                    the queue →
                   </button>
                 )}
-                {lead.opportunity_id && (
-                  <Link
-                    href={
-                      '/admin/pipeline?q=' + encodeURIComponent(lead.company)
-                    }
-                  >
-                    Open Enquiries →
-                  </Link>
+              </>
+            ),
+          },
+          {
+            id: 'queue',
+            label: 'Review queue',
+            note: newLeads || undefined,
+            panel: (
+              <section>
+                <h2 className="scout-sr-only">Prospect review queue</h2>
+                <LeadFilterBar
+                  leads={data?.leads || []}
+                  filter={filter}
+                  onChange={setFilter}
+                  shown={visible.length}
+                />
+                {!data && !error && (
+                  <SkeletonRows rows={5} label="Loading saved leads" />
                 )}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-      <details className="scout-panel">
-        <summary>Recent search runs</summary>
-        <ul>
-          {data?.runs.length === 0 && <li>No searches have run yet.</li>}
-          {data?.runs.map((run) => (
-            <li key={run.id}>
-              <strong>
-                {new Date(run.created_at).toLocaleString()} · {run.status}
-              </strong>
-              <span>
-                {run.note ||
-                  'In progress. A run left here after interruption needs review.'}
-              </span>
-              {data.events.some((event) => event.run_id === run.id) && (
-                <ol className="scout-run-events">
-                  {data.events
-                    .filter((event) => event.run_id === run.id)
-                    .reverse()
-                    .map((event) => (
-                      <li key={event.id}>
-                        <span>{event.stage}</span>
-                        <b>{event.status}</b>
-                        <p>{event.message}</p>
+                {/* An empty list has two quite different causes, and saying which one
+                  it is saves someone re-running a search they did not need. */}
+                {data && !visible.length && (
+                  <p>
+                    {data.leads.length
+                      ? 'No leads match these filters. Clear one, or widen the status.'
+                      : 'Nothing saved yet. Run a search, or set a schedule above and let one run overnight.'}
+                  </p>
+                )}
+                <div className="scout-grid">
+                  {visible.map((lead) => (
+                    <article className="scout-panel" key={lead.id}>
+                      <span className="scout-small">
+                        {lead.status} · Public research, not verified buying
+                        intent
+                      </span>
+                      <h3>{lead.company}</h3>
+                      <a href={lead.website} target="_blank" rel="noreferrer">
+                        Company website ↗
+                      </a>
+                      <p>{lead.data.description}</p>
+                      <h4>Possible fit — AI hypothesis</h4>
+                      <p>{lead.data.opportunity}</p>
+                      <h4>Public business contacts</h4>
+                      {lead.data.contacts.length ? (
+                        <ul>
+                          {lead.data.contacts.map((c, i) => (
+                            <li key={i}>
+                              <strong>{c.kind}: </strong>
+                              {c.value}{' '}
+                              <a
+                                href={c.source}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Source ↗
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>
+                          No contact details supported by the returned evidence.
+                        </p>
+                      )}
+                      <p className="scout-small">
+                        {/* Older saved leads predate checkedAt; "Checked Invalid Date" read as a fault in the evidence rather than a missing field. */}
+                        {lead.data.checkedAt &&
+                        !Number.isNaN(Date.parse(lead.data.checkedAt))
+                          ? `Checked ${new Date(lead.data.checkedAt).toLocaleDateString()}. `
+                          : ''}
+                        Public availability does not establish consent to
+                        marketing.
+                      </p>
+                      <details>
+                        <summary>
+                          Review source evidence ({lead.data.sources.length})
+                        </summary>
+                        {lead.data.sources.map((s, i) => (
+                          <div key={i}>
+                            <a href={s.url} target="_blank" rel="noreferrer">
+                              {s.title || s.url} ↗
+                            </a>
+                            <p className="scout-excerpt">
+                              {s.content ||
+                                'No excerpt returned. Open the source to verify.'}
+                            </p>
+                          </div>
+                        ))}
+                      </details>
+                      <div className="scout-actions">
+                        {['new', 'shortlisted'].includes(lead.status) && (
+                          <>
+                            <button
+                              disabled={busy || researchBlocked}
+                              onClick={() => act('enrich', lead.id)}
+                            >
+                              {pending === 'enrich:' + lead.id
+                                ? 'Enriching…'
+                                : 'Enrich public details'}
+                            </button>
+                            {lead.status === 'new' && (
+                              <button
+                                disabled={busy}
+                                onClick={() => act('shortlist', lead.id)}
+                              >
+                                Shortlist
+                              </button>
+                            )}
+                            {lead.status === 'shortlisted' && (
+                              <button
+                                disabled={busy}
+                                onClick={() => act('promote', lead.id)}
+                              >
+                                Move to Enquiries
+                              </button>
+                            )}
+                            <button
+                              disabled={busy}
+                              onClick={() => act('dismiss', lead.id)}
+                            >
+                              Dismiss
+                            </button>
+                          </>
+                        )}
+                        {lead.status === 'dismissed' && (
+                          <button
+                            disabled={busy}
+                            onClick={() => act('restore', lead.id)}
+                          >
+                            Restore to new leads
+                          </button>
+                        )}
+                        {lead.opportunity_id && (
+                          <Link
+                            href={
+                              '/admin/pipeline?q=' +
+                              encodeURIComponent(lead.company)
+                            }
+                          >
+                            Open Enquiries →
+                          </Link>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ),
+          },
+          {
+            id: 'schedule',
+            label: 'Schedule',
+            panel: (
+              <>
+                <LeadSchedule
+                  campaign={data?.campaign ?? null}
+                  busy={busy}
+                  pending={pending}
+                  onSave={(schedule) =>
+                    void act('schedule', undefined, schedule)
+                  }
+                />
+                <details className="scout-panel">
+                  <summary>Recent search runs</summary>
+                  <ul>
+                    {data?.runs.length === 0 && (
+                      <li>No searches have run yet.</li>
+                    )}
+                    {data?.runs.map((run) => (
+                      <li key={run.id}>
+                        <strong>
+                          {new Date(run.created_at).toLocaleString()} ·{' '}
+                          {run.status}
+                        </strong>
+                        <span>
+                          {run.note ||
+                            'In progress. A run left here after interruption needs review.'}
+                        </span>
+                        {data.events.some(
+                          (event) => event.run_id === run.id,
+                        ) && (
+                          <ol className="scout-run-events">
+                            {data.events
+                              .filter((event) => event.run_id === run.id)
+                              .reverse()
+                              .map((event) => (
+                                <li key={event.id}>
+                                  <span>{event.stage}</span>
+                                  <b>{event.status}</b>
+                                  <p>{event.message}</p>
+                                </li>
+                              ))}
+                          </ol>
+                        )}
                       </li>
                     ))}
-                </ol>
-              )}
-            </li>
-          ))}
-        </ul>
-        <Link href="/admin/audit">Open activity log →</Link>
-      </details>
+                  </ul>
+                  <Link href="/admin/audit">Open activity log →</Link>
+                </details>
+                {ready && (
+                  <details className="scout-panel">
+                    <summary>
+                      Business readiness ·{' '}
+                      {ready.database && !ready.missingTables.length
+                        ? 'database connected'
+                        : 'database needs attention'}
+                    </summary>
+                    <ul>
+                      <li>
+                        AI key: {ready.openrouter ? 'configured' : 'missing'}
+                      </li>
+                      <li>
+                        Resend sender and key:{' '}
+                        {ready.resend ? 'configured' : 'not configured'}
+                      </li>
+                      <li>
+                        Production admin allowlist:{' '}
+                        {ready.adminAllowlist
+                          ? 'configured'
+                          : 'not configured; production access stays closed'}
+                      </li>
+                      {ready.missingTables.length > 0 && (
+                        <li>
+                          Missing tables: {ready.missingTables.join(', ')}
+                        </li>
+                      )}
+                      {ready.notes.map((note) => (
+                        <li key={note}>{note}</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

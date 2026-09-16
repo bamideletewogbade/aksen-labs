@@ -11,6 +11,7 @@
 | `Docs/Operating-Templates/` | Discovery, qualification, proposal, scope, kickoff, UAT, handover, care, billing, change. |
 | `clients/` | Per-client briefs and discovery notes. Real people. Treat accordingly. |
 | `video/` | Remotion marketing video, plus the Playwright script that captures real product screens. |
+| `marketing/nigeria-kit/` | Shareable images, reels config and captions for the Nigeria friends referral test. Prices live in its `config.mjs`. |
 | `research/` | Positioning and market research inputs. |
 
 ## Rules that are not negotiable

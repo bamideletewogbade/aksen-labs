@@ -47,7 +47,10 @@ async function POSTHandler(request: Request) {
     .slice(0, 200);
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return NextResponse.json(
-      { error: 'That email address does not look right. Leave it blank if you prefer.' },
+      {
+        error:
+          'That email address does not look right. Leave it blank if you prefer.',
+      },
       { status: 400 },
     );
 
@@ -55,9 +58,18 @@ async function POSTHandler(request: Request) {
   const hour = currentHour();
   const submitter = await visitorKey(request);
   // Reserved before the write, so a flood cannot fill the board.
-  if (!(await reserve(db, `feedback-visitor-${submitter}-${hour}`, ideaVisitorLimit)))
+  if (
+    !(await reserve(
+      db,
+      `feedback-visitor-${submitter}-${hour}`,
+      ideaVisitorLimit,
+    ))
+  )
     return NextResponse.json(
-      { error: 'That is several ideas in an hour. Send the rest a little later.' },
+      {
+        error:
+          'That is several ideas in an hour. Send the rest a little later.',
+      },
       { status: 429 },
     );
   if (!(await reserve(db, `feedback-${hour}`, ideaHourlyCeiling)))

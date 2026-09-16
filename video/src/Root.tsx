@@ -4,6 +4,8 @@ import { formats, fps, type FormatName } from './brand';
 import { OrderStory, orderStoryDuration } from './compositions/OrderStory';
 import { LaunchFilm, launchFilmDuration } from './compositions/LaunchFilm';
 import { AksenAd, aksenAdDuration } from './compositions/AksenAd';
+import { NaijaOffers, NaijaOverview, NaijaReel, NG_OFFERS, NG_OVERVIEW, NG_REEL } from './compositions/NaijaShowcase';
+import { industries } from '../../marketing/nigeria-kit/config.mjs';
 
 /**
  * One story, registered once per shape.
@@ -75,6 +77,24 @@ export function RemotionRoot() {
           defaultProps={{ format }}
         />
       ))}
+      {/* Nigeria friends kit, vertical only: WhatsApp Status, Reels, TikTok.
+          One twelve second reel per industry, a thirty second overview and a
+          fifteen second price reel. `node scripts/render-nigeria.mjs` renders
+          all of them into out/nigeria. */}
+      {industries.map((b) => (
+        <Composition
+          key={`ng-${b.id}`}
+          id={`ng-reel-${b.id}`}
+          component={NaijaReel}
+          durationInFrames={NG_REEL}
+          fps={fps}
+          width={formats.vertical.width}
+          height={formats.vertical.height}
+          defaultProps={{ id: b.id }}
+        />
+      ))}
+      <Composition id="ng-overview" component={NaijaOverview} durationInFrames={NG_OVERVIEW} fps={fps} width={formats.vertical.width} height={formats.vertical.height} />
+      <Composition id="ng-offers" component={NaijaOffers} durationInFrames={NG_OFFERS} fps={fps} width={formats.vertical.width} height={formats.vertical.height} />
     </>
   );
 }

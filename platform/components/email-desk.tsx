@@ -110,7 +110,7 @@ export function EmailDesk() {
   }
   const reviewed = data?.items.find((i) => i.id === reviewId);
   return (
-    <div className="ops-layout">
+    <div className="ops-layout email-layout">
       <section className="admin-panel ops-controls">
         <h2>Compose a service email</h2>
         <label>
