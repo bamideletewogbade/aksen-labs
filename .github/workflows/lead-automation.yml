@@ -18,8 +18,17 @@ name: Aksen automation heartbeat
 
 on:
   schedule:
-    # Hourly, on the hour, UTC. The endpoint decides whether anything happens.
-    - cron: '0 * * * *'
+    # Every ten minutes, UTC. The endpoint decides whether anything happens.
+    #
+    # This was hourly, which was right when the only work here was research that
+    # nobody is waiting on. The outbox changed that: a person who writes in at
+    # 10:05 would have waited until 11:00 for the message telling them their
+    # enquiry arrived, and fifty-five minutes of silence after pressing send is
+    # how a visitor concludes the form is broken.
+    #
+    # Calling more often costs nothing. Research still runs only when its own
+    # cadence says so, and a drain with an empty queue is two cheap queries.
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 concurrency:

@@ -1,0 +1,315 @@
+/* ----------------------------------------------------------------------
+   White admin: the parts a palette conversion cannot reach.
+
+   The stylesheets beside this one are rewritten wholesale by
+   scripts/relight-admin.mjs, which maps every colour by what its property is
+   doing and how light it was. That handles six hundred values and cannot
+   handle judgement. This file is the judgement, written by hand, loaded last,
+   and deliberately excluded from the converter so it is never fed its own
+   output.
+   ---------------------------------------------------------------------- */
+
+@media screen {
+  /* The rail only collapses above 1101px, where the layout is two columns.
+     Below that the header menu does the work, so a collapse button is a
+     control for a behaviour that does not exist, and it was rendering as a
+     bare 16px icon with no skin because every rule that sizes it lives in the
+     desktop block. */
+  .admin-rail-toggle {
+    display: none;
+  }
+
+  /* PendingButton carries no skin of its own. Eight of the twelve places the
+     admin uses it pass no class either, so they rendered as naked browser
+     buttons: no border, no padding, the icon stacking above the label. That is
+     the "weird" on the social hub, and it was never a social hub problem.
+
+     :where() drops this to the specificity of .admin-refresh alone, so it is a
+     floor rather than an override and .admin-primary still wins. */
+  .admin-refresh :where(.pending-button) {
+    padding: 9px 16px;
+    border: 1px solid #cddcc5;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1d4a33;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease;
+  }
+  .admin-refresh :where(.pending-button):hover:not(:disabled) {
+    background: #f2f7ed;
+    border-color: #175b3b;
+  }
+  .admin-refresh :where(.pending-button):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .admin-refresh .pending-button:focus-visible {
+    outline: 2px solid #175b3b;
+    outline-offset: 2px;
+  }
+
+  /* One obvious primary per screen. Lime on white is a suggestion; solid green
+     is an instruction, and the save button is the thing you came to press. */
+  .admin-refresh .admin-primary {
+    background: #175b3b;
+    border: 1px solid #175b3b;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .admin-refresh .admin-primary:hover:not(:disabled) {
+    background: #12472e;
+    border-color: #12472e;
+  }
+  .admin-refresh .admin-primary:disabled {
+    background: #9fb6a6;
+    border-color: #9fb6a6;
+    color: #ffffff;
+  }
+
+  .admin-refresh .admin-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+  }
+
+  /* Inputs read as places to type, which on a white page means a visible well
+     rather than the borderless fields the dark theme could get away with. */
+  .admin-refresh
+    :is(
+      input[type='text'],
+      input[type='url'],
+      input[type='email'],
+      input[type='search'],
+      input[type='number'],
+      input[type='password'],
+      textarea,
+      select
+    ) {
+    background: #ffffff;
+    border: 1px solid #d3ded0;
+    border-radius: 8px;
+    color: #11241a;
+  }
+  .admin-refresh :is(input, textarea, select):focus-visible {
+    outline: 2px solid #175b3b;
+    outline-offset: 1px;
+    border-color: #175b3b;
+  }
+  .admin-refresh ::placeholder {
+    color: #8d9c91;
+  }
+
+  /* ---- what the conversion could not see ----
+
+     These components style themselves from globals.css under class names that
+     say nothing about the admin (.media-*, .create-tabs, .content-list), so the
+     converter, which only rewrites admin-owned rules in that shared file,
+     correctly left them alone and they kept their dark-theme values. Scoped to
+     .admin-refresh here so the public site keeps its own. Found by
+     video/scripts/audit-contrast.mjs rather than by looking. */
+
+  /* A card that stayed near-black, which put a 3.18:1 Delete on top of it. */
+  .admin-refresh .content-list article {
+    background: #ffffff;
+    border-color: #e0e8db;
+  }
+
+  /* Lime was a foreground on black. On white it measures 1.29:1, which is a
+     colour you can see and text you cannot read. */
+  .admin-refresh .create-tabs button.active {
+    color: #1d5b3c;
+  }
+  /* !important in the original, so this needs one back. --signal is a fill and
+     using it as a foreground was already wrong on the dark theme; on white it
+     is lime text on near-white at 1.29:1. */
+  .admin-refresh .media-enhance-button {
+    color: #1d5b3c !important;
+    border-color: #9dcf83 !important;
+  }
+  .admin-refresh .create-tabs button.active {
+    border-bottom-color: #175b3b;
+  }
+  .admin-refresh
+    :is(
+      .create-tabs button,
+      .media-preset-row button,
+      .media-reference-field > span
+    ) {
+    color: #56685c;
+  }
+  .admin-refresh .media-preset-row button:is(:hover, .active) {
+    color: #1d5b3c;
+    border-color: #175b3b;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   The rail
+
+   Collapsed it is icons only. Hovering expands it OVER the content instead of
+   pushing it: the grid column stays 64px and the sidebar simply overflows it.
+   That is the part that matters. A sidebar that widens the layout on hover
+   reflows the whole page under the pointer, so every line of text moves while
+   you are reading it and the thing you were about to click walks away.
+
+   The pin is for people who would rather not have it move at all, and it is
+   remembered. Hover only exists above the breakpoint, where the layout is two
+   columns and a pointer is a fair assumption; below it the existing menu
+   button still does the work.
+   ---------------------------------------------------------------------- */
+
+@media screen and (min-width: 1101px) {
+  .admin-refresh {
+    background: linear-gradient(to right, #102219 0 248px, #f4f7f1 248px 100%);
+    transition: background 0.22s ease;
+  }
+  .admin-refresh .admin-sidebar {
+    box-shadow: 1px 0 0 #2a3c2e;
+    transition:
+      width 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s ease;
+  }
+
+  /* `.admin-sidebar nav a span` in globals.css is a count badge: a dark pill
+     with its own colour and font size. Wrapping the labels in a span to make
+     them hideable handed every one of them that badge, so the expanded rail
+     showed the nav as a column of dark lozenges. */
+  .admin-refresh .admin-sidebar nav a span.admin-nav-label {
+    display: inline;
+    place-items: normal;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .admin-rail-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 4px 20px 10px;
+  }
+  .admin-rail-head .admin-brand {
+    margin: 0;
+    min-width: 0;
+    flex: 1;
+  }
+  .admin-rail-toggle {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex: none;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #8fa795;
+    cursor: pointer;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease;
+  }
+  .admin-rail-toggle:hover {
+    background: #1b3525;
+    color: #eef7e7;
+  }
+  .admin-rail-toggle:focus-visible {
+    outline: 2px solid #bde997;
+    outline-offset: 1px;
+  }
+
+  :root[data-rail='collapsed'] .admin-refresh {
+    grid-template-columns: 64px minmax(0, 1fr);
+    background: linear-gradient(to right, #102219 0 64px, #f4f7f1 64px 100%);
+  }
+  :root[data-rail='collapsed'] .admin-refresh .admin-sidebar {
+    width: 64px;
+    padding-inline: 10px;
+    /* Overflowing its own 64px column is what makes the expansion an overlay
+       rather than a layout change. */
+    overflow: visible;
+    z-index: 70;
+  }
+  /* :focus-visible, not :focus-within. The collapse button lives inside the
+     sidebar and keeps focus after it is clicked, so :focus-within held the rail
+     open against the very click that asked it to close: the column shrank to
+     64px underneath while the sidebar stayed 248px and covered the page.
+     :has(:focus-visible) ignores a mouse click and still expands for anyone
+     arriving by keyboard, which is the only reason the rule exists. */
+  :root[data-rail='collapsed']
+    .admin-refresh
+    .admin-sidebar:is(:hover, :has(:focus-visible)) {
+    width: 248px;
+    padding-inline: 16px;
+    border-radius: 0 14px 14px 0;
+    box-shadow: 14px 0 44px #04120b3d;
+  }
+
+  /* Collapsed and untouched: icons only, and every group open, because an
+     accordion whose labels are hidden is a set of unmarked doors. */
+  :root[data-rail='collapsed']
+    .admin-refresh
+    .admin-sidebar:not(:hover, :has(:focus-visible)) {
+    .admin-nav-label,
+    .admin-brand div,
+    .admin-nav-group-toggle span,
+    .admin-nav-group-toggle svg,
+    .admin-profile span,
+    .admin-profile > a {
+      display: none;
+    }
+    .admin-nav-group-items {
+      display: grid !important;
+      height: auto !important;
+      opacity: 1 !important;
+      overflow: visible !important;
+    }
+    .admin-nav-group-toggle {
+      height: 1px;
+      min-height: 0;
+      padding: 0;
+      margin: 10px 6px;
+      overflow: hidden;
+      background: #2a3c2e;
+      border-radius: 1px;
+    }
+    nav a,
+    .admin-site-link {
+      justify-content: center;
+      padding-inline: 0;
+    }
+    .admin-profile {
+      justify-content: center;
+      padding: 8px;
+    }
+    /* The pin stays on screen. Hiding it until hover meant the only way back
+       from a collapsed rail was to discover that hovering it brings a button
+       back, which is a control you have to already know about to find. */
+    .admin-rail-head {
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      margin-inline: 0;
+    }
+    .admin-rail-head .admin-brand {
+      flex: none;
+    }
+  }
+
+  /* A pointer that never arrives should not trap the rail shut. Keyboard focus
+     expands it too, which is what :focus-within above is for. */
+  @media (prefers-reduced-motion: reduce) {
+    .admin-refresh,
+    .admin-refresh .admin-sidebar {
+      transition: none;
+    }
+  }
+}

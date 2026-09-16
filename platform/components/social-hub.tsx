@@ -6,7 +6,7 @@ import {
   ExternalLink,
   Save,
   ShieldCheck,
-  Sparkles,
+  PenLine,
 } from 'lucide-react';
 import { PendingButton, StatusNote } from '@/components/ui/activity';
 import {
@@ -203,9 +203,10 @@ export function SocialHub({
         <div>
           <strong>Your password does not belong in this workspace.</strong>
           <p>
-            Profile links work now. Direct publishing will use each network&apos;s
-            official OAuth consent when its developer app is configured. AI can
-            draft; you remain the publisher and final approver.
+            Profile links work now. Direct publishing will use each
+            network&apos;s official OAuth consent when its developer app is
+            configured. AI can draft; you remain the publisher and final
+            approver.
           </p>
         </div>
       </section>
@@ -329,7 +330,7 @@ export function SocialHub({
             <small>DRAFT STUDIO</small>
             <h2>One idea, shaped for each channel</h2>
           </div>
-          <Sparkles />
+          <PenLine />
         </div>
         <div className="social-draft-form">
           <label>
@@ -382,7 +383,7 @@ export function SocialHub({
             pendingLabel="Shaping drafts"
             disabled={!topic.trim() || !selected.length}
           >
-            <Sparkles size={15} /> Create review drafts
+            <PenLine size={15} /> Create review drafts
           </PendingButton>
           {draftNote && (
             <StatusNote tone={draftNote.failed ? 'error' : 'done'}>

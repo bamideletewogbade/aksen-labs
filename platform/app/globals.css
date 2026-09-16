@@ -1284,8 +1284,8 @@ footer > span {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 238px 1fr;
-  color: #e8eee9;
-  background: #070a08;
+  color: #11241a;
+  background: #ffffff;
 }
 .admin-sidebar {
   position: sticky;
@@ -1348,7 +1348,7 @@ footer > span {
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  background: #0d120f;
+  background: #ffffff;
 }
 .admin-profile > div {
   display: grid;
@@ -1356,7 +1356,7 @@ footer > span {
   width: 33px;
   height: 33px;
   border-radius: 9px;
-  color: #071008;
+  color: #1d5b3c;
   background: var(--signal);
   font-size: 12px;
   font-weight: 800;
@@ -1373,19 +1373,18 @@ footer > span {
 }
 .admin-profile small {
   margin-top: 2px;
-  color: #626d65;
+  color: #11241a;
   font-size: 11px;
 }
 .admin-profile a {
   grid-column: 2;
-  color: #77827a;
+  color: #56685c;
   font-size: 11px;
 }
 .admin-main {
   padding: 38px clamp(24px, 4vw, 64px) 70px;
-  background:
-    radial-gradient(circle at 70% 0%, rgba(30, 143, 90, 0.08), transparent 27%),
-    #070a08;
+  background: radial-gradient(circle at 70% 0%, rgba(30, 143, 90, 0.08), transparent 27%),
+    #ffffff;
 }
 .admin-header {
   display: flex;
@@ -1406,7 +1405,7 @@ footer > span {
 }
 .admin-header p {
   margin: 0;
-  color: #69746c;
+  color: #11241a;
   font-size: 12px;
 }
 .admin-header > a {
@@ -1416,7 +1415,7 @@ footer > span {
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 7px;
-  color: #9aa59d;
+  color: #2b3d32;
   font-size: 13px;
 }
 .admin-header > a svg {

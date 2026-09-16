@@ -565,19 +565,12 @@
 
 /* The three headlines share one grid cell, so the tallest sets the height and a
    longer line cannot push the paragraph and buttons down as the copy swaps. */
+/* One fixed promise. The stacked-variant rules that used to live here went with
+   the rotating headline: the sector story now changes underneath a heading that
+   stays still. */
 .ambition-headline {
-  display: grid;
-}
-.ambition-headline > span {
-  grid-area: 1 / 1;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.ambition-headline > span.is-current {
-  opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ambition-headline > span {
-    transition: none;
-  }
+  display: block;
+  /* Two lines, not three. The site's h1 scale was set for a shorter promise
+     than this one, and a clause that wraps reads as two thoughts. */
+  font-size: clamp(2.9rem, 5.1vw, 5.4rem);
 }

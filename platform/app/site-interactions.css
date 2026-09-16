@@ -160,6 +160,11 @@
 @media (max-width: 620px) {
   .agency-site .whatsapp-link.is-footer {
     margin: 10px 0 0;
+    /* The footer variant sets min-height to 0 so it can sit inline on a wide
+       screen. On a phone it is a 32px-tall tap target on every page of the
+       site, and it is the one control there that starts a conversation. */
+    min-height: 44px;
+    padding: 8px 14px;
   }
   .agency-site .whatsapp-link small {
     display: none;

@@ -9,24 +9,27 @@ import { Reveal } from './agency-motion';
 // order match /industries so the same story is told in both places. One medium
 // throughout: these are photographs of the kind of business we build for, never
 // presented as our own clients.
+//
+// These used to carry the headline too, so the page's main promise changed
+// every seven seconds. A visitor who runs a shop and lands on the hotel line
+// spends their first seconds reading about somebody else, and a heading that
+// moves while you read it is a comprehension cost with nothing bought for it.
+// The promise is fixed now. What rotates is the evidence under it: the sector's
+// own sentence, its photograph and its note.
 const heroStories = [
   {
     label: 'Retail',
     tab: 'Retail',
-    headline: 'Take more orders.',
-    headlineEm: 'Not more messages.',
     title: 'An order nobody has to chase.',
     image: 'retail-commerce',
     alt: 'Shop staff taking an order at the counter while a delivery rider waits',
     caption: 'FROM ENQUIRY TO DELIVERED ORDER',
     note: 'An agent answers first on WhatsApp.',
-    lead: 'Customers message your shop on WhatsApp and Instagram. An agent answers there, takes the order with the details complete, and your team sees every one in a single place.',
+    lead: 'You sell on WhatsApp and Instagram, and the messages do not stop when the shop does. An agent answers them, takes the order properly, and hands your team a list instead of a backlog.',
   },
   {
     label: 'Hospitality',
     tab: 'Hospitality',
-    headline: 'Fill more rooms.',
-    headlineEm: 'Not more spreadsheets.',
     title: 'A booking the next shift can see.',
     image: 'hospitality-tourism',
     alt: 'Guests checking in at a hotel reception desk',
@@ -39,8 +42,6 @@ const heroStories = [
     // name that /industries uses.
     label: 'Professional services',
     tab: 'Consulting',
-    headline: 'Win more work.',
-    headlineEm: 'Not more admin.',
     title: 'A quote out while it still matters.',
     image: 'professional-services-workflow',
     alt: 'A consultant reviewing documents with a client in an office',
@@ -208,33 +209,19 @@ export function HeroShowcase() {
       <div className="agency-container ambition-grid">
         <div className="ambition-copy">
           <Reveal>
+            {/* Digital transformation is the category we sell into, and it is
+                not a phrase anyone running a shop says out loud. The eyebrow
+                names the work instead; the category belongs in the copy a
+                buyer reads after they know what we make. */}
             <p className="agency-eyebrow">
-              DIGITAL TRANSFORMATION FOR AFRICAN BUSINESSES
+              WEBSITES, BUSINESS SYSTEMS AND AI · BUILT IN GHANA
             </p>
           </Reveal>
-          {/* One heading holding three stacked variants, so a longer line
-              cannot change the height and push the paragraph and buttons down.
-              aria-hidden alone did not keep the inactive ones out of the
-              heading's accessible name: the tree read back all three run
-              together. The label states the name outright, so the page has one
-              main heading that says exactly what is on screen. */}
           <Reveal delay={70}>
-            <h1
-              id="home-title"
-              className="ambition-headline"
-              aria-label={`${heroStories[active].headline} ${heroStories[active].headlineEm}`}
-            >
-              {heroStories.map((story, index) => (
-                <span
-                  key={story.label}
-                  className={index === active ? 'is-current' : ''}
-                  aria-hidden={index !== active}
-                >
-                  {story.headline}
-                  <br />
-                  <em>{story.headlineEm}</em>
-                </span>
-              ))}
+            <h1 id="home-title" className="ambition-headline">
+              Messages get answered.
+              <br />
+              <em>You get your evening back.</em>
             </h1>
           </Reveal>
           <Reveal delay={130}>
@@ -255,8 +242,11 @@ export function HeroShowcase() {
               <Link className="agency-button" href="/agent-mapper">
                 Discuss your business <ArrowUpRight size={19} />
               </Link>
-              <Link className="agency-text-link" href="#what-we-do">
-                Explore our services <ArrowDown size={17} />
+              {/* Points at the next thing on the page rather than jumping past
+                  it: somebody who is not ready to talk should land on the
+                  walkthrough, not on a service menu. */}
+              <Link className="agency-text-link" href="#one-enquiry">
+                See it handle one enquiry <ArrowDown size={17} />
               </Link>
             </div>
           </Reveal>

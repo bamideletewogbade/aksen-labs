@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowRight, Bot, Check, ChevronRight } from 'lucide-react';
+import { ArrowRight, Check, ChevronRight } from 'lucide-react';
+import { NodeMark } from '@/components/ui/node-mark';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { workflowSuggestion } from '@/lib/workflow-suggestion';
@@ -156,8 +157,12 @@ export function StandaloneMapper({
   return (
     <div className="mapper-shell standalone">
       <div className="mapper-topline">
+        {/* Was a robot face. This is the first thing a visitor meets on the
+            page where they describe their business, and a cartoon robot
+            promises the one thing the rest of the site argues against: a
+            machine doing the deciding. */}
         <div className="agent-avatar">
-          <Bot size={18} />
+          <NodeMark size={18} />
         </div>
         <div>
           <strong>Find your starting point</strong>

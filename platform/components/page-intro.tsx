@@ -7,7 +7,7 @@ import {
   FileText,
   Layers,
   ScanText,
-  Sparkles,
+  BookOpen,
 } from 'lucide-react';
 import { Reveal } from './agency-motion';
 import { stages } from '@/lib/pricing';
@@ -125,7 +125,7 @@ function OpeningArt({
             note: `${freeTools.length} · USE THEM HERE`,
           },
           {
-            icon: Sparkles,
+            icon: BookOpen,
             name: 'AI in practice',
             note: `${agentCatalog.length} WORKED EXAMPLES`,
           },

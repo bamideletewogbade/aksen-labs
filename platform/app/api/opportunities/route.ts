@@ -3,12 +3,10 @@ import { resolvePricingSelection } from '@/lib/pricing';
 import { formatPrice } from '@/lib/currency';
 import { NextResponse } from 'next/server';
 import { getDb } from '@/db';
-import { auditEvents, opportunities } from '@/db/schema';
-import { workspaceOwnerId } from '@/app/chatgpt-auth';
 import { workflowSuggestion } from '@/lib/workflow-suggestion';
 import { boundedJson } from '@/lib/bounded-json';
 import { currentHour, reserve, visitorKey } from '@/lib/rate-limit';
-import { notifyNewLead } from '@/lib/lead-notification';
+import { captureLead, intakeKey } from '@/lib/lead-intake';
 
 // One person sending a genuine enquiry needs one or two attempts. The shared
 // ceiling keeps a distributed flood from filling the pipeline the founder reads.
@@ -101,7 +99,6 @@ async function POSTHandler(request: Request) {
       { status: 429 },
     );
 
-  const id = crypto.randomUUID();
   // Store the suggestion the visitor actually saw; fall back when the model was unreachable.
   const shown =
     typeof input.recommendation === 'string'
@@ -113,71 +110,33 @@ async function POSTHandler(request: Request) {
     (updatedFormat
       ? `Goal: ${String(first).slice(0, 180)}. Market: ${String(second).slice(0, 180)}. Current setup: ${String(third).slice(0, 180)}.`
       : `${String(work)} via ${String(channel)} with a desired outcome of ${String(desiredOutcome)}.`);
-  const name = String(input.name).trim().slice(0, 120);
-  const company = String(input.company).trim().slice(0, 160);
 
-  await db.insert(opportunities).values({
-    id,
-    name,
-    email: email.slice(0, 200),
-    company,
-    work: String(work).slice(0, 160),
-    channel: String(channel).slice(0, 160),
-    desiredOutcome: String(desiredOutcome).slice(0, 160),
-    recommendation,
-    summary,
-    nextAction: 'Founder review and personal follow-up',
-    // Every admin view of this table filters on owner_id. Without this the row
-    // is stored with a null owner and is invisible in the pipeline, the stage
-    // counts and the overdue follow-ups: captured, stored, emailed, and absent
-    // from the system meant to work it. The notification would be its only
-    // trace. The reader also tolerates a null owner, so a lead can never be
-    // lost this way twice.
-    ownerId: workspaceOwnerId() || null,
-  });
-
-  // The enquiry is stored. Nothing below may turn a captured lead into an error
-  // for the visitor, so each step records its outcome instead of throwing.
-  await db
-    .insert(auditEvents)
-    .values({
-      id: crypto.randomUUID(),
-      actorType: 'visitor',
-      action: 'lead.created',
-      entityType: 'opportunity',
-      entityId: id,
-      details: {
-        source: pricingSelection ? 'website_pricing' : 'website_mapper',
-        consent: 'provided',
-        ...(pricingSelection ? { pricingPackage: pricingSelection.name } : {}),
-      },
-    })
-    .catch(() => null);
-
-  const delivery = await notifyNewLead({
-    id,
-    name,
+  // Capture, audit and the two messages all live in one place now, so the
+  // enquiry form, the free tools and anything added later cannot drift into
+  // three slightly different ideas of what capturing a lead means.
+  const captured = await captureLead({
+    source: pricingSelection ? 'website_pricing' : 'website_mapper',
+    name: String(input.name),
     email,
-    company,
-    summary,
+    company: String(input.company),
+    work: String(work),
+    channel: String(channel),
+    desiredOutcome: String(desiredOutcome),
     recommendation,
+    summary,
+    intakeKey: await intakeKey('enquiry', email, summary),
+    detail: pricingSelection
+      ? { pricingPackage: pricingSelection.name }
+      : undefined,
   });
-  // A stored enquiry nobody was told about is the failure this loop exists to
-  // prevent, so the outcome is recorded against the enquiry either way.
-  await db
-    .insert(auditEvents)
-    .values({
-      id: crypto.randomUUID(),
-      actorType: 'system',
-      action: delivery.notified ? 'lead.notified' : 'lead.notification_failed',
-      entityType: 'opportunity',
-      entityId: id,
-      details: delivery,
-    })
-    .catch(() => null);
 
   return NextResponse.json(
-    { id, status: 'new', recommendation, acknowledged: delivery.acknowledged },
+    {
+      id: captured.id,
+      status: 'new',
+      recommendation,
+      acknowledged: captured.acknowledged,
+    },
     { status: 201 },
   );
 }

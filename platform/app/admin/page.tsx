@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { sql } from 'drizzle-orm';
 import {
   ArrowRight,
-  Bot,
+  ClipboardList,
   BriefcaseBusiness,
   CalendarClock,
   CheckCircle2,
@@ -243,7 +243,7 @@ export default async function AdminPage() {
             <Radar /> Find leads
           </Link>
           <Link href="/admin/agent-desk">
-            <Bot /> Use AI tools
+            <ClipboardList /> Use AI tools
           </Link>
         </div>
       </header>

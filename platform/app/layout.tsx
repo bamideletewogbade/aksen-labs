@@ -58,8 +58,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // suppressHydrationWarning: the admin writes data-rail onto <html> before the
+  // first paint, so the sidebar is never drawn at the wrong width. React then
+  // finds an attribute the server did not send and reports a mismatch for
+  // something that is working exactly as intended.
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

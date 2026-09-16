@@ -799,6 +799,23 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
+    /* The scrollbar is hidden, so without this the strip looks like it ends at
+       the screen edge and the tabs past it are never found. The fade says there
+       is more, and it lifts once you reach the end. */
+    mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+    scroll-snap-type: x proximity;
+  }
+  .page-tabs-strip:has(> :last-child:focus-within),
+  .page-tabs-strip[data-end='true'] {
+    mask-image: none;
+  }
+  .page-tabs-strip > * {
+    scroll-snap-align: start;
   }
   .page-tabs-strip::-webkit-scrollbar {
     display: none;

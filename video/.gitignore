@@ -6,6 +6,10 @@ out
 # output rather than source.
 public/captures
 
+# A signed-in browser profile for capturing the admin. It is a live session,
+# not a secret this repo should carry. Delete it to sign the profile out.
+.auth
+
 # Human-recorded footage. Kept out of git because it is large and binary and
 # gets re-shot, not edited. Back it up wherever the rest of the raw video lives.
 public/footage

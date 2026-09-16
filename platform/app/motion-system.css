@@ -41,8 +41,28 @@
 
 /* ---------- pending button ---------- */
 
+/* One cell, two layers. The sizer sets the width from the widest label the
+   button can ever show; the face draws on top of it. Laid out as flex siblings
+   they added their widths together, so every button that was not stretched to
+   full width had to wrap, and the icon ended up on a line of its own. */
 .pending-button {
   position: relative;
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+}
+/* Column flow is the safety net. If a caller forgets the face wrapper, its bare
+   text becomes an anonymous item that no selector can place into the shared
+   cell; flowing in columns puts it beside the icon rather than in a second row
+   under it, so the failure is a button that is too wide instead of one with its
+   label cut off. */
+.pending-button {
+  grid-auto-flow: column;
+}
+.pending-button > * {
+  grid-area: 1 / 1;
+}
+.pending-button-face {
   display: inline-flex;
   align-items: center;
   justify-content: center;

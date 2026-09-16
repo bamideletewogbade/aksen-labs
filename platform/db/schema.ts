@@ -51,10 +51,65 @@ export const opportunities = pgTable(
     nextAction: text('next_action').notNull().default('Review opportunity'),
     followUpAt: date('follow_up_at'),
     ownerId: text('owner_id'),
+    /**
+     * Makes capturing a lead safe to retry. A visitor whose connection drops
+     * after the insert but before the response presses the button again, and
+     * without this that is a second lead, a second notification, and a founder
+     * who cannot tell which one is real. Null on rows captured before it existed.
+     */
+    intakeKey: text('intake_key'),
   },
   (table) => [
     index('idx_opportunities_status_created').on(table.status, table.createdAt),
     index('idx_opportunities_email').on(table.email),
+    index('idx_opportunities_source_created').on(table.source, table.createdAt),
+  ],
+);
+
+/**
+ * Everything this business sends, queued rather than fired.
+ *
+ * A send used to happen inside the request that captured the lead: the visitor
+ * waited for the provider, and a provider outage lost the notice with an audit
+ * row as its only trace. One outage meant one silently unanswered customer,
+ * which is the failure the whole enquiry loop exists to prevent.
+ *
+ * Rows are never deleted. A message that was never delivered is a business
+ * fact, and the day somebody asks "did we ever reply to them" the answer has to
+ * be in one place.
+ */
+export const messageOutbox = pgTable(
+  'message_outbox',
+  {
+    id: text('id').primaryKey(),
+    createdAt,
+    updatedAt,
+    /**
+     * email today. WhatsApp and SMS become rows with a different channel, not a
+     * second delivery path with its own retry rules to get wrong.
+     */
+    channel: text('channel').notNull().default('email'),
+    /** Caller-supplied and stable, so the same event enqueued twice is one message. */
+    dedupeKey: text('dedupe_key').notNull().unique(),
+    recipient: text('recipient').notNull(),
+    subject: text('subject').notNull(),
+    body: text('body').notNull(),
+    /** queued, sending, sent, abandoned. */
+    status: text('status').notNull().default('queued'),
+    attempts: integer('attempts').notNull().default(0),
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    lastError: text('last_error'),
+    providerReceipt: text('provider_receipt'),
+    entityType: text('entity_type'),
+    entityId: text('entity_id'),
+    ownerId: text('owner_id'),
+    sentAt: timestamp('sent_at', { withTimezone: true }),
+  },
+  (table) => [
+    index('idx_outbox_due').on(table.status, table.nextAttemptAt),
+    index('idx_outbox_entity').on(table.entityType, table.entityId),
   ],
 );
 export const projects = pgTable(

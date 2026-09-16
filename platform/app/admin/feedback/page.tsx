@@ -146,7 +146,9 @@ export default async function AdminFeedbackPage() {
           </span>
           <strong>{loadFailed ? '—' : totals.votes}</strong>
           <small>
-            {loadFailed ? 'Records unavailable' : 'one per device, not per person'}
+            {loadFailed
+              ? 'Records unavailable'
+              : 'one per device, not per person'}
           </small>
         </article>
       </div>
@@ -155,7 +157,9 @@ export default async function AdminFeedbackPage() {
         <div className="panel-head">
           <div>
             <small>LATEST 300 SUGGESTIONS</small>
-            <h2>{loadFailed ? 'Records unavailable' : `${ideas.length} shown`}</h2>
+            <h2>
+              {loadFailed ? 'Records unavailable' : `${ideas.length} shown`}
+            </h2>
           </div>
           <MessagesSquare />
         </div>

@@ -37,7 +37,9 @@ function readVoted(): string[] {
   try {
     const raw = window.localStorage.getItem(votedStore);
     const parsed: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.filter((v) => typeof v === 'string') : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((v) => typeof v === 'string')
+      : [];
   } catch {
     return [];
   }
@@ -85,7 +87,10 @@ function IdeaCard({
         {idea.body && <p>{idea.body}</p>}
         {idea.statusNote && <p className="board-note">{idea.statusNote}</p>}
         {idea.shippedSlug && (
-          <Link className="agency-text-link" href={`/changelog#${idea.shippedSlug}`}>
+          <Link
+            className="agency-text-link"
+            href={`/changelog#${idea.shippedSlug}`}
+          >
             Read what shipped <ArrowUpRight size={15} />
           </Link>
         )}
@@ -117,7 +122,10 @@ export function FeedbackBoard({ ideas }: { ideas: BoardIdea[] }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id }),
       });
-      const data = (await response.json()) as { votes?: number; error?: string };
+      const data = (await response.json()) as {
+        votes?: number;
+        error?: string;
+      };
       if (!response.ok) {
         setError(data.error || 'That vote did not go through. Try again.');
         return;
@@ -192,8 +200,9 @@ export function FeedbackBoard({ ideas }: { ideas: BoardIdea[] }) {
         {sent ? (
           <output className="board-sent">
             <Check size={17} />
-            Got it. We read every suggestion before it goes on the board, usually
-            within a day. If you left an email we will tell you when it moves.
+            Got it. We read every suggestion before it goes on the board,
+            usually within a day. If you left an email we will tell you when it
+            moves.
           </output>
         ) : (
           <form
@@ -229,8 +238,8 @@ export function FeedbackBoard({ ideas }: { ideas: BoardIdea[] }) {
               {sending ? 'Sending…' : 'Send the suggestion'}
             </button>
             <p className="board-privacy">
-              We read every one before it appears here. Your email is never shown
-              on the board and is not added to a mailing list.
+              We read every one before it appears here. Your email is never
+              shown on the board and is not added to a mailing list.
             </p>
           </form>
         )}
@@ -263,8 +272,8 @@ export function FeedbackBoard({ ideas }: { ideas: BoardIdea[] }) {
         </p>
         {grouped.length === 0 ? (
           <p className="board-empty">
-            Nothing on the board under that heading yet. Your suggestion would be
-            the first one.
+            Nothing on the board under that heading yet. Your suggestion would
+            be the first one.
           </p>
         ) : (
           grouped.map((group) => (

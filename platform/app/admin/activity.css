@@ -14,14 +14,14 @@
   margin: 4px 0 0;
 }
 .admin-refresh .ai-routing-facts dt {
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.74rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .admin-refresh .ai-routing-facts dd {
   margin: 5px 0 0;
-  color: #e6efe7;
+  color: #11241a;
   font-size: 0.92rem;
   line-height: 1.5;
 }
@@ -33,8 +33,8 @@
   font-size: 0.82rem;
   padding: 3px 7px;
   border-radius: 6px;
-  color: #dcecdd;
-  background: #ffffff0d;
+  color: #11241a;
+  background: #10261d10;
   overflow-wrap: anywhere;
 }
 .admin-refresh .ai-routing-chain {
@@ -51,18 +51,18 @@
 /* The arrow is ornament between two names; it carries no meaning a screen
    reader needs, and is already aria-hidden in the markup. */
 .admin-refresh .ai-routing-chain i {
-  color: #6f8676;
+  color: #56685c;
   font-style: normal;
 }
 
 .admin-refresh .ai-routing-more {
   margin-top: 18px;
-  border-top: 1px solid #2f4736;
+  border-top: 1px solid #dde7d8;
   padding-top: 14px;
 }
 .admin-refresh .ai-routing-more > summary {
   cursor: pointer;
-  color: #bde997;
+  color: #2c6b2f;
   font-size: 0.84rem;
   font-weight: 600;
   padding: 6px 0;
@@ -90,7 +90,7 @@
   transform: rotate(90deg);
 }
 .admin-refresh .ai-routing-more > summary:hover {
-  color: #d6f5bb;
+  color: #2c6b2f;
 }
 @media (prefers-reduced-motion: no-preference) {
   .admin-refresh .ai-routing-more[open] > *:not(summary) {
@@ -108,23 +108,23 @@
 .admin-refresh .ai-profile-table td {
   padding: 9px 12px;
   text-align: left;
-  border-bottom: 1px solid #24382b;
+  border-bottom: 1px solid #e3ebde;
 }
 .admin-refresh .ai-profile-table thead th {
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .admin-refresh .ai-profile-table tbody th {
-  color: #e6efe7;
+  color: #11241a;
   font-weight: 600;
 }
 .admin-refresh .ai-profile-table .num {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
-  color: #c3d3c6;
+  color: #2b3d32;
 }
 /* Tier is ordinal, so it reads as a rising scale rather than three labels. */
 .admin-refresh .tier-mark {
@@ -136,23 +136,23 @@
   text-transform: capitalize;
 }
 .admin-refresh .tier-mark[data-tier='low'] {
-  color: #9fe08a;
-  background: #9fe08a1c;
+  color: #2c6b2f;
+  background: #2f7d321c;
 }
 .admin-refresh .tier-mark[data-tier='medium'] {
-  color: #e7c46a;
-  background: #e7c46a1c;
+  color: #8a6414;
+  background: #9a6b121c;
 }
 .admin-refresh .tier-mark[data-tier='high'] {
-  color: #e58b7b;
-  background: #e58b7b1c;
+  color: #a8372a;
+  background: #b3412c1c;
 }
 
 /* ---------- run log ---------- */
 
 .admin-refresh .run-range {
   margin: 4px 0 0;
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
 }
@@ -164,7 +164,7 @@
   gap: 12px;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #2f4736;
+  border-top: 1px solid #dde7d8;
 }
 .admin-refresh .run-pager a,
 .admin-refresh .run-pager > span {
@@ -173,7 +173,7 @@
   gap: 6px;
   min-height: 40px;
   padding: 8px 14px;
-  border: 1px solid #3d5443;
+  border: 1px solid #e0e8db;
   border-radius: 8px;
   font-size: 0.82rem;
   font-weight: 600;
@@ -185,22 +185,22 @@
     transform 150ms ease;
 }
 .admin-refresh .run-pager a {
-  color: #d7ead9;
+  color: #2c6b2f;
 }
 .admin-refresh .run-pager a:is(:hover, :focus-visible) {
-  color: #0d1f14;
-  border-color: #bde997;
-  background: #bde997;
+  color: #1d5b3c;
+  border-color: #9dcf83;
+  background: #dcf3bd;
 }
 /* The end of the range is text, not a disabled link: a link that goes nowhere
    still takes focus and still announces itself as a link. */
 .admin-refresh .run-pager > span {
-  color: #5d7163;
-  border-color: #24382b;
+  color: #11241a;
+  border-color: #e3ebde;
   cursor: default;
 }
 .admin-refresh .run-pager small {
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
 }

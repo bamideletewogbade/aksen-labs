@@ -24,34 +24,34 @@
 }
 .admin-refresh .waitlist-who a {
   overflow: hidden;
-  color: #e7f0e8;
+  color: #11241a;
   font-size: 1rem;
   font-weight: 550;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .admin-refresh .waitlist-who a:is(:hover, :focus-visible) {
-  color: #bde997;
+  color: #2c6b2f;
 }
 .admin-refresh .waitlist-product {
-  color: #8d9a92;
+  color: #56685c;
   font-size: 0.8125rem;
 }
 .admin-refresh .waitlist-hoped {
   margin: 2px 0 0;
-  color: #bfd3b6;
+  color: #2b3d32;
   font-size: 0.875rem;
   line-height: 1.55;
 }
 /* Someone who left only an address is still a signup. Saying so keeps the row
    from looking like a record that failed to save. */
 .admin-refresh .waitlist-silent {
-  color: #6f8169;
+  color: #56685c;
   font-size: 0.8125rem;
   font-style: italic;
 }
 .admin-refresh .waitlist-list time {
-  color: #8d9a92;
+  color: #56685c;
   font-size: 0.8125rem;
   white-space: nowrap;
 }

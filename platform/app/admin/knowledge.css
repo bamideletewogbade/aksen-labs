@@ -14,19 +14,19 @@
 }
 .admin-refresh .knowledge-stats > div {
   padding: 10px 16px;
-  border: 1px solid #2f4736;
+  border: 1px solid #dde7d8;
   border-radius: 10px;
-  background: #0f2117;
+  background: #ffffff;
 }
 .admin-refresh .knowledge-stats dt {
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.68rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 .admin-refresh .knowledge-stats dd {
   margin: 2px 0 0;
-  color: #e6efe7;
+  color: #11241a;
   font-size: 1.15rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -37,21 +37,21 @@
   gap: 4px;
   margin: 0 0 18px;
   padding: 14px 16px;
-  border: 1px solid #e7c46a3d;
-  border-left: 3px solid #e7c46a;
+  border: 1px solid #9a6b123d;
+  border-left: 3px solid #e2c079;
   border-radius: 10px;
-  background: #e7c46a0f;
-  color: #cbbb92;
+  background: #9a6b120f;
+  color: #8a6414;
   font-size: 0.86rem;
   line-height: 1.6;
 }
 .admin-refresh .knowledge-warning strong {
-  color: #e7c46a;
+  color: #8a6414;
 }
 
 .admin-refresh .knowledge-intro {
   max-width: 64ch;
-  color: #a9bdae;
+  color: #2b3d32;
   font-size: 0.88rem;
   line-height: 1.65;
 }
@@ -68,10 +68,10 @@
   flex: 1 1 280px;
   min-height: 46px;
   padding: 10px 14px;
-  border: 1px solid #78947e;
+  border: 1px solid #e8efe3;
   border-radius: 10px;
-  color: #edf5ee;
-  background: #0c1a12;
+  color: #11241a;
+  background: #ffffff;
   font: inherit;
   transition:
     border-color 160ms ease,
@@ -79,7 +79,7 @@
 }
 .admin-refresh .knowledge-ask input:focus-visible {
   outline: none;
-  border-color: #bde997;
+  border-color: #9dcf83;
   box-shadow: 0 0 0 3px rgba(189, 233, 151, 0.16);
 }
 .admin-refresh .knowledge-verdict {
@@ -93,20 +93,20 @@
   align-items: center;
   gap: 8px;
   padding: 4px 12px;
-  border: 1px solid #3d5443;
+  border: 1px solid #e0e8db;
   border-radius: 999px;
-  color: #8ba392;
+  color: #56685c;
   transition: border-color 160ms ease;
 }
 .admin-refresh .knowledge-search:focus-within {
-  border-color: #bde997;
+  border-color: #9dcf83;
 }
 .admin-refresh .knowledge-search input {
   min-width: 150px;
   min-height: 34px;
   border: 0;
   outline: none;
-  color: #edf5ee;
+  color: #11241a;
   background: transparent;
   font: inherit;
   font-size: 0.84rem;
@@ -120,10 +120,10 @@
   list-style: none;
 }
 .admin-refresh .knowledge-entry {
-  border: 1px solid #2f4736;
-  border-left: 3px solid #2f4736;
+  border: 1px solid #dde7d8;
+  border-left: 3px solid #dde7d8;
   border-radius: 10px;
-  background: #0f2117;
+  background: #ffffff;
   overflow: hidden;
   transition:
     border-color 180ms ease,
@@ -132,14 +132,14 @@
 /* After a preview the list says what happened to each entry: sent to the
    assistant, matched but below the cut, or not reached at all. */
 .admin-refresh .knowledge-entry[data-sent] {
-  border-left-color: #7fbf6a;
-  background: #7fbf6a0a;
+  border-left-color: #9dcf83;
+  background: #2f7d320a;
 }
 .admin-refresh .knowledge-entry[data-missed] {
   opacity: 0.55;
 }
 .admin-refresh .knowledge-entry:hover {
-  border-color: #4b6a53;
+  border-color: #d5e0cf;
 }
 
 .admin-refresh .knowledge-entry-head {
@@ -151,7 +151,7 @@
   padding: 13px 16px;
   border: 0;
   background: transparent;
-  color: #e6efe7;
+  color: #11241a;
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -165,7 +165,7 @@
 }
 .admin-refresh .knowledge-entry-meta {
   flex: 0 0 auto;
-  color: #7d9184;
+  color: #56685c;
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
@@ -176,30 +176,30 @@
   font-size: 0.7rem;
   font-style: normal;
   font-weight: 600;
-  color: #8ba392;
-  background: #ffffff0f;
+  color: #56685c;
+  background: #10261d12;
 }
 .admin-refresh .knowledge-entry[data-sent] .knowledge-score {
-  color: #0f2a18;
-  background: #9fe08a;
+  color: #1d5b3c;
+  background: #dcf3bd;
 }
 
 .admin-refresh .knowledge-entry-body {
   display: grid;
   gap: 14px;
   padding: 4px 16px 16px;
-  border-top: 1px solid #24382b;
+  border-top: 1px solid #e3ebde;
 }
 .admin-refresh .knowledge-entry-body p {
   display: grid;
   gap: 5px;
   margin: 0;
-  color: #c3d3c6;
+  color: #2b3d32;
   font-size: 0.86rem;
   line-height: 1.65;
 }
 .admin-refresh .knowledge-entry-body strong {
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.7rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -222,20 +222,20 @@
 .admin-refresh .knowledge-keywords code {
   padding: 2px 7px;
   border-radius: 5px;
-  color: #b6c8ba;
-  background: #ffffff0d;
+  color: #2b3d32;
+  background: #10261d10;
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.72rem;
 }
 .admin-refresh .knowledge-content {
   white-space: pre-wrap;
-  color: #d3e0d5 !important;
+  color: #11241a !important;
 }
 .admin-refresh .knowledge-open {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #bde997;
+  color: #2c6b2f;
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;

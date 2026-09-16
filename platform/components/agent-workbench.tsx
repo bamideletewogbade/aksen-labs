@@ -1,6 +1,6 @@
 ﻿'use client';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Download, FilePenLine } from 'lucide-react';
+import { ArrowUpRight, Check, Download, FilePenLine, Mail } from 'lucide-react';
 import { Spinner } from '@/components/ui/activity';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,15 @@ export function AgentWorkbench({
   const [history, setHistory] = useState<SavedDraft[]>([]);
   const [historyError, setHistoryError] = useState('');
   const [historyRefresh, setHistoryRefresh] = useState(0);
+  // The copy offer, on the public side only. Closed until the draft exists and
+  // the visitor has read it, because asking before then takes away the thing
+  // that makes these worth trying: nothing to hand over.
+  const [copyOpen, setCopyOpen] = useState(false);
+  const [copyEmail, setCopyEmail] = useState('');
+  const [copyBusy, setCopyBusy] = useState(false);
+  const [copyDone, setCopyDone] = useState('');
+  const [copyError, setCopyError] = useState('');
+  const copyField = useRef<HTMLInputElement | null>(null);
   const controller = useRef<AbortController | null>(null);
   const agent = agents.find((item) => item.id === selected) || agents[0];
   const endpoint = admin
@@ -68,19 +77,33 @@ export function AgentWorkbench({
       });
     return () => abort.abort();
   }, [admin, historyRefresh]);
+  // Focus follows the click that opened the field. An autoFocus attribute would
+  // do the same thing and also steal focus on first paint for anyone who lands
+  // here with the form already open.
+  useEffect(() => {
+    if (copyOpen) copyField.current?.focus();
+  }, [copyOpen]);
+  function resetCopy() {
+    setCopyOpen(false);
+    setCopyBusy(false);
+    setCopyDone('');
+    setCopyError('');
+  }
   function choose(id: string) {
     setSelected(id);
     setBrief('');
     setDraft(null);
     setError('');
     setSnapshot(false);
+    resetCopy();
   }
-  async function run(event: React.FormEvent) {
+  async function run(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy || brief.trim().length < 30) return;
     setBusy(true);
     setError('');
     setDraft(null);
+    resetCopy();
     const abort = new AbortController();
     controller.current = abort;
     const timer = setTimeout(() => abort.abort(), 60000);
@@ -125,6 +148,39 @@ export function AgentWorkbench({
     } finally {
       clearTimeout(timer);
       setBusy(false);
+    }
+  }
+  async function sendCopy(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (copyBusy || !draft) return;
+    setCopyBusy(true);
+    setCopyError('');
+    try {
+      const res = await fetch('/api/lead-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'business_agent',
+          email: copyEmail,
+          tool: draft.name,
+          note: brief,
+          draft: draft.content,
+        }),
+      });
+      const data = (await res.json()) as { sent?: boolean; error?: string };
+      if (!res.ok) throw new Error(data.error || 'That did not send.');
+      // `sent` is false when nothing can actually leave, and the wording has to
+      // follow it. Telling somebody a copy is on its way when the queue has
+      // nowhere to send it is the one outcome worth avoiding here.
+      setCopyDone(
+        data.sent
+          ? `On its way to ${copyEmail}.`
+          : 'Saved. A person will reply to that address.',
+      );
+    } catch (e) {
+      setCopyError(e instanceof Error ? e.message : 'That did not send.');
+    } finally {
+      setCopyBusy(false);
     }
   }
   function download() {
@@ -275,22 +331,30 @@ export function AgentWorkbench({
               {/* The same sizing trick as PendingButton, applied by hand
                   because this uses the shared Button component and would
                   otherwise jump from "Run this agent" to the longer pending
-                  label mid-click. */}
+                  label mid-click.
+
+                  The face wrapper is not optional. The sizer and the visible
+                  content share one grid cell, and bare text beside an icon is
+                  an anonymous item that cannot be placed into it: without the
+                  wrapper the icon lands in the cell and the words get pushed
+                  into a second row and clipped. */}
               <span className="pending-button-sizer" aria-hidden="true">
                 <span>Run this agent</span>
                 <span>Preparing your draft…</span>
               </span>
-              {busy ? (
-                <>
-                  <Spinner size={17} />
-                  Preparing your draft…
-                </>
-              ) : (
-                <>
-                  <FilePenLine size={17} />
-                  Run this agent
-                </>
-              )}
+              <span className="pending-button-face">
+                {busy ? (
+                  <>
+                    <Spinner size={17} />
+                    Preparing your draft…
+                  </>
+                ) : (
+                  <>
+                    <FilePenLine size={17} />
+                    Run this agent
+                  </>
+                )}
+              </span>
             </Button>
             {error && (
               <p role="alert" className="agent-error">
@@ -325,9 +389,72 @@ export function AgentWorkbench({
               )}
               <ResponseText text={draft.content} />
               {!admin && (
-                <Link className="agent-next" href="/agent-mapper">
-                  Discuss putting this into practice <ArrowUpRight size={17} />
-                </Link>
+                <div className="agent-after">
+                  {copyDone ? (
+                    <p className="agent-copy-done">
+                      <Check size={16} />
+                      {copyDone}
+                    </p>
+                  ) : copyOpen ? (
+                    <form className="agent-copy-form" onSubmit={sendCopy}>
+                      <label htmlFor="agent-copy-email">
+                        Where should it go?
+                      </label>
+                      <div className="agent-copy-row">
+                        <input
+                          id="agent-copy-email"
+                          type="email"
+                          required
+                          ref={copyField}
+                          disabled={copyBusy}
+                          value={copyEmail}
+                          placeholder="you@yourbusiness.com"
+                          onChange={(e) => setCopyEmail(e.target.value)}
+                          aria-describedby="agent-copy-note"
+                        />
+                        <Button
+                          type="submit"
+                          aria-busy={copyBusy}
+                          disabled={copyBusy}
+                        >
+                          {copyBusy ? (
+                            <Spinner size={16} />
+                          ) : (
+                            <Mail size={16} />
+                          )}
+                          {copyBusy ? 'Sending' : 'Send it'}
+                        </Button>
+                      </div>
+                      {/* The privacy line above this section promises the log
+                          keeps run details and not the brief. Giving us an
+                          address changes that, so it says so here rather than
+                          leaving the earlier promise quietly untrue. */}
+                      <p id="agent-copy-note" className="agent-privacy">
+                        This draft and what you wrote are kept with your address
+                        so a person can follow up. Nothing else, and no list.
+                      </p>
+                      {copyError && (
+                        <p role="alert" className="agent-error">
+                          {copyError}
+                        </p>
+                      )}
+                    </form>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="agent-copy-open"
+                      onClick={() => setCopyOpen(true)}
+                    >
+                      <Mail size={16} />
+                      Send this to yourself
+                    </Button>
+                  )}
+                  <Link className="agent-next" href="/agent-mapper">
+                    Discuss putting this into practice{' '}
+                    <ArrowUpRight size={17} />
+                  </Link>
+                </div>
               )}
             </section>
           )}

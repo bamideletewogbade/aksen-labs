@@ -229,6 +229,89 @@
   margin: 0 0 17px;
   white-space: pre-wrap;
 }
+/* What happens after the draft. The offer to send a copy sits here rather than
+   beside the Download button, because it is the one control on this page that
+   asks for something back and it should come after the reader has decided the
+   draft was worth having. */
+.agent-after {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--aw-line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.agent-after .agent-next {
+  margin-top: 0;
+}
+.agent-copy-open {
+  gap: 9px;
+}
+.agent-copy-form {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 340px;
+  min-width: 0;
+}
+.agent-copy-form > label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #24382c;
+}
+.agent-copy-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.agent-copy-row input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--aw-line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: #10261d;
+}
+.agent-copy-row input:focus-visible {
+  outline: 2px solid #175b3b;
+  outline-offset: 1px;
+}
+.agent-copy-row button {
+  gap: 8px;
+  background: #175b3b;
+  color: #fff;
+  flex: none;
+}
+.agent-copy-form .agent-privacy {
+  margin: 0;
+}
+.agent-copy-done {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: 9px;
+  background: #eaf4dc;
+  border: 1px solid #cfe2b7;
+  color: #1d3f2c;
+  font-size: 14px !important;
+  font-weight: 500;
+}
+@media (max-width: 620px) {
+  .agent-after {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .agent-copy-open {
+    width: 100%;
+    justify-content: center;
+  }
+}
 .agent-next {
   display: flex;
   align-items: center;

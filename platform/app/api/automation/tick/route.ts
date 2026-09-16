@@ -7,6 +7,7 @@ import { isDue, type Cadence } from '@/lib/automation-schedule';
 import { auditEvents } from '@/db/schema';
 import { runEditorialScout } from '@/lib/editorial-agent';
 import { runFeedbackTriage, triageDue } from '@/lib/feedback-triage';
+import { drainOutbox } from '@/lib/outbox';
 
 /**
  * The heartbeat. Something outside calls this on a timer and asks whether
@@ -276,6 +277,15 @@ async function POSTHandler(request: Request) {
     };
   }
 
+  // The outbox goes first among the event-shaped work in every sense that
+  // matters: it is the only one a customer is waiting on. Prospect research and
+  // article ideas can miss a beat. A person who wrote in twenty minutes ago and
+  // has heard nothing cannot.
+  //
+  // No cadence and no gate. A drain with nothing due is two cheap queries, and
+  // anything clever here would only delay a message to save them.
+  const outbox = await drainOutbox();
+
   // Always 200 when authorised, including when nothing was due. A timer that
   // sees a failure status for the ordinary case of "not yet" will eventually
   // be muted or removed by whoever is watching it.
@@ -285,6 +295,7 @@ async function POSTHandler(request: Request) {
       outcomes,
       editorialOutcomes,
       triage,
+      outbox,
       at: now.toISOString(),
     },
     { headers: { 'Cache-Control': 'no-store' } },

@@ -7,9 +7,13 @@ import {
   EyeOff,
   GitMerge,
   Send,
-  Sparkles,
+  ListChecks,
 } from 'lucide-react';
-import { changelogKinds, ideaStatuses, statusLabel } from '@/lib/feedback-board';
+import {
+  changelogKinds,
+  ideaStatuses,
+  statusLabel,
+} from '@/lib/feedback-board';
 
 export type AdminIdea = {
   id: string;
@@ -122,11 +126,7 @@ export function AdminFeedback({
   }
 
   const shown = rows.filter((row) =>
-    view === 'all'
-      ? true
-      : view === 'waiting'
-        ? !row.published
-        : row.published,
+    view === 'all' ? true : view === 'waiting' ? !row.published : row.published,
   );
 
   /** Candidates to merge into: published, not themselves merged, not this one. */
@@ -168,7 +168,7 @@ export function AdminFeedback({
               }
               onClick={() => void triageAction({ action: 'run' })}
             >
-              <Sparkles size={14} />
+              <ListChecks size={14} />
               {busy === 'triage'
                 ? 'Reading…'
                 : triage.waiting > 0
@@ -239,7 +239,11 @@ export function AdminFeedback({
             <span>
               {
                 rows.filter((row) =>
-                  id === 'all' ? true : id === 'waiting' ? !row.published : row.published,
+                  id === 'all'
+                    ? true
+                    : id === 'waiting'
+                      ? !row.published
+                      : row.published,
                 ).length
               }
             </span>
@@ -298,7 +302,8 @@ export function AdminFeedback({
               {idea.body && <p className="admin-feedback-body">{idea.body}</p>}
               {idea.authorEmail && (
                 <p className="admin-feedback-from">
-                  From <a href={`mailto:${idea.authorEmail}`}>{idea.authorEmail}</a>
+                  From{' '}
+                  <a href={`mailto:${idea.authorEmail}`}>{idea.authorEmail}</a>
                 </p>
               )}
 
@@ -308,7 +313,8 @@ export function AdminFeedback({
               {idea.triageSummary && (
                 <div className="admin-feedback-triage">
                   <small>
-                    TRIAGE SUGGESTION{idea.triageSize ? ` · ${idea.triageSize}` : ''}
+                    TRIAGE SUGGESTION
+                    {idea.triageSize ? ` · ${idea.triageSize}` : ''}
                   </small>
                   <p>{idea.triageSummary}</p>
                 </div>
@@ -319,10 +325,14 @@ export function AdminFeedback({
                   type="button"
                   disabled={busy === idea.id}
                   onClick={() =>
-                    void act(idea.id, { action: idea.published ? 'hide' : 'publish' })
+                    void act(idea.id, {
+                      action: idea.published ? 'hide' : 'publish',
+                    })
                   }
                 >
-                  {idea.published ? 'Take off the board' : 'Publish to the board'}
+                  {idea.published
+                    ? 'Take off the board'
+                    : 'Publish to the board'}
                 </button>
                 <label>
                   Status
@@ -336,7 +346,9 @@ export function AdminFeedback({
                       // invented by the form.
                       const note =
                         status === 'declined'
-                          ? window.prompt('Why not? This goes on the public card.')
+                          ? window.prompt(
+                              'Why not? This goes on the public card.',
+                            )
                           : '';
                       if (status === 'declined' && !note) return;
                       void act(idea.id, { action: 'status', status, note });
@@ -353,7 +365,9 @@ export function AdminFeedback({
                   type="button"
                   className="is-primary"
                   disabled={busy === idea.id}
-                  onClick={() => setShipping(shipping === idea.id ? '' : idea.id)}
+                  onClick={() =>
+                    setShipping(shipping === idea.id ? '' : idea.id)
+                  }
                 >
                   <Send size={14} /> Mark shipped
                 </button>
@@ -364,7 +378,9 @@ export function AdminFeedback({
                   <button
                     type="button"
                     disabled={busy === idea.id}
-                    onClick={() => setMerging(merging === idea.id ? '' : idea.id)}
+                    onClick={() =>
+                      setMerging(merging === idea.id ? '' : idea.id)
+                    }
                   >
                     <GitMerge size={14} /> Duplicate of…
                   </button>
@@ -387,8 +403,9 @@ export function AdminFeedback({
                   }}
                 >
                   <p>
-                    The votes move across rather than being thrown away, and this
-                    card comes off the board pointing at the one it repeats.
+                    The votes move across rather than being thrown away, and
+                    this card comes off the board pointing at the one it
+                    repeats.
                   </p>
                   <label>
                     Merge into
@@ -440,12 +457,16 @@ export function AdminFeedback({
                   }}
                 >
                   <p>
-                    This writes the changelog entry and moves the card to Shipped
-                    in one step, so the two cannot disagree.
+                    This writes the changelog entry and moves the card to
+                    Shipped in one step, so the two cannot disagree.
                   </p>
                   <label>
                     Headline
-                    <input name="title" defaultValue={idea.title} maxLength={110} />
+                    <input
+                      name="title"
+                      defaultValue={idea.title}
+                      maxLength={110}
+                    />
                   </label>
                   <label>
                     What shipped

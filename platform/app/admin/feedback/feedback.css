@@ -22,20 +22,20 @@
 .admin-refresh .admin-triage small {
   display: block;
   margin-bottom: 6px;
-  color: #9dbd8c;
+  color: #2b3d32;
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
 }
 .admin-refresh .admin-triage h3 {
   margin: 0;
-  color: #e7f0e8;
+  color: #11241a;
   font-size: 1.0625rem;
   font-weight: 550;
 }
 .admin-refresh .admin-triage-head p {
   margin: 6px 0 0;
   max-width: 48ch;
-  color: #9fb0a6;
+  color: #2b3d32;
   font-size: 0.875rem;
   line-height: 1.55;
 }
@@ -51,10 +51,10 @@
   gap: 7px;
   min-height: 38px;
   padding: 0 14px;
-  border: 1px solid #bde997;
+  border: 1px solid #9dcf83;
   border-radius: 7px;
   background: rgba(189, 233, 151, 0.14);
-  color: #d8f0bc;
+  color: #2c6b2f;
   font: inherit;
   font-size: 0.85rem;
   cursor: pointer;
@@ -67,13 +67,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #9fb0a6;
+  color: #2b3d32;
   font-size: 0.8125rem;
 }
 .admin-refresh .admin-triage-switch input {
   width: 17px;
   height: 17px;
-  accent-color: #bde997;
+  accent-color: #2f7d32;
 }
 .admin-refresh .admin-triage-actions input[type='number'] {
   width: 68px;
@@ -82,7 +82,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.04);
-  color: #e7f0e8;
+  color: #11241a;
   font: inherit;
   font-size: 0.85rem;
 }
@@ -92,12 +92,12 @@
   margin: 14px 0 0;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #9fb0a6;
+  color: #2b3d32;
   font-size: 0.8125rem;
 }
 .admin-refresh .admin-triage-limit {
   margin: 10px 0 0;
-  color: #7f9086;
+  color: #56685c;
   font-size: 0.78rem;
   line-height: 1.5;
 }
@@ -108,14 +108,14 @@
   padding: 2px 8px;
   border: 1px dashed rgba(255, 255, 255, 0.2);
   border-radius: 99px;
-  color: #9fb0a6;
+  color: #2b3d32;
   font-size: 0.75rem;
 }
 .admin-refresh .admin-feedback-merged {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: #9a8fd0;
+  color: #5b4494;
 }
 
 .admin-refresh .admin-feedback-views {
@@ -133,19 +133,19 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 99px;
   background: transparent;
-  color: #9fb0a6;
+  color: #2b3d32;
   font: inherit;
   font-size: 0.875rem;
   cursor: pointer;
 }
 .admin-refresh .admin-feedback-views button:hover {
-  color: #e7f0e8;
+  color: #11241a;
   border-color: rgba(255, 255, 255, 0.22);
 }
 .admin-refresh .admin-feedback-views button.is-current {
-  border-color: #bde997;
+  border-color: #9dcf83;
   background: rgba(189, 233, 151, 0.12);
-  color: #d8f0bc;
+  color: #2c6b2f;
 }
 .admin-refresh .admin-feedback-views span {
   display: inline-grid;
@@ -162,9 +162,9 @@
 .admin-refresh .admin-feedback-error {
   margin-bottom: 14px;
   padding: 12px 14px;
-  border-left: 2px solid #e2896f;
+  border-left: 2px solid #e8a495;
   background: rgba(226, 137, 111, 0.1);
-  color: #f0b8a6;
+  color: #a8372a;
   font-size: 0.875rem;
 }
 
@@ -184,16 +184,16 @@
   padding-left: 14px;
 }
 .admin-refresh .admin-feedback-list > li[data-status='planned'] {
-  --desk-mark: #6ea8d0;
+  --desk-mark: #3475a2;
 }
 .admin-refresh .admin-feedback-list > li[data-status='building'] {
-  --desk-mark: #d8a94a;
+  --desk-mark: #9a6b12;
 }
 .admin-refresh .admin-feedback-list > li[data-status='shipped'] {
-  --desk-mark: #7cc98f;
+  --desk-mark: #2f7d32;
 }
 .admin-refresh .admin-feedback-list > li[data-status='declined'] {
-  --desk-mark: #8d8079;
+  --desk-mark: #746962;
 }
 .admin-refresh .admin-feedback-top {
   display: flex;
@@ -202,15 +202,15 @@
   gap: 10px;
   margin-bottom: 10px;
   font-size: 0.8125rem;
-  color: #8d9a92;
+  color: #56685c;
 }
 .admin-refresh .admin-feedback-votes {
-  color: #d8f0bc;
+  color: #2c6b2f;
   font-variant-numeric: tabular-nums;
 }
 .admin-refresh .admin-feedback-top .board-status {
   background: rgba(255, 255, 255, 0.08);
-  color: #c3d4c8;
+  color: #2b3d32;
 }
 .admin-refresh .admin-feedback-live,
 .admin-refresh .admin-feedback-hidden {
@@ -219,7 +219,7 @@
   gap: 5px;
 }
 .admin-refresh .admin-feedback-hidden {
-  color: #cfa98f;
+  color: #a8372a;
 }
 .admin-refresh .admin-feedback-top time {
   margin-left: auto;
@@ -227,14 +227,14 @@
 }
 .admin-refresh .admin-feedback-list h3 {
   margin: 0;
-  color: #e7f0e8;
+  color: #11241a;
   font-size: 1.0625rem;
   font-weight: 550;
   line-height: 1.35;
 }
 .admin-refresh .admin-feedback-body {
   margin: 8px 0 0;
-  color: #bfd3b6;
+  color: #2b3d32;
   font-size: 0.875rem;
   line-height: 1.6;
   /* Written by a stranger, so an unbroken string must not stretch the desk. */
@@ -243,11 +243,11 @@
 }
 .admin-refresh .admin-feedback-from {
   margin: 8px 0 0;
-  color: #8d9a92;
+  color: #56685c;
   font-size: 0.8125rem;
 }
 .admin-refresh .admin-feedback-from a {
-  color: #bde997;
+  color: #2c6b2f;
 }
 /* Marked as the agent's reading, not as a finding. It is a suggestion about
    text a stranger wrote, and the border is there so it never reads as ours. */
@@ -261,13 +261,13 @@
 .admin-refresh .admin-feedback-triage small {
   display: block;
   margin-bottom: 6px;
-  color: #9dbd8c;
+  color: #2b3d32;
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
 }
 .admin-refresh .admin-feedback-triage p {
   margin: 0;
-  color: #cfe0c4;
+  color: #2c6b2f;
   font-size: 0.875rem;
   line-height: 1.6;
 }
@@ -275,7 +275,7 @@
   margin: 10px 0 0;
   padding-left: 10px;
   border-left: 2px solid rgba(255, 255, 255, 0.12);
-  color: #9fb0a6;
+  color: #2b3d32;
   font-size: 0.8125rem;
 }
 
@@ -296,7 +296,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 7px;
   background: transparent;
-  color: #cfe0c4;
+  color: #2c6b2f;
   font: inherit;
   font-size: 0.85rem;
   cursor: pointer;
@@ -304,14 +304,16 @@
 .admin-refresh .admin-feedback-actions button:hover:not(:disabled),
 .admin-refresh .admin-feedback-ship button:hover:not(:disabled) {
   border-color: rgba(189, 233, 151, 0.5);
-  color: #e7f0e8;
+  color: #11241a;
 }
 .admin-refresh :is(.admin-feedback-actions, .admin-feedback-ship) .is-primary {
-  border-color: #bde997;
+  border-color: #9dcf83;
   background: rgba(189, 233, 151, 0.14);
-  color: #d8f0bc;
+  color: #2c6b2f;
 }
-.admin-refresh :is(.admin-feedback-actions, .admin-feedback-ship) button:disabled {
+.admin-refresh
+  :is(.admin-feedback-actions, .admin-feedback-ship)
+  button:disabled {
   opacity: 0.55;
   cursor: progress;
 }
@@ -320,17 +322,18 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #8d9a92;
+  color: #56685c;
   font-size: 0.8125rem;
 }
-.admin-refresh :is(.admin-feedback-actions, .admin-feedback-ship)
+.admin-refresh
+  :is(.admin-feedback-actions, .admin-feedback-ship)
   :is(select, input, textarea) {
   min-height: 38px;
   padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.04);
-  color: #e7f0e8;
+  color: #11241a;
   font: inherit;
   font-size: 0.85rem;
 }
@@ -346,7 +349,7 @@
 }
 .admin-refresh .admin-feedback-ship > p {
   margin: 0;
-  color: #9fb0a6;
+  color: #2b3d32;
   font-size: 0.8125rem;
   line-height: 1.55;
 }

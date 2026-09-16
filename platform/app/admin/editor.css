@@ -3,16 +3,16 @@
 
 .admin-refresh .md-editor {
   margin-top: 8px;
-  border: 1px solid #78947e;
+  border: 1px solid #e8efe3;
   border-radius: 10px;
-  background: #0c1a12;
+  background: #ffffff;
   overflow: hidden;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease;
 }
 .admin-refresh .md-editor:focus-within {
-  border-color: #bde997;
+  border-color: #9dcf83;
   box-shadow: 0 0 0 3px rgba(189, 233, 151, 0.16);
 }
 
@@ -22,8 +22,8 @@
   gap: 2px;
   flex-wrap: wrap;
   padding: 7px 8px;
-  border-bottom: 1px solid #2f4736;
-  background: #0f2117;
+  border-bottom: 1px solid #dde7d8;
+  background: #ffffff;
 }
 .admin-refresh .md-toolbar button {
   display: inline-flex;
@@ -37,7 +37,7 @@
   padding: 0 8px;
   border: 1px solid transparent;
   border-radius: 7px;
-  color: #b6c8ba;
+  color: #2b3d32;
   background: transparent;
   cursor: pointer;
   transition:
@@ -46,7 +46,7 @@
     border-color 140ms ease;
 }
 .admin-refresh .md-toolbar button:hover:not(:disabled) {
-  color: #eaf5ea;
+  color: #2c6b2f;
   background: rgba(189, 233, 151, 0.1);
 }
 .admin-refresh .md-toolbar button:disabled {
@@ -54,9 +54,9 @@
   cursor: not-allowed;
 }
 .admin-refresh .md-toolbar button[aria-pressed='true'] {
-  color: #0d1f14;
-  background: #bde997;
-  border-color: #bde997;
+  color: #1d5b3c;
+  background: #dcf3bd;
+  border-color: #9dcf83;
 }
 .admin-refresh .md-toolbar-spacer {
   flex: 1 1 auto;
@@ -67,14 +67,14 @@
   padding: 0 11px;
 }
 .admin-refresh .md-count {
-  color: #8ba392;
+  color: #56685c;
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
   padding-right: 6px;
 }
 .admin-refresh .md-count.is-near {
-  color: #e7c46a;
+  color: #8a6414;
 }
 
 .admin-refresh .md-input {
@@ -83,7 +83,7 @@
   border: 0;
   outline: none;
   padding: 16px;
-  color: #edf5ee;
+  color: #11241a;
   background: transparent;
   font-family:
     var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -95,7 +95,7 @@
   overflow-wrap: break-word;
 }
 .admin-refresh .md-input::placeholder {
-  color: #6f8676;
+  color: #56685c;
 }
 
 /* The preview is set in the reading face, because its job is to show what the
@@ -103,7 +103,7 @@
 .admin-refresh .md-preview {
   padding: 18px 20px;
   min-height: 160px;
-  color: #e4ede4;
+  color: #11241a;
   font-size: 0.95rem;
   line-height: 1.75;
 }
@@ -143,8 +143,8 @@
 .admin-refresh .md-preview blockquote {
   margin: 0 0 14px;
   padding: 2px 0 2px 14px;
-  border-left: 2px solid #bde997;
-  color: #b9c9bc;
+  border-left: 2px solid #9dcf83;
+  color: #2b3d32;
 }
 .admin-refresh .md-preview code {
   padding: 2px 6px;
@@ -154,17 +154,17 @@
   font-size: 0.86em;
 }
 .admin-refresh .md-preview a {
-  color: #bde997;
+  color: #2c6b2f;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .admin-refresh .md-preview hr {
   margin: 20px 0;
   border: 0;
-  border-top: 1px solid #2f4736;
+  border-top: 1px solid #dde7d8;
 }
 .admin-refresh .md-preview-empty {
-  color: #7d9184;
+  color: #56685c;
   font-style: italic;
 }
 
@@ -174,7 +174,7 @@
 .admin-refresh .md-field-label {
   display: block;
   margin-top: 14px;
-  color: #c3d3c6;
+  color: #2b3d32;
   font-size: 0.86rem;
   font-weight: 600;
 }

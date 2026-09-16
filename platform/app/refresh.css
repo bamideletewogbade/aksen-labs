@@ -333,26 +333,6 @@
   aspect-ratio: 3/2;
   object-fit: cover;
 }
-.refresh-home-ai {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 70px;
-  align-items: center;
-}
-.refresh-home-ai p:not(.agency-eyebrow) {
-  margin-top: 24px;
-  max-width: 580px;
-  color: #53635a;
-}
-.refresh-home-ai .agency-text-link {
-  margin-top: 20px;
-}
-.refresh-process-note {
-  padding: 32px;
-  border-radius: 12px;
-  background: #eaf0e3;
-  border: 1px solid #d6e0ce;
-}
 .refresh-small-index {
   display: block;
   color: #607766;
@@ -361,13 +341,6 @@
     monospace;
   letter-spacing: 0.06em;
   margin-bottom: 16px;
-}
-.refresh-process-note h3 {
-  font-size: 1.6rem;
-  line-height: 1.3;
-}
-.refresh-process-note p {
-  font-size: 0.96rem;
 }
 .refresh-page-intro {
   padding-block: 56px;
@@ -798,8 +771,7 @@
   }
   .refresh-page-intro.with-image,
   .refresh-feature,
-  .refresh-scope,
-  .refresh-home-ai {
+  .refresh-scope {
     gap: 36px;
   }
   .refresh-view-controls {
@@ -902,7 +874,6 @@
     grid-column: 3;
   }
   .refresh-feature,
-  .refresh-home-ai,
   .refresh-page-intro.with-image,
   .refresh-scope,
   .refresh-three-up {
@@ -914,12 +885,6 @@
   }
   .refresh-feature h2 {
     font-size: 2.3rem;
-  }
-  .refresh-home-ai {
-    gap: 30px;
-  }
-  .refresh-process-note {
-    padding: 26px;
   }
   .refresh-page-intro {
     padding-block: 34px;
@@ -1304,42 +1269,1175 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   font-size: 0.95rem;
 }
 
-/* Three capabilities named by where they sit in an owner's week. A quiet list
-   inside an existing section, so the thread is present without taking over. */
-.refresh-ai-steps {
+/* One enquiry followed end to end. Two panes show what the customer and the
+   shop each see, and the step list beside them says who is acting. The panes
+   are the illustration; the list carries the meaning. */
+.refresh-flow-head {
+  max-width: 680px;
+}
+.refresh-flow-head p:not(.agency-eyebrow) {
+  margin-top: 22px;
+  color: #53635a;
+}
+.refresh-flow-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 26px;
+}
+.refresh-flow-foot .refresh-scenario-note {
+  max-width: 460px;
+  margin: 0;
+}
+.flow-shell {
+  display: grid;
+  grid-template-columns: 1fr 0.86fr;
+  gap: 34px;
+  margin-top: 36px;
+  align-items: start;
+}
+.flow-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  min-width: 0;
+}
+.flow-pane {
+  border: 1px solid #d6e0ce;
+  border-radius: 14px;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-shadow: 0 14px 40px #10261d0a;
+}
+.flow-pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e6ece0;
+  margin-bottom: 14px;
+}
+.flow-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #1d3f2c;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.flow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #175b3b;
+}
+.is-playing .flow-dot {
+  animation: flow-pulse 2.4s ease-in-out infinite;
+}
+.flow-pane-note {
+  color: #7d8c83;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+/* Fixed height, anchored to the bottom: new messages push older ones up the
+   way a real thread does, and the section never jumps as the steps advance. */
+.flow-thread {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  height: 268px;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, #000 34px);
+}
+.flow-bubble {
+  margin: 0;
+  max-width: 88%;
+  padding: 9px 12px;
+  border-radius: 13px;
+  font-size: 0.83rem !important;
+  line-height: 1.5 !important;
+  animation: flow-bubble-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.flow-bubble.is-customer {
+  align-self: flex-start;
+  background: #f1f4ee;
+  border: 1px solid #e2e8db;
+  color: #2c3a32;
+  border-bottom-left-radius: 4px;
+}
+.flow-bubble.is-agent {
+  align-self: flex-end;
+  background: #e2f0cf;
+  border: 1px solid #cfe2b7;
+  color: #1d3f2c;
+  border-bottom-right-radius: 4px;
+}
+.flow-typing {
+  align-self: flex-start;
+  display: inline-flex;
+  gap: 4px;
+  padding: 9px 11px;
+  border-radius: 13px;
+  background: #f1f4ee;
+  border: 1px solid #e2e8db;
+}
+.flow-typing i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #9aa89f;
+}
+.is-playing .flow-typing i {
+  animation: flow-typing 1.15s ease-in-out infinite;
+}
+.flow-typing i:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.flow-typing i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+.flow-fields {
+  margin: 0;
+  display: grid;
+  gap: 11px;
+  flex: 1;
+  align-content: start;
+}
+.flow-field {
+  display: grid;
+  gap: 3px;
+}
+.flow-field dt {
+  color: #7d8c83;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.flow-field dd {
+  margin: 0;
+  min-height: 19px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #2c3a32;
+}
+.flow-value {
+  display: inline-block;
+  animation: flow-value-in 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.flow-blank {
+  display: block;
+  height: 9px;
+  width: 68%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #eef1ea, #e3e9dd, #eef1ea);
+  background-size: 200% 100%;
+}
+.is-playing .flow-blank {
+  animation: flow-blank 1.9s linear infinite;
+}
+.flow-approval {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 11px;
+  border: 1px solid #e2e8db;
+  background: #f7f9f4;
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease;
+}
+.flow-approval.is-ready {
+  border-color: #ecd6ab;
+  background: #fdf5e6;
+}
+.flow-approval.is-approved {
+  border-color: #cfe2b7;
+  background: #eaf4dc;
+}
+.flow-approval-mark {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  flex: none;
+  background: #d9e0d4;
+  color: #fff;
+  transition:
+    background 0.35s ease,
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.flow-approval.is-ready .flow-approval-mark {
+  background: #c9a45c;
+}
+.flow-approval.is-approved .flow-approval-mark {
+  background: #175b3b;
+  transform: scale(1.1);
+}
+.flow-approval-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.flow-approval-text strong {
+  font-size: 0.79rem;
+  color: #1d3f2c;
+  font-weight: 600;
+}
+.flow-approval-text small {
+  font-size: 0.71rem;
+  line-height: 1.45;
+  color: #7d8c83;
+}
+.flow-side {
+  min-width: 0;
+}
+/* The rail fills to the current step, so progress through the story is
+   visible without reading the numbers. */
+.flow-steps {
   list-style: none;
-  margin: 26px 0 0;
+  margin: 0;
+  padding: 0 0 0 26px;
+  display: grid;
+  position: relative;
+}
+.flow-steps::before,
+.flow-steps::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-radius: 2px;
+  background: #dde4d7;
+}
+.flow-steps::after {
+  bottom: auto;
+  height: var(--flow-fill, 0%);
+  background: #175b3b;
+  transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.flow-steps li {
+  position: relative;
+}
+.flow-steps li::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 17px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #dde4d7;
+  transition:
+    border-color 0.35s ease,
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+.flow-steps li.is-done::before {
+  border-color: #175b3b;
+  background: #175b3b;
+}
+.flow-steps li.is-current::before {
+  border-color: #175b3b;
+  background: #c2f576;
+  transform: scale(1.25);
+}
+.flow-steps button {
+  width: 100%;
+  display: grid;
+  gap: 5px;
+  text-align: left;
+  padding: 11px 12px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
+}
+.flow-steps li:not(.is-current) button {
+  opacity: 0.62;
+}
+.flow-steps button:hover {
+  opacity: 1;
+  background: #f1f4ee;
+}
+.flow-steps li.is-current button {
+  background: #fff;
+  border-color: #d6e0ce;
+  box-shadow: 0 10px 28px #10261d08;
+}
+.flow-steps button:focus-visible {
+  outline: 2px solid #175b3b;
+  outline-offset: 2px;
+}
+.flow-step-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.flow-step-time {
+  color: #7d8c83;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+.flow-who {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.flow-who.is-agent {
+  background: #e2f0cf;
+  color: #2c5a26;
+}
+.flow-who.is-you {
+  background: #10261d;
+  color: #f4f6ed;
+}
+.flow-step-title {
+  font-size: 0.99rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: #10261d;
+}
+.flow-step-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #53635a;
+  transition:
+    grid-template-rows 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.3s ease;
+}
+.flow-step-detail > span {
+  overflow: hidden;
+}
+.flow-steps li.is-current .flow-step-detail {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.flow-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 12px 12px 0 26px;
+  border-top: 1px solid #dde4d7;
+}
+.flow-count {
+  display: grid;
+  gap: 2px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #1d3f2c;
+  font-weight: 600;
+}
+.flow-count-detail {
+  letter-spacing: 0.05em;
+  text-transform: none;
+  font-weight: 400;
+  color: #7d8c83;
+  font-size: 0.68rem;
+}
+.flow-toggle {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid #d6e0ce;
+  background: #fff;
+  color: #1d3f2c;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+.flow-toggle:hover:not(:disabled) {
+  background: #eaf0e3;
+  transform: scale(1.06);
+}
+.flow-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.flow-toggle:focus-visible {
+  outline: 2px solid #175b3b;
+  outline-offset: 2px;
+}
+@keyframes flow-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(9px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes flow-value-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes flow-blank {
+  from {
+    background-position: 140% 0;
+  }
+  to {
+    background-position: -40% 0;
+  }
+}
+@keyframes flow-typing {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+@keyframes flow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 #175b3b55;
+  }
+  60% {
+    box-shadow: 0 0 0 6px #175b3b00;
+  }
+}
+/* The evening the page is about. Dark, because it is night, and because the
+   two bands either side of it are paper. */
+.refresh-problem {
+  background: #10261d;
+  color: #f4f6ed;
+}
+.refresh-problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.95fr;
+  gap: 60px;
+  align-items: center;
+  padding-block: 84px;
+}
+.refresh-problem .agency-eyebrow {
+  color: #b6ccbc;
+}
+.refresh-problem h2 em {
+  color: #c2f576;
+}
+.refresh-problem p {
+  margin-top: 24px;
+  max-width: 540px;
+  color: #c7d3c9;
+}
+.refresh-problem-line {
+  font-size: 1.2rem !important;
+  color: #f4f6ed !important;
+  font-weight: 500;
+}
+.volume-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 9px;
+  max-width: 460px;
+}
+.volume-grid span {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: #ffffff14;
+  border: 1px solid #ffffff1f;
+  opacity: 0;
+  transform: scale(0.6);
+}
+.volume.is-seen .volume-grid span {
+  animation: volume-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 34ms);
+}
+.volume-grid span.is-order {
+  background: #c2f576;
+  border-color: #c2f576;
+}
+.volume.is-seen .volume-grid span.is-order {
+  animation:
+    volume-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both,
+    volume-flare 0.9s ease-out 1.5s both;
+  animation-delay: calc(var(--i) * 34ms), 1.6s;
+}
+.volume-key {
+  display: grid;
+  gap: 9px;
+  margin-top: 24px;
+  opacity: 0;
+}
+.volume.is-seen .volume-key {
+  animation: volume-in 0.5s ease 1.5s both;
+}
+.volume-key span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #a8b8ad;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.volume-key i {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border-radius: 4px;
+  background: #ffffff1f;
+}
+.volume-key i.is-order {
+  background: #c2f576;
+}
+@keyframes volume-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes volume-flare {
+  0% {
+    box-shadow: 0 0 0 0 #c2f57699;
+  }
+  100% {
+    box-shadow: 0 0 0 12px #c2f57600;
+  }
+}
+
+/* Where the line is. The objection every owner arrives with, answered as two
+   lists rather than a reassurance. */
+.refresh-line {
+  background: #175b3b;
+  color: #eef5e4;
+}
+.refresh-line-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  padding-block: 78px;
+  align-items: start;
+}
+.refresh-line .agency-eyebrow {
+  color: #a9d3b6;
+}
+.refresh-line h2 {
+  font-size: clamp(1.9rem, 3.1vw, 3.1rem);
+}
+.refresh-line h2 em {
+  color: #c2f576;
+}
+.refresh-line > div > div > p {
+  margin-top: 24px;
+  max-width: 520px;
+  color: #cfe0cf;
+}
+.refresh-line-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.refresh-line-split .refresh-small-index {
+  color: #c2f576;
+  margin-bottom: 14px;
+}
+.refresh-line-split ul {
+  list-style: none;
+  margin: 0;
   padding: 0;
   display: grid;
-  gap: 0;
-  max-width: 580px;
 }
-.refresh-ai-steps li {
+.refresh-line-split li {
+  padding: 11px 0;
+  border-top: 1px solid #ffffff24;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #dbe8da;
+}
+.refresh-line-split li:last-child {
+  border-bottom: 1px solid #ffffff24;
+}
+.refresh-line-split > div:last-child li {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Our own software, ours to show. Phone-shaped captures because that is the
+   shape they were taken in and the shape most visitors are holding. */
+.refresh-proof-section .refresh-section-heading {
+  margin-bottom: 28px;
+}
+.proof-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.proof-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 17px;
+  border-radius: 999px;
+  border: 1px solid #d3ddcd;
+  background: #fff;
+  color: #1d3f2c;
+  font: inherit;
+  font-size: 0.87rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+.proof-tabs button:hover {
+  border-color: #175b3b;
+}
+.proof-tabs button.is-current {
+  background: #10261d;
+  border-color: #10261d;
+  color: #f4f6ed;
+}
+.proof-tab-index {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+.proof-tabs button:focus-visible {
+  outline: 2px solid #175b3b;
+  outline-offset: 2px;
+}
+.proof-lead {
+  max-width: 620px;
+  color: #53635a;
+  margin-bottom: 26px !important;
+  animation: proof-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.proof-shots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.proof-shots figure {
+  margin: 0;
+  display: grid;
+  gap: 14px;
+  animation: proof-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 80ms);
+}
+.proof-frame {
+  display: block;
+  padding: 9px;
+  border-radius: 22px;
+  background: #10261d;
+  box-shadow: 0 22px 60px #10261d1f;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.proof-shots figure:hover .proof-frame {
+  transform: translateY(-5px);
+}
+.proof-frame img {
+  width: 100%;
+  border-radius: 14px;
+  aspect-ratio: 430 / 620;
+  object-fit: cover;
+  object-position: top center;
+  background: #e8ece3;
+}
+/* The workspace is a thing you sit in front of, so it gets a screen shape and
+   one shot at a time rather than three phones in a row. */
+.proof-shots.is-screen {
+  grid-template-columns: 1fr 1fr;
+}
+.proof-shots.is-screen figure:first-child {
+  grid-column: 1 / -1;
+}
+/* Full width at 16/10 is most of a screen tall for one picture. The crop keeps
+   the part that says what the page is and drops the empty form below it. */
+.proof-shots.is-screen figure:first-child .proof-frame img {
+  aspect-ratio: 16 / 7;
+}
+.proof-shots.is-screen .proof-frame {
+  padding: 8px 8px 20px;
+  border-radius: 14px;
+}
+.proof-shots.is-screen .proof-frame img {
+  aspect-ratio: 16 / 10;
+  border-radius: 7px;
+}
+.proof-shots.is-screen .proof-frame::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 3px;
+  margin: 9px auto 0;
+  border-radius: 999px;
+  background: #ffffff2e;
+}
+.proof-shots figcaption {
   display: grid;
   gap: 4px;
-  padding: 15px 0;
-  border-top: 1px solid #d3ddcd;
+}
+.proof-shots figcaption strong {
+  font-size: 1rem;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  color: #10261d;
+}
+.proof-shots figcaption span {
+  font-size: 0.87rem;
+  line-height: 1.5;
   color: #53635a;
-  font-size: 0.97rem;
-  line-height: 1.6;
 }
-.refresh-ai-steps li:last-child {
-  border-bottom: 1px solid #d3ddcd;
+.proof-note {
+  margin-top: 28px !important;
+  padding-top: 20px;
+  border-top: 1px solid #d3ddcd;
+  max-width: 720px;
+  font-size: 0.9rem !important;
+  color: #7d8c83;
 }
-.refresh-ai-steps strong {
-  color: #1d3f2c;
-  font-size: 0.7rem;
+.proof-note .agency-text-link {
+  margin-left: 6px;
+  font-size: 0.87rem;
+}
+@keyframes proof-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Free to open, right now. The cheapest next step on the page, so it is a
+   grid of doors rather than a paragraph about doors. */
+.refresh-open-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.refresh-open-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  height: 100%;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid #d6e0ce;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.refresh-open-card:hover {
+  transform: translateY(-4px);
+  border-color: #175b3b;
+  box-shadow: 0 18px 44px #10261d12;
+}
+.refresh-open-kind {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
   font-family: var(--font-geist-mono), monospace;
-  letter-spacing: 0.09em;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
 }
+.refresh-open-kind.is-tool {
+  background: #c2f576;
+  color: #1d3f2c;
+}
+.refresh-open-kind.is-demonstration {
+  background: #eaf0e3;
+  color: #53635a;
+}
+.refresh-open-card h3 {
+  font-size: 1.2rem;
+}
+.refresh-open-card p {
+  font-size: 0.89rem !important;
+  line-height: 1.55 !important;
+  color: #53635a;
+}
+.refresh-open-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: #175b3b;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.refresh-open-card:hover .refresh-open-action svg {
+  transform: translate(2px, -2px);
+}
+.refresh-open-action svg {
+  transition: transform 0.25s ease;
+}
+
+/* Why any of this exists. Last on the page, and quiet. */
+.refresh-why {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 60px;
+  align-items: center;
+}
+.refresh-why-copy p:not(.agency-eyebrow) {
+  margin-top: 22px;
+  max-width: 580px;
+  color: #53635a;
+}
+.refresh-why-plain {
+  padding-left: 18px;
+  border-left: 2px solid #c2f576;
+  color: #2c3a32 !important;
+}
+.refresh-why .agency-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+.refresh-why-mark blockquote {
+  margin: 0;
+  padding: 34px;
+  border-radius: 16px;
+  background: #10261d;
+  color: #f4f6ed;
+}
+.refresh-why-mark blockquote p {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.32rem !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.01em;
+}
+.refresh-why-mark cite {
+  display: block;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #ffffff24;
+  font-style: normal;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c2f576;
+}
+
+/* How a business gets from today to that. Four steps, the same four named on
+   the approach page, so the site tells one story. */
+.refresh-start-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 34px;
+}
+.refresh-start-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  counter-reset: none;
+}
+.refresh-start-steps li {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding-top: 18px;
+  border-top: 2px solid #d3ddcd;
+  transition: border-color 0.3s ease;
+}
+.refresh-start-steps li:hover {
+  border-top-color: #175b3b;
+}
+.refresh-start-number {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: #175b3b;
+  font-weight: 600;
+}
+.refresh-start-steps h3 {
+  font-size: 1.28rem;
+}
+.refresh-start-steps p {
+  font-size: 0.93rem !important;
+  color: #53635a;
+}
+@media (max-width: 1080px) {
+  .flow-shell {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  /* Stacked, the words go first. The two panes are around 800px tall on a
+     phone, and a picture that long before any explanation asks the reader to
+     work out what they are looking at on their own. */
+  .flow-side {
+    order: -1;
+  }
+  .refresh-start-steps,
+  .refresh-open-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px 22px;
+  }
+  .refresh-problem-grid,
+  .refresh-line-grid,
+  .refresh-why {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+  .refresh-problem-grid {
+    padding-block: 62px;
+  }
+  .refresh-line-grid {
+    padding-block: 60px;
+  }
+  .volume-grid {
+    max-width: 520px;
+  }
+  .proof-shots {
+    gap: 18px;
+  }
+  .refresh-why-mark blockquote {
+    padding: 28px;
+  }
+}
 @media (max-width: 760px) {
-  .refresh-ai-steps {
+  .refresh-flow-head p:not(.agency-eyebrow) {
+    margin-top: 16px;
+  }
+  .flow-shell {
+    margin-top: 26px;
+    gap: 22px;
+  }
+  /* On a phone the two panes stack and the thread comes first: it is the part
+     a shop owner recognises without being told what they are looking at. */
+  .flow-panes {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .flow-pane {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .flow-thread {
+    height: 200px;
+  }
+  /* Every detail stays open on a phone. Collapsing them saves height, but the
+     list advances on a timer, and text that grows and shrinks under somebody's
+     thumb while they are reading it is worse than a longer page. */
+  .flow-step-detail {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .flow-steps li:not(.is-current) button {
+    opacity: 0.78;
+  }
+  .flow-bubble {
+    max-width: 92%;
+    font-size: 0.86rem !important;
+  }
+  .flow-steps {
+    padding-left: 22px;
+  }
+  .flow-steps li::before {
+    left: -22px;
+  }
+  .flow-steps::before,
+  .flow-steps::after {
+    left: 4px;
+  }
+  .flow-steps button {
+    padding: 10px 10px;
+  }
+  .flow-step-title {
+    font-size: 0.95rem;
+  }
+  .flow-step-detail {
+    font-size: 0.87rem;
+  }
+  .flow-controls {
+    padding-left: 22px;
+  }
+  .refresh-flow-foot {
+    display: grid;
     margin-top: 20px;
   }
-  .refresh-ai-steps li {
-    padding: 13px 0;
-    font-size: 0.94rem;
+  .refresh-start-head {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    margin-bottom: 26px;
+  }
+  .refresh-start-steps,
+  .refresh-open-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .refresh-start-steps li {
+    padding-top: 14px;
+  }
+  .refresh-start-steps h3 {
+    font-size: 1.18rem;
+  }
+  .refresh-problem-grid {
+    padding-block: 48px;
+    gap: 28px;
+  }
+  .refresh-problem-line {
+    font-size: 1.1rem !important;
+  }
+  /* Eight across keeps the squares big enough to read as squares on a phone;
+     ten across turns them into dots. */
+  .volume-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 7px;
+    max-width: 100%;
+  }
+  .refresh-line-grid {
+    padding-block: 46px;
+    gap: 28px;
+  }
+  .refresh-line-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  /* Three tall phone captures stacked is a very long scroll, so on a phone
+     they become one swipeable row instead. */
+  .proof-shots {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 74%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    margin-inline: calc(var(--agency-gutter) * -1);
+    padding-inline: var(--agency-gutter);
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+  .proof-shots::-webkit-scrollbar {
+    display: none;
+  }
+  .proof-shots figure {
+    scroll-snap-align: start;
+  }
+  .proof-shots.is-screen {
+    grid-auto-columns: 88%;
+  }
+  .proof-shots.is-screen figure:first-child {
+    grid-column: auto;
+  }
+  .proof-tabs button {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+  .refresh-open-card {
+    padding: 18px;
+  }
+  .refresh-why {
+    gap: 28px;
+  }
+  .refresh-why-mark blockquote {
+    padding: 24px;
+  }
+  .refresh-why-mark blockquote p {
+    font-size: 1.16rem !important;
+  }
+}
+/* Thumbs, not pointers.
+ *
+ * 24px is the WCAG 2.5.8 floor and everything here already cleared it. 44px is
+ * the size a thumb actually wants, and on the pages a customer sees that is the
+ * bar worth holding. Measured with video/scripts/audit-targets.mjs, which lists
+ * anything between the two so the gap is a decision rather than an oversight.
+ *
+ * Buttons only. An <a> inside a sentence is text, and padding it to 44px would
+ * put holes in the prose. */
+@media (pointer: coarse), (max-width: 760px) {
+  .agency-site :is(button, [role='button'], input[type='submit']) {
+    min-height: 44px;
+  }
+  .agency-site .currency-picker-options button {
+    min-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-bubble,
+  .flow-value,
+  .proof-lead,
+  .proof-shots figure {
+    animation: none;
+  }
+  .flow-steps::after,
+  .flow-step-detail,
+  .proof-frame {
+    transition: none;
+  }
+  /* The squares still need to be visible, so the reveal resolves rather than
+     never running: no motion, but no blank grid either. */
+  .volume .volume-grid span,
+  .volume .volume-key {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
   }
 }

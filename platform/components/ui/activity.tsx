@@ -72,16 +72,23 @@ export function PendingButton({
       {/* Every label the button can show, stacked and unmeasured, so its width
           is the widest of them. Reserving only the idle label still let the
           button grow whenever the pending text was the longer one, which is
-          the usual case: "Save" becoming "Saving". */}
+          the usual case: "Save" becoming "Saving".
+
+          The sizer and the face occupy the same grid cell. As flex siblings
+          they added up instead: the button needed room for the label twice,
+          and anything not stretched to full width wrapped, which is why the
+          icon sat on its own line above the text on every admin form. */}
       <span className="pending-button-sizer" aria-hidden="true">
         <span>{children}</span>
         <span>{pendingLabel}</span>
         {done !== undefined && <span>{doneLabel}</span>}
       </span>
-      {pending && <Spinner />}
-      {done && !pending && <Check size={14} aria-hidden="true" />}
-      <span className="pending-button-label">
-        {pending ? pendingLabel : done ? doneLabel : children}
+      <span className="pending-button-face">
+        {pending && <Spinner />}
+        {done && !pending && <Check size={14} aria-hidden="true" />}
+        <span className="pending-button-label">
+          {pending ? pendingLabel : done ? doneLabel : children}
+        </span>
       </span>
     </button>
   );

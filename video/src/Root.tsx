@@ -3,6 +3,7 @@ import { Composition } from 'remotion';
 import { formats, fps, type FormatName } from './brand';
 import { OrderStory, orderStoryDuration } from './compositions/OrderStory';
 import { LaunchFilm, launchFilmDuration } from './compositions/LaunchFilm';
+import { AksenAd, aksenAdDuration } from './compositions/AksenAd';
 
 /**
  * One story, registered once per shape.
@@ -52,6 +53,22 @@ export function RemotionRoot() {
           id={`launch-film-${format}`}
           component={LaunchFilm}
           durationInFrames={launchFilmDuration}
+          fps={fps}
+          width={formats[format].width}
+          height={formats[format].height}
+          defaultProps={{ format }}
+        />
+      ))}
+      {/* The sixty second ad. Faster than the launch film and built for a feed
+          rather than for someone who already decided to watch: hard cuts, type
+          that lands, and every shot a real screen.
+          Run `node scripts/shoot-film-stills.mjs` before rendering. */}
+      {cuts.map((format) => (
+        <Composition
+          key={`ad-${format}`}
+          id={`aksen-ad-${format}`}
+          component={AksenAd}
+          durationInFrames={aksenAdDuration}
           fps={fps}
           width={formats[format].width}
           height={formats[format].height}

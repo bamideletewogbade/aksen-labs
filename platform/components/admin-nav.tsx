@@ -2,7 +2,8 @@
 import Link from 'next/link';
 import {
   Activity,
-  Bot,
+  FilePenLine,
+  Gauge,
   BookOpen,
   BriefcaseBusiness,
   Menu,
@@ -48,7 +49,10 @@ const groups = [
     label: 'Today',
     items: [
       { href: '/admin', label: 'Home', icon: Activity },
-      { href: '/admin/operations', label: 'Client drafts', icon: Bot },
+      // Named for what the page holds, not for what prepared it. A robot icon
+      // beside "Client drafts" describes the tool rather than the destination,
+      // and every one of these drafts is read by a person before it goes out.
+      { href: '/admin/operations', label: 'Client drafts', icon: FilePenLine },
       { href: '/admin/agent-desk', label: 'AI tools', icon: ClipboardList },
     ],
   },
@@ -105,7 +109,7 @@ const groups = [
   {
     label: 'Manage',
     items: [
-      { href: '/admin/agents', label: 'AI usage', icon: Bot },
+      { href: '/admin/agents', label: 'AI usage', icon: Gauge },
       { href: '/admin/audit', label: 'Activity history', icon: ScrollText },
       {
         href: '/admin/support/knowledge',
@@ -187,7 +191,10 @@ export function AdminNav({ signOutPath }: { signOutPath: string }) {
                     className={pathname === href ? 'active' : ''}
                   >
                     <Icon size={17} />
-                    {label}
+                    {/* Wrapped because a bare text node cannot be selected,
+                        and the collapsed rail has to hide the words while
+                        keeping the icon. */}
+                    <span className="admin-nav-label">{label}</span>
                   </Link>
                 ))}
               </div>
@@ -195,7 +202,8 @@ export function AdminNav({ signOutPath }: { signOutPath: string }) {
           );
         })}
         <Link href="/" className="admin-site-link">
-          View website <ArrowUpRight size={16} />
+          <span className="admin-nav-label">View website</span>
+          <ArrowUpRight size={16} />
         </Link>
         <a className="admin-menu-signout" href={signOutPath}>
           Sign out

@@ -15,11 +15,11 @@
    queue that has never had anything in it. It is amber because it is a pause,
    not a problem: nothing is wrong, something is simply waiting on a person. */
 .admin-refresh .decision-panel {
-  border-left: 3px solid #e7c46a;
+  border-left: 3px solid #e2c079;
 }
 .admin-refresh .decision-note {
   margin: 0 0 12px;
-  color: #a9bdae;
+  color: #2b3d32;
   font-size: 0.86rem;
 }
 .admin-refresh .decision-list {
@@ -36,20 +36,20 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid #2f4736;
+  border: 1px solid #dde7d8;
   border-radius: 10px;
-  background: #0f2117;
+  background: #ffffff;
 }
 .admin-refresh .decision-list li > span {
   display: grid;
   gap: 3px;
 }
 .admin-refresh .decision-list strong {
-  color: #e6efe7;
+  color: #11241a;
   font-size: 0.92rem;
 }
 .admin-refresh .decision-list small {
-  color: #8ba392;
+  color: #56685c;
   font-size: 0.78rem;
 }
 
@@ -69,13 +69,13 @@
 /* Resting: reads as a caption until you go near it. */
 .admin-refresh .confirm-action-arm {
   border: 1px solid transparent;
-  color: #8aa08f;
+  color: #56685c;
   background: transparent;
 }
 .admin-refresh .confirm-action-arm:is(:hover, :focus-visible):not(:disabled) {
-  color: #f0b3a5;
-  border-color: #a5544433;
-  background: #a554441f;
+  color: #a8372a;
+  border-color: #b3412c33;
+  background: #b3412c1f;
 }
 .admin-refresh .confirm-action-arm:disabled {
   opacity: 0.4;
@@ -84,21 +84,21 @@
 
 /* Armed: the next click does it, so it stops being subtle. */
 .admin-refresh .confirm-action-go {
-  border: 1px solid #c2624f;
-  color: #2a0f0a;
-  background: #e0836c;
+  border: 1px solid #e8a495;
+  color: #a8372a;
+  background: #fbe0d9;
 }
 .admin-refresh .confirm-action-go:is(:hover, :focus-visible):not(:disabled) {
-  background: #eb9782;
+  background: #fbe0d9;
 }
 .admin-refresh .confirm-action-cancel {
-  border: 1px solid #3d5443;
-  color: #c2d3c6;
+  border: 1px solid #e0e8db;
+  color: #2b3d32;
   background: transparent;
 }
 .admin-refresh .confirm-action-cancel:is(:hover, :focus-visible) {
-  border-color: #5d7a64;
-  color: #eaf4ea;
+  border-color: #d5e0cf;
+  color: #2c6b2f;
 }
 
 /* Erasing and deleting are different acts with different consequences, so they
@@ -110,7 +110,7 @@
   gap: 10px;
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px dashed #2f4736;
+  border-top: 1px dashed #dde7d8;
 }
 .admin-refresh .lead-destructive .status-note {
   flex-basis: 100%;
@@ -118,7 +118,7 @@
 /* Deleting the record is the rarer and more final of the two, and is set back
    a step so it is never the one reached for by accident. */
 .admin-refresh .lead-remove .confirm-action-arm {
-  color: #718576;
+  color: #56685c;
   font-weight: 500;
 }
 
@@ -161,9 +161,9 @@
 .admin-refresh .media-gallery-remove .confirm-action-arm {
   min-height: 26px;
   padding: 3px 8px;
-  color: #e8f0e9;
-  background: #0b1a10cc;
-  border-color: #ffffff1f;
+  color: #11241a;
+  background: #2f7d32cc;
+  border-color: #10261d24;
   backdrop-filter: blur(6px);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -187,7 +187,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #bde997;
+  color: #2c6b2f;
   font-size: 0.84rem;
   font-weight: 600;
   text-decoration: none;

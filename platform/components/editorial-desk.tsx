@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Bot,
   Clock3,
   ExternalLink,
   FilePenLine,
-  Radar,
-  Sparkles,
+  ListOrdered,
+  Rss,
+  UserCheck,
 } from 'lucide-react';
 import { CADENCE_LABEL, type Cadence } from '@/lib/automation-schedule';
 import { editorialSources } from '@/lib/editorial-sources';
@@ -124,18 +124,21 @@ export function EditorialDesk() {
           onClick={() => act('research')}
           disabled={Boolean(busy)}
         >
-          <Radar size={16} />{' '}
+          <Rss size={16} />{' '}
           {busy === 'research' ? 'Researching…' : 'Find fresh ideas'}
         </button>
       </div>
 
+      {/* Each step is labelled with what it does. Sparkles said "magic happens
+          here" about a ranking, and a robot sat beside the words "You approve",
+          which is the one step in the row a machine does not touch. */}
       <div className="editorial-flow" aria-label="Editorial workflow">
         <span>
-          <Radar /> Research
+          <Rss /> Research
         </span>
         <i>→</i>
         <span>
-          <Sparkles /> Rank ideas
+          <ListOrdered /> Rank ideas
         </span>
         <i>→</i>
         <span>
@@ -143,7 +146,7 @@ export function EditorialDesk() {
         </span>
         <i>→</i>
         <span>
-          <Bot /> You approve
+          <UserCheck /> You approve
         </span>
       </div>
 
