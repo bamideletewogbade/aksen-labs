@@ -16,14 +16,8 @@ export default function ApproachPage() {
         <PageIntro
           variant="approach"
           label="OUR APPROACH"
-          title={
-            <>
-              From agreed scope
-              <br />
-              <em>to everyday use.</em>
-            </>
-          }
-          text="We understand the problem, agree what to build and test it with your team. Before launch, we plan training, responsibilities and ongoing support."
+          title={<>Nothing gets built before you have agreed what it is.</>}
+          text="We work out the problem together, write down what is being built and what it costs, then test it with the people who will actually use it. Training, who owns what, and support are settled before launch rather than after."
           image="agency-founders"
           alt="Entrepreneurs planning together with materials and a laptop"
           target="#process"

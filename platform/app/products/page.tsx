@@ -67,15 +67,11 @@ function FreeToolsPanel() {
   return (
     <section className="agency-container refresh-section" id="free-tools-panel">
       <div className="refresh-section-heading">
-        <h2>
-          Free to use,
-          <br />
-          <em>right here.</em>
-        </h2>
+        <h2>Open these now. No account, no charge.</h2>
         <p>
-          No account and no charge. The first group works on whatever business
-          you describe to it. The second acts out the same work on a business we
-          made up, and says so on the page.
+          The first group works on whatever business you describe to it. The
+          second walks the same work through a worked example, using a sample
+          business so you can follow it end to end.
         </p>
       </div>
       {/* The label is a sibling of the heading rather than a span inside it: in
@@ -114,11 +110,7 @@ function ExamplesPanel() {
         <header className="agents-gallery-heading">
           <div>
             <p className="agency-eyebrow">CAPABILITY EXAMPLES</p>
-            <h2>
-              What this looks like
-              <br />
-              <em>in a working business.</em>
-            </h2>
+            <h2>The same idea, inside a business that runs on it.</h2>
           </div>
           <p>
             Each card is one job an assistant can hold, written as the moment a
@@ -252,14 +244,8 @@ export default function ProductsPage() {
         <PageIntro
           variant="products"
           label="PRODUCTS AND TOOLS"
-          title={
-            <>
-              What we have built,
-              <br />
-              <em>and what you can use.</em>
-            </>
-          }
-          text="The free tools below run on this site with no account and no charge. After them are examples of the same approach inside a working business, and the products we have built and run ourselves."
+          title={<>What we have built, and what you can use today.</>}
+          text="The tools below run on this site with no account and no charge. After them are worked examples of the same approach inside a business, and the products we build and run ourselves."
           target="#products-tabs"
           action="Use something now"
         />

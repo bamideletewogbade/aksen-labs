@@ -12,14 +12,8 @@ export default function SupportDemo() {
         <PageIntro
           variant="workspace"
           label="CUSTOMER SUPPORT DEMO"
-          title={
-            <>
-              A helpful answer.
-              <br />
-              <em>A sensible next step.</em>
-            </>
-          }
-          text="See how an assistant handles everyday questions, asks for missing information and knows when a person should take over."
+          title={<>Watch it refuse to guess.</>}
+          text="Ask it something it can answer, then ask it something the business never told it. The second one is the interesting part: it should ask you for what is missing, or hand the whole thing to a person."
         />
         <section className="support-demo-layout">
           <div>

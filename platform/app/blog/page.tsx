@@ -51,14 +51,8 @@ export default async function BlogPage() {
           target="#latest-articles"
           action="Read the latest"
           label="THE BLOG"
-          title={
-            <>
-              Useful ideas.
-              <br />
-              <em>For better business.</em>
-            </>
-          }
-          text="Practical thinking about digital experiences, business systems and AI. Written to help you make your next decision."
+          title={<>Notes on AI that is actually in production.</>}
+          text="Where we follow the field, who is worth reading, and what it takes to get an agent running in a real business rather than a demo. Written for people running a business, and for people learning to build this."
         />
         <section
           id="latest-articles"

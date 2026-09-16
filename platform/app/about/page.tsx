@@ -18,36 +18,29 @@ export default function AboutPage() {
         <PageIntro
           variant="about"
           label="ABOUT AKSEN LABS"
-          title={
-            <>
-              Built around
-              <br />
-              <em>African businesses.</em>
-            </>
-          }
-          text="Aksen Labs is a Ghana-based digital transformation agency. We build websites, connect business systems and develop digital products to help African businesses prosper."
+          title={<>A digital studio, built in Accra.</>}
+          text="Aksen Labs builds websites, connects the systems a business already runs on, and develops digital products. You deal directly with the people building your project, and the scope and price are agreed in writing before anything starts."
           image="agency-founders"
           alt="Two entrepreneurs collaborating in a contemporary design studio"
         />
         <section className="agency-container refresh-section refresh-scope">
           <Reveal>
-            <p className="agency-eyebrow">WHY WE EXIST</p>
-            <h2>
-              Business potential
-              <br />
-              <em>deserves better tools.</em>
-            </h2>
+            <p className="agency-eyebrow">WHAT GETS IN THE WAY</p>
+            <h2>Most businesses are not held back by their idea.</h2>
           </Reveal>
           <Reveal delay={60}>
             <p>
-              A good business can be held back by a difficult buying experience,
-              scattered information or work that depends on one overloaded
-              person.
+              They are held back by a checkout nobody finishes, information
+              sitting in four places, or one person who is the only one who
+              knows how something works. None of that is interesting, and all of
+              it is expensive.
             </p>
             <p>
-              We help you choose what to improve, build the solution and teach
-              your team to use it. That might mean a better online shop, shared
-              customer records, useful reporting or a new digital service.
+              The job is working out which of those is actually costing you
+              money, building the fix, and leaving your team able to run it
+              without me. Sometimes that is a shop. Sometimes it is shared
+              customer records, reporting that tells you something you did not
+              know, or a service you did not offer before.
             </p>
             <Link className="agency-text-link" href="/solutions">
               Explore our services <ArrowUpRight size={18} />
@@ -66,22 +59,17 @@ export default function AboutPage() {
               />
             </Reveal>
             <Reveal delay={60}>
-              <p className="agency-eyebrow">AN AGENCY. ROOM TO INVENT.</p>
-              <h2>
-                Built for clients.
-                <br />
-                <em>Open to new ideas.</em>
-              </h2>
+              <p className="agency-eyebrow">CLIENT WORK, AND OUR OWN</p>
+              <h2>Client work pays for it. Building our own keeps it sharp.</h2>
               <p>
-                Alongside client projects, we build our own. CV Forge started as
-                a CV reviewer and builder and now covers the rest of a job
+                CV Forge began as a CV reviewer and now covers the rest of a job
                 search: finding roles, preparing each application against the
-                real advert, and keeping track of what happened next.
+                actual advert, and keeping a record of what came of it.
               </p>
               <p>
-                CV Forge is built and we use it ourselves; it does not have a
-                public address yet. The free tools on the products page do work
-                today.
+                It is built and in use. A public address is coming, so it is not
+                something you can open today. The free tools on the products
+                page are live right now.
               </p>
               <Link className="agency-text-link" href="/products">
                 Explore our products <ArrowUpRight size={18} />
@@ -91,22 +79,19 @@ export default function AboutPage() {
         </section>
         <section className="agency-container refresh-section refresh-scope">
           <Reveal>
-            <p className="agency-eyebrow">OUR PERSPECTIVE</p>
-            <h2>
-              Ghana is home.
-              <br />
-              <em>Ambition travels.</em>
-            </h2>
+            <p className="agency-eyebrow">WHERE WE WORK</p>
+            <h2>Based in Ghana, open to anywhere we can actually deliver.</h2>
           </Reveal>
           <Reveal delay={60}>
             <p>
-              We’re based in Ghana and welcome opportunities in Nigeria, across
-              Africa and beyond.
+              Nigeria, elsewhere in Africa, and further out where the fit is
+              right. We scope each market properly before taking work in it.
             </p>
             <p>
-              Every market deserves its own understanding. We shape the work
-              around your customers, connectivity, payment options and operating
-              reality.
+              Every market has its own habits. Which channels customers actually
+              message on, what the connectivity is like, how people expect to
+              pay. That shapes a build far more than any choice of framework
+              does.
             </p>
           </Reveal>
         </section>

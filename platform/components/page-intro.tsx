@@ -165,11 +165,11 @@ function OpeningArt({
       <div className="opening-blog-art" aria-hidden="true">
         <span className="opening-quote">“</span>
         <strong>
-          A useful idea
+          Most of this
           <br />
-          can change
+          was learned
           <br />
-          <em>what happens next.</em>
+          <em>the expensive way.</em>
         </strong>
         <span className="opening-art-end">NOTES FROM AKSEN LABS</span>
       </div>

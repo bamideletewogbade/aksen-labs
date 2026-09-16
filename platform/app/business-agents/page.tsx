@@ -14,11 +14,7 @@ export default function BusinessAgentsPage() {
       <main id="main-content" className="business-agents-page agency-container">
         <header className="business-agents-intro">
           <p className="agency-eyebrow">BUSINESS AGENTS</p>
-          <h1>
-            A useful next step.
-            <br />
-            <em>From the facts you provide.</em>
-          </h1>
+          <h1>Describe your business. Get something you can act on.</h1>
           <p>
             Choose a task, describe your business and get a draft you can
             review. Start with your own brief or a fictional example.

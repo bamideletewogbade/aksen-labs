@@ -2,6 +2,7 @@ import { desc, eq, isNull, or } from 'drizzle-orm';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { getDb } from '@/db';
 import { opportunities } from '@/db/schema';
+import { AdminTabs } from '@/components/admin-tabs';
 import { AdminAddLead } from '@/components/admin-add-lead';
 import { AdminPipelineList, type Lead } from '@/components/admin-pipeline-list';
 import { byUrgency, todayIso } from '@/lib/pipeline-order';
@@ -55,34 +56,47 @@ export default async function AdminPipelinePage({
           </p>
         </div>
       </header>
-      <div className="admin-layout">
-        <section className="admin-panel pipeline-panel">
-          {loadFailed ? (
-            <div className="empty-admin" role="alert">
-              <strong>Enquiries could not be loaded.</strong>
-              <span>
-                Check the database connection, then reload this page. No example
-                records are substituted.
-              </span>
-            </div>
-          ) : leads.length ? (
-            <AdminPipelineList
-              initialLeads={leads}
-              today={today}
-              initialQuery={initialQuery}
-            />
-          ) : (
-            <div className="empty-admin">
-              <strong>Nothing in the pipeline yet.</strong>
-              <span>
-                Enquiries arrive from the opportunity mapper, or add someone who
-                came to you directly.
-              </span>
-            </div>
-          )}
-        </section>
-        <AdminAddLead />
-      </div>
+      {/* The add form used to take a third of the width on every visit, beside
+          a list that is what this page is opened for. It is one tab away now,
+          and the list has the whole width. */}
+      <AdminTabs
+        label="Sales pipeline"
+        tabs={[
+          {
+            id: 'enquiries',
+            label: 'Enquiries',
+            note: loadFailed ? undefined : leads.length,
+            panel: (
+              <section className="admin-panel pipeline-panel">
+                {loadFailed ? (
+                  <div className="empty-admin" role="alert">
+                    <strong>Enquiries could not be loaded.</strong>
+                    <span>
+                      Check the database connection, then reload this page. No
+                      example records are substituted.
+                    </span>
+                  </div>
+                ) : leads.length ? (
+                  <AdminPipelineList
+                    initialLeads={leads}
+                    today={today}
+                    initialQuery={initialQuery}
+                  />
+                ) : (
+                  <div className="empty-admin">
+                    <strong>Nothing in the pipeline yet.</strong>
+                    <span>
+                      Enquiries arrive from the opportunity mapper, or add
+                      someone who came to you directly.
+                    </span>
+                  </div>
+                )}
+              </section>
+            ),
+          },
+          { id: 'add', label: 'Add a lead', panel: <AdminAddLead /> },
+        ]}
+      />
     </section>
   );
 }

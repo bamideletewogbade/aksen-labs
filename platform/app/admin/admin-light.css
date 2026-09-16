@@ -149,6 +149,202 @@
 }
 
 /* ----------------------------------------------------------------------
+   The system pass
+
+   One set of rules, aimed at the things every admin screen shares, rather than
+   twenty screens fixed one at a time.
+
+   The root problem was contrast between surfaces, not colour. Panels were
+   #f7faf4 sitting on a #f4f7f1 page: a difference of about one percent
+   lightness, so nothing on any screen read as a card. Everything looked like
+   one continuous beige field with text scattered on it, and every screen
+   inherited that at once. Panels are white here, with a real border and a
+   shadow that is barely there but enough to lift them.
+
+   The second problem was the type scale. Eyebrows at 10px, body copy at 12px
+   and panel headings at 17px is a range of seven points doing four jobs, which
+   is why the screens read as dense rather than organised.
+   ---------------------------------------------------------------------- */
+
+@media screen {
+  /* ---- the tokens ----
+
+     These four were declared on `.admin-refresh .founder-overview`, so the
+     dashboard had a design system and every other screen did not. Anything
+     outside that one route asking for var(--line) fell through to the
+     definition in globals.css, which is rgba(7,10,8,.13): a neutral grey on a
+     page whose every other border is the green-grey #dde7d8. That is why the
+     conversation history and the project item list draw a line that does not
+     match the card it sits in.
+
+     Declared on .admin-refresh they cover the whole workspace. The dashboard's
+     own block is more specific and still wins inside it, so this fills the gap
+     rather than changing the screen that was already right. */
+  .admin-refresh {
+    --card: #ffffff;
+    --card-raised: #f7faf4;
+    --line: #dde7d8;
+    --line-strong: #cddcc5;
+    --muted: #5f775f;
+    --bright: #14402b;
+  }
+
+  /* ---- surfaces ---- */
+
+  .admin-refresh :is(.admin-panel, .metric-grid article) {
+    background: #ffffff;
+    border-color: #dde7d8;
+    border-radius: 14px;
+    box-shadow:
+      0 1px 2px #1022190a,
+      0 8px 24px #10221908;
+  }
+  /* Metrics are the one place a card is also a link or a filter, so it earns a
+     hover. Panels do not move. */
+  .admin-refresh .metric-grid article:hover {
+    border-color: #bcd2b4;
+  }
+
+  /* ---- type scale ----
+     Four steps doing four jobs: eyebrow, body, panel title, page title. */
+
+  .admin-refresh :is(.admin-header small, .panel-head small) {
+    font-size: 11px;
+    letter-spacing: 0.11em;
+    font-weight: 600;
+    color: #5d7165;
+  }
+  .admin-refresh .admin-header h1 {
+    /* Was #2c6b2f, a mid green carrying the largest text on the page against a
+       pale green background. Deeper reads as the page's own voice and clears
+       contrast comfortably at every size the clamp produces. */
+    color: #14402b;
+  }
+  .admin-refresh .admin-header p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #46584d;
+    max-width: 72ch;
+  }
+  .admin-refresh .panel-head h2 {
+    font-size: 18px;
+    letter-spacing: -0.015em;
+    color: #14402b;
+  }
+  .admin-refresh .admin-header {
+    padding-bottom: 22px;
+    margin-bottom: 26px;
+  }
+
+  /* ---- lists and toolbars ----
+     12px was doing the work of body copy in every record list on the site. */
+
+  .admin-refresh :is(.admin-record-toolbar label, .admin-filter-count) {
+    font-size: 12px;
+    color: #5d7165;
+  }
+  .admin-refresh .content-count {
+    font-size: 12.5px;
+    color: #46584d;
+    background: #fbfdf9;
+  }
+
+  /* ---- empty states ----
+     These are the screens a new workspace actually opens on, and an empty
+     panel with a sentence in it read like a rendering failure. A dashed well
+     says "nothing here yet" on purpose. */
+
+  .admin-refresh .empty-admin {
+    margin: 18px;
+    padding: 34px 26px;
+    border: 1px dashed #cddcc5;
+    border-radius: 12px;
+    background: #fbfdf9;
+  }
+  .admin-refresh .empty-admin strong {
+    font-size: 17px;
+    color: #14402b;
+  }
+  .admin-refresh .empty-admin span {
+    font-size: 13.5px;
+    color: #46584d;
+  }
+
+  /* ---- the page surface ----
+     A touch more air at the top so the h1 is not sitting on the rail's edge. */
+
+  .admin-refresh .admin-main {
+    padding-top: 38px;
+  }
+
+  /* ---- focus ----
+
+     The workspace-wide focus ring was #dcf3bd, which was a sensible glow on the
+     old near-black admin and measures about 1.3:1 against the white this one
+     uses. Every screen, every control: a keyboard user could tab through the
+     entire workspace and never see where they were. The deep green reads on
+     white and on the pale panels alike, and the white ring underneath keeps it
+     visible where a control sits on a dark or coloured fill.
+
+     Declared after the inputs block above so it also covers the elements that
+     block gives a border-colour change to on focus. */
+  .admin-refresh
+    :is(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid #14402b;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px #ffffff;
+  }
+  /* On the dark rail the same ring needs to go the other way. */
+  .admin-refresh .admin-sidebar :is(a, button, summary):focus-visible {
+    outline-color: #bde997;
+    box-shadow: 0 0 0 4px #102219;
+  }
+
+  /* ---- fields ----
+
+     Operations, the agent desk and the knowledge screens each declared their
+     own input border, one shade off the one the shared rule uses. Pointed at
+     the token so there is one answer to what a field looks like. */
+  .admin-refresh
+    :is(.ops-layout, .ai-check, .admin-create-form, .admin-record-toolbar)
+    :is(input, select, textarea) {
+    border-color: var(--line);
+    background: #ffffff;
+    color: #11241a;
+  }
+  .admin-refresh .ops-layout button:not(.admin-primary) {
+    border-color: var(--line-strong);
+    background: #ffffff;
+    color: #1d4a33;
+    font-weight: 600;
+  }
+  .admin-refresh .ops-layout button:not(.admin-primary):hover:not(:disabled) {
+    background: #f2f7ed;
+    border-color: #175b3b;
+  }
+
+  /* ---- headings inside a screen ----
+     h2 was doing panel titles at 17px and section titles at whatever globals
+     gave it. One step below the page title, one above body. */
+  .admin-refresh .admin-main :is(h2, h3) {
+    color: var(--bright);
+    letter-spacing: -0.015em;
+  }
+  .admin-refresh .admin-main h3 {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  /* The dashboard keeps its own --bright, a lighter green, because the
+     scoreboard figures use it as an accent and they should stay lively. Its
+     page title should not: a workspace where one screen's h1 is a different
+     green from every other screen's reads as two products. */
+  .admin-refresh .founder-header h1 {
+    color: #14402b;
+  }
+}
+
+/* ----------------------------------------------------------------------
    The pipeline row
 
    The row is a two column grid: a 34px company mark, then everything else.
@@ -616,5 +812,533 @@
     .admin-refresh .admin-sidebar {
       transition: none;
     }
+  }
+}
+
+/* ----------------------------------------------------------------------
+   Review, 16 September 2026.
+
+   A walk through every admin screen with fictional seed data, plus a script
+   that measured the contrast of every piece of text rather than only buttons.
+   Most of what it found is one bug in many places: dark-theme text colours
+   (near white, pale lime, pale gold) that the relight never reached, sitting
+   on what is now a white page. Headlines, counts and record names were there
+   in the DOM and invisible on screen.
+
+   Grouped by screen so a later reader can delete a block with its screen.
+   ---------------------------------------------------------------------- */
+@media screen {
+  /* ---- Tabs: one job per view on screens that did four ---- */
+  .admin-refresh .admin-tabs-strip {
+    display: flex;
+    gap: 4px;
+    margin: 4px 0 22px;
+    padding: 4px;
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid #dde7d8;
+    border-radius: 12px;
+    background: #ffffff;
+    scrollbar-width: none;
+  }
+  .admin-refresh .admin-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #56685c;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .admin-refresh .admin-tab:hover {
+    color: #10261d;
+    background: #f2f7ed;
+  }
+  .admin-refresh .admin-tab[aria-selected='true'] {
+    background: #175b3b;
+    color: #ffffff;
+  }
+  .admin-refresh .admin-tab:focus-visible {
+    outline: 2px solid #175b3b;
+    outline-offset: 2px;
+  }
+  .admin-refresh .admin-tab-note {
+    min-width: 20px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    background: #e7f5d4;
+    color: #1d4a33;
+    font-size: 12px;
+    text-align: center;
+  }
+  .admin-refresh .admin-tab[aria-selected='true'] .admin-tab-note {
+    background: #c2f576;
+    color: #062319;
+  }
+  .admin-refresh .admin-tab-panel {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+  }
+  .admin-refresh .admin-tab-panel[hidden] {
+    display: none;
+  }
+
+  /* ---- Shared: panels that stopped at 900px on a 1440px screen ---- */
+  .admin-refresh .full-panel {
+    max-width: none;
+  }
+  .admin-refresh .metric-grid article > strong,
+  .admin-refresh .metric-grid article strong {
+    color: #10261d;
+  }
+  .admin-refresh .metric-grid article small b {
+    color: #175b3b;
+  }
+
+  /* Status words written in pale lime and pale gold for a black page. */
+  .admin-refresh
+    :is(.content-list, .run-list, .approval-card)
+    b.status-published,
+  .admin-refresh .content-list b.status-published {
+    background: #e3f2dc;
+    color: #175b3b;
+  }
+  .admin-refresh .content-list b.status-draft {
+    background: #fbf0d9;
+    color: #7a5200;
+  }
+  .admin-refresh .content-list strong,
+  .admin-refresh .run-list article strong {
+    color: #10261d;
+  }
+  .admin-refresh .content-list button.resolved {
+    color: #175b3b;
+    border-color: #cddcc5;
+    background: #ffffff;
+  }
+
+  /* ---- Approvals: the action being approved was the invisible part ---- */
+  .admin-refresh .approval-card h3 {
+    color: #10261d;
+  }
+  .admin-refresh .approval-card > span {
+    color: #175b3b;
+  }
+
+  /* ---- Projects: the last black cards in a white workspace ---- */
+  .admin-refresh .project-list > article {
+    background: #ffffff;
+    color: #10261d;
+  }
+  .admin-refresh .project-list strong {
+    color: #10261d;
+  }
+  .admin-refresh .project-list header span {
+    color: #56685c;
+  }
+  .admin-refresh .project-list header b {
+    background: #e3f2dc;
+    color: #175b3b;
+  }
+  .admin-refresh .project-list header b.health-at_risk,
+  .admin-refresh .project-list header b.health-off_track {
+    background: #fde8e3;
+    color: #a3321b;
+  }
+  .admin-refresh .project-progress {
+    background: #e7eee3;
+  }
+  .admin-refresh .project-progress i {
+    background: #175b3b;
+  }
+  .admin-refresh .project-list footer span,
+  .admin-refresh .project-list footer small {
+    color: #56685c;
+  }
+  .admin-refresh .project-items > summary {
+    color: #1d4a33;
+  }
+
+  /* ---- AI tools: the page title and the selected tool were white on white ---- */
+  .admin-refresh .business-agents-intro h1,
+  .admin-refresh .agent-task-heading h2,
+  .admin-refresh .agent-history h2 {
+    color: #10261d;
+  }
+  .admin-refresh .agent-kicker {
+    color: #2c6b2f;
+  }
+  .admin-refresh .admin-agent-page .business-agents-intro > p:last-child,
+  .admin-refresh .business-agents-intro p,
+  .admin-refresh .agent-task-heading > p,
+  .admin-refresh .agent-history > p {
+    color: #56685c;
+  }
+
+  /* ---- Activity history: metadata under AA ---- */
+  .admin-refresh .audit-list small,
+  .admin-refresh .audit-list time {
+    color: #5f7066;
+  }
+
+  /* ---- Articles ---- */
+  .admin-refresh .draft-publish-note,
+  .admin-refresh .editorial-flow i {
+    color: #5f7066;
+    opacity: 1;
+  }
+  /* The row's actions wrapped a word per line into a 20px column. */
+  .admin-refresh .content-list article {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .admin-refresh .content-list article > div:first-child {
+    flex: 1 1 240px;
+    min-width: 0;
+  }
+  .admin-refresh .content-list article button,
+  .admin-refresh .content-list article .confirm-action-arm {
+    white-space: nowrap;
+  }
+
+  /* ---- Pipeline: a closed lead dimmed its own labels below legibility ---- */
+  .admin-refresh .lead-row.stage-lost,
+  .admin-refresh .lead-row.stage-won {
+    opacity: 1;
+  }
+  .admin-refresh .lead-row.stage-lost {
+    background: #fafbf8;
+  }
+  .admin-refresh .lead-row.stage-lost .lead-title strong {
+    color: #56685c;
+  }
+  .admin-refresh .company-mark {
+    background: #e3f2dc;
+    color: #175b3b;
+  }
+
+  /* ---- Lead Scout ---- */
+  .admin-refresh .lead-chip span {
+    opacity: 1;
+  }
+  .scout-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .admin-refresh .scout button.scout-to-queue {
+    justify-self: start;
+    padding: 12px 18px;
+    border: 1px solid #175b3b;
+    border-radius: 10px;
+    background: #175b3b;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ---- Help answers: the closing note had no surface ---- */
+  .admin-refresh .knowledge-maintain {
+    display: grid;
+    gap: 8px;
+    padding: 18px 22px;
+    border: 1px solid #dde7d8;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  /* ---- Drafting desks (client drafts, templates, demos, email) ----
+     .admin-panel gives these a background and a border but no padding, so
+     the labels ran into the card's edge and the two columns read as loose
+     form fields rather than two cards. */
+  .admin-refresh .ops-controls,
+  .admin-refresh .ops-editor {
+    padding: 20px 22px 22px;
+    border: 1px solid #dde7d8;
+    background: #ffffff;
+  }
+  .admin-refresh .ops-layout label {
+    color: #1d4a33;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .admin-refresh .ops-status,
+  .admin-refresh .ops-controls > p {
+    margin: 0;
+    color: #56685c;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .admin-refresh .ops-layout details > summary {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d4a33;
+    cursor: pointer;
+  }
+  .admin-refresh .ops-layout a {
+    font-size: 14px;
+  }
+
+  /* ---- Messages ---- */
+  .admin-refresh .content-list > article > div > span {
+    color: #56685c;
+  }
+
+  /* ---- Clients & invoices ---- */
+  .admin-refresh .ws-toolbar label {
+    color: #1d4a33;
+  }
+}
+
+@media screen {
+  .admin-refresh .knowledge-maintain h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #10261d;
+  }
+  .admin-refresh .knowledge-maintain p {
+    margin: 0;
+    max-width: 70ch;
+    color: #56685c;
+    font-size: 14px;
+  }
+  .admin-refresh .knowledge-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+}
+@media screen {
+  /* AI tools as a grid of cards. In the old narrow column the names broke
+     mid-word ("Operation s desk") and the name was set in a faded grey. */
+  .admin-refresh .ai-entry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    padding: 16px;
+  }
+  .admin-refresh .ai-entry-grid article {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    align-content: start;
+    gap: 6px 10px;
+    padding: 16px;
+    border: 1px solid #dde7d8;
+    border-radius: 10px;
+    background: #ffffff;
+  }
+  .admin-refresh .ai-entry-grid article > small {
+    grid-column: 2;
+    color: #5f7066;
+  }
+  .admin-refresh .ai-entry-grid article strong {
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}
+
+@media screen {
+  /* The channel choices inherited the admin's 44px full-width input rule, so
+     each checkbox filled its pill and squeezed "LinkedIn" to a letter a line. */
+  .admin-refresh .social-channel-choices input[type='checkbox'] {
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .admin-refresh .social-channel-choices label {
+    white-space: nowrap;
+  }
+}
+@media screen {
+  /* ---- Pipeline rows: one screen shows five enquiries, not two ---- */
+  .admin-refresh .pipeline-list .lead-row {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: start;
+    row-gap: 14px;
+  }
+  .admin-refresh .lead-quick {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .admin-refresh .lead-controls {
+    grid-column: 2 / -1;
+  }
+  .admin-refresh .lead-more {
+    grid-column: 2 / -1;
+    border-top: 1px dashed #dde7d8;
+    padding-top: 10px;
+  }
+  .admin-refresh .lead-more > summary {
+    width: fit-content;
+    color: #56685c;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .admin-refresh .lead-more[open] > summary {
+    margin-bottom: 12px;
+    color: #1d4a33;
+  }
+  .admin-refresh .lead-more .lead-destructive {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .admin-refresh .lead-stage-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 22px 12px;
+  }
+  .admin-refresh .lead-stage-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    border: 1px solid #dde7d8;
+    border-radius: 99px;
+    background: #ffffff;
+    color: #1d4a33;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .admin-refresh .lead-stage-chip span {
+    color: #56685c;
+    font-weight: 500;
+  }
+  .admin-refresh .lead-stage-chip[aria-pressed='true'] {
+    border-color: #175b3b;
+    background: #175b3b;
+    color: #ffffff;
+  }
+  .admin-refresh .lead-stage-chip[aria-pressed='true'] span {
+    color: #c2f576;
+  }
+}
+@media screen and (max-width: 760px) {
+  .admin-refresh .pipeline-list .lead-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+  .admin-refresh .lead-quick {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+  .admin-refresh .lead-more {
+    grid-column: 1 / -1;
+  }
+}
+@media screen and (min-width: 761px) {
+  /* Placed explicitly: earlier rules pin every child to column 2, which put
+     the quick actions under the name, and stack the three fields into three
+     rows. On a desktop the fields fit on one line. */
+  .admin-refresh .pipeline-list .lead-row > .lead-who {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .admin-refresh .pipeline-list .lead-row > .lead-quick {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .admin-refresh .pipeline-list .lead-row > .lead-controls {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    grid-template-columns: 170px minmax(200px, 1fr) 170px 22px;
+    align-items: end;
+  }
+  .admin-refresh .pipeline-list .lead-row > .lead-more {
+    grid-column: 2 / -1;
+    grid-row: 3;
+  }
+  .admin-refresh .lead-controls > .lead-stage {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .admin-refresh .lead-controls > .lead-next {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .admin-refresh .lead-controls > .lead-when {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .admin-refresh .lead-controls > .lead-state {
+    grid-column: 4;
+    grid-row: 1;
+  }
+}
+@media screen {
+  /* Panels have no inner padding of their own, and these blocks brought none,
+     so labels and fields sat on the card's border. */
+  .admin-refresh .admin-panel > .settings-form,
+  .admin-refresh .admin-panel > .settings-intro,
+  .admin-refresh .admin-panel > .settings-status,
+  .admin-refresh .admin-panel > .settings-actions,
+  .admin-refresh .admin-panel > .social-draft-form,
+  .admin-refresh .admin-panel > .social-draft-results,
+  .admin-refresh .admin-panel > .social-context-grid,
+  .admin-refresh .admin-panel > .social-intro,
+  .admin-refresh .admin-panel > .social-provider-grid {
+    margin-left: 22px;
+    margin-right: 22px;
+  }
+  .admin-refresh .admin-panel > .settings-form,
+  .admin-refresh .admin-panel > .social-draft-form,
+  .admin-refresh .admin-panel > .social-context-grid {
+    margin-top: 18px;
+  }
+  .admin-refresh .admin-panel > .settings-status,
+  .admin-refresh .admin-panel > .settings-actions:last-child,
+  .admin-refresh .admin-panel > .social-draft-results:last-child {
+    margin-bottom: 22px;
+  }
+}
+@media screen and (min-width: 1101px) {
+  /* Writing the email is the work; the outbox is a short list beside it. The
+     shared desk layout gave the wide column to the list. */
+  .admin-refresh .ops-layout.email-layout {
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.8fr);
+  }
+}
+@media screen {
+  /* A tab container dropped into a grid (the Lead Scout is one) takes its
+     content's width unless told otherwise, and on a phone that was wider
+     than the screen. */
+  .admin-refresh .admin-tabs {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+@media screen {
+  /* Four steps in one line ran off a phone screen. */
+  .admin-refresh .editorial-flow {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+}
+@media screen {
+  .admin-refresh fieldset.lead-stage-chips {
+    margin: 0;
+    border: 0;
+    min-width: 0;
   }
 }

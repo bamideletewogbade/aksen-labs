@@ -10,17 +10,22 @@ import { Reveal } from './agency-motion';
 // throughout: these are photographs of the kind of business we build for, never
 // presented as our own clients.
 //
-// These used to carry the headline too, so the page's main promise changed
-// every seven seconds. A visitor who runs a shop and lands on the hotel line
-// spends their first seconds reading about somebody else, and a heading that
-// moves while you read it is a comprehension cost with nothing bought for it.
-// The promise is fixed now. What rotates is the evidence under it: the sector's
-// own sentence, its photograph and its note.
+// The headline rotates with the story again, because a fixed promise about
+// messages and evenings sat over a photograph of a hotel reception and read as
+// two unrelated things on one screen. The comprehension cost that made it fixed
+// is real, so it is paid down a different way: every variant opens with the
+// same shape, "<something> get answered", and only the payoff changes. The
+// promise holds still even while the words move, and the sector the reader is
+// looking at is the sector the heading is talking about.
 const heroStories = [
   {
     label: 'Retail',
     tab: 'Retail',
     title: 'An order nobody has to chase.',
+    headline: {
+      lead: 'Messages get answered.',
+      turn: 'You get your evening back.',
+    },
     image: 'retail-commerce',
     alt: 'Shop staff taking an order at the counter while a delivery rider waits',
     caption: 'FROM ENQUIRY TO DELIVERED ORDER',
@@ -31,6 +36,10 @@ const heroStories = [
     label: 'Hospitality',
     tab: 'Hospitality',
     title: 'A booking the next shift can see.',
+    headline: {
+      lead: 'Requests get answered.',
+      turn: 'The next shift already knows.',
+    },
     image: 'hospitality-tourism',
     alt: 'Guests checking in at a hotel reception desk',
     caption: 'FROM REQUEST TO ARRIVAL',
@@ -43,6 +52,10 @@ const heroStories = [
     label: 'Professional services',
     tab: 'Consulting',
     title: 'A quote out while it still matters.',
+    headline: {
+      lead: 'Enquiries get answered.',
+      turn: 'The quote goes out in time.',
+    },
     image: 'professional-services-workflow',
     alt: 'A consultant reviewing documents with a client in an office',
     caption: 'FROM BRIEF TO AGREED SCOPE',
@@ -218,10 +231,30 @@ export function HeroShowcase() {
             </p>
           </Reveal>
           <Reveal delay={70}>
-            <h1 id="home-title" className="ambition-headline">
-              Messages get answered.
-              <br />
-              <em>You get your evening back.</em>
+            {/* One h1, three variants stacked inside it. Three separate h1
+                elements would give the page three top-level headings and leave
+                `aria-labelledby="home-title"` pointing at whichever one won.
+                The name is set explicitly rather than left to the contents:
+                aria-hidden on the inactive variants was not enough on its own,
+                and the heading announced all three promises run together. It
+                matches the visible line exactly, so anyone driving the page by
+                voice still reads out what they can see. */}
+            <h1
+              id="home-title"
+              className="ambition-headline"
+              aria-label={`${heroStories[active].headline.lead} ${heroStories[active].headline.turn}`}
+            >
+              {heroStories.map((story, index) => (
+                <span
+                  key={story.label}
+                  className={`ambition-headline-variant ${index === active ? 'is-current' : ''}`}
+                  aria-hidden={index !== active}
+                >
+                  {story.headline.lead}
+                  <br />
+                  <em>{story.headline.turn}</em>
+                </span>
+              ))}
             </h1>
           </Reveal>
           <Reveal delay={130}>

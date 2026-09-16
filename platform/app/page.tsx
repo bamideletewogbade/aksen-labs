@@ -12,6 +12,7 @@ import { freeTools } from '@/lib/product-catalog';
 /**
  * The homepage is one argument told in order, not a set of panels.
  *
+ *   what this is       who we are, before any pitch
  *   the evening        a problem the reader had this week
  *   what happens       one enquiry followed end to end
  *   where the line is  the thing this company actually turns on
@@ -31,6 +32,79 @@ export default function Home() {
       <SiteNav />
       <main id="main-content">
         <HeroShowcase />
+
+        {/* The hero makes a promise, which raises "who is saying this?". That
+            used to go unanswered until the About page, so a reader met the
+            forty-messages problem before they knew whose problem we were
+            solving. This says what the company is in plain words first.
+
+            It also breaks the two-line heading pattern the rest of the page
+            uses on purpose. Every other section opens with a clause and a
+            turn; if this one did too, the page would read as a rhythm rather
+            than as somebody talking. */}
+        <section className="agency-container refresh-section refresh-what">
+          <Reveal className="refresh-what-lead">
+            <p className="agency-eyebrow">WHAT AKSEN IS</p>
+            <h2>The first business we rebuilt was our own.</h2>
+            <p>
+              Aksen Labs is a digital transformation studio in Accra. The plain
+              version: we take how your business actually runs, the enquiries,
+              the orders, the records, the chasing, and build the digital
+              version of it. Then we hand it over and help your team use it.
+            </p>
+            <p>
+              I started with Aksen. This site and the workspace behind it are
+              one codebase, and the workspace is where the leads, projects,
+              invoices and approvals for this company live. So when I tell you a
+              system like this is worth having, it is because I run on one.
+            </p>
+          </Reveal>
+          <Reveal delay={70} className="refresh-what-cards">
+            <Link className="refresh-what-card" href="/solutions">
+              <span className="refresh-what-index">01</span>
+              <h3>The work</h3>
+              <p>
+                Websites and shops, connected records, reporting, and agents
+                that take the repetitive part off your team. Four areas. We
+                start with whichever one is costing you most.
+              </p>
+              <span className="refresh-what-go">
+                What we build <ArrowUpRight size={16} />
+              </span>
+            </Link>
+            <Link className="refresh-what-card" href="/products">
+              <span className="refresh-what-index">02</span>
+              <h3>The lab</h3>
+              <p>
+                Small AI tools you can open right now, and walkthroughs you can
+                press. Built here, kept live, free to use with no account.
+              </p>
+              <span className="refresh-what-go">
+                Open the tools <ArrowUpRight size={16} />
+              </span>
+            </Link>
+            <Link className="refresh-what-card" href="/blog">
+              <span className="refresh-what-index">03</span>
+              <h3>The notes</h3>
+              <p>
+                Where we follow AI, who is worth reading on LinkedIn and
+                elsewhere, and what it takes to run an agent in a real business
+                rather than a demo.
+              </p>
+              <span className="refresh-what-go">
+                Read the notes <ArrowUpRight size={16} />
+              </span>
+            </Link>
+          </Reveal>
+          <Reveal delay={110}>
+            <p className="refresh-what-route">
+              Wherever you start, the route is the same. Work out what to
+              change, build it, get your team using it, then improve it. You
+              agree each step before it happens, and you can stop after any one
+              of them.
+            </p>
+          </Reveal>
+        </section>
 
         {/* Start where the reader already is: a specific evening, and a number
             they can check against their own phone. */}
@@ -67,11 +141,7 @@ export default function Home() {
         >
           <Reveal className="refresh-flow-head">
             <p className="agency-eyebrow">ONE ENQUIRY, START TO FINISH</p>
-            <h2>
-              The same night,
-              <br />
-              <em>handled while you sleep.</em>
-            </h2>
+            <h2>One of those forty, handled while you slept.</h2>
             <p>
               This is one of those forty messages, step by step. The agent does
               the typing. Your team does the deciding. Watch it run, or tap any
@@ -143,11 +213,7 @@ export default function Home() {
           <Reveal className="refresh-section-heading">
             <div>
               <p className="agency-eyebrow">WHAT WE DO</p>
-              <h2>
-                Help customers buy.
-                <br />
-                <em>Help your team deliver.</em>
-              </h2>
+              <h2>Four areas, and you do not have to buy all four.</h2>
             </div>
             <p>
               The WhatsApp agent is one job out of four. Websites and shops,
@@ -164,11 +230,7 @@ export default function Home() {
             <Reveal className="refresh-section-heading">
               <div>
                 <p className="agency-eyebrow">WE RUN AKSEN ON IT</p>
-                <h2>
-                  Our shop window.
-                  <br />
-                  <em>And the workshop behind it.</em>
-                </h2>
+                <h2>This site is half of it. Here is the other half.</h2>
               </div>
               <p>
                 This site is the public half. The other half is the workspace we
@@ -222,11 +284,7 @@ export default function Home() {
             <Reveal className="refresh-start-head">
               <div>
                 <p className="agency-eyebrow">HOW A BUSINESS GETS THERE</p>
-                <h2>
-                  Four steps,
-                  <br />
-                  <em>and you agree each one.</em>
-                </h2>
+                <h2>Four steps, and you sign off on each one.</h2>
               </div>
               <Link className="agency-text-link" href="/how-it-works">
                 Our approach <ArrowUpRight size={18} />
@@ -248,30 +306,31 @@ export default function Home() {
             will read the reasons; a reader who has not, will not. */}
         <section className="agency-container refresh-section refresh-why">
           <Reveal className="refresh-why-copy">
-            <p className="agency-eyebrow">WHY WE ARE BUILDING THIS</p>
+            <p className="agency-eyebrow">WHY THIS EXISTS</p>
             <h2>
-              African businesses do not
+              Africa gets the youngest workforce on earth.
               <br />
-              <em>need technology for show.</em>
+              <em>The argument about jobs has already started.</em>
             </h2>
             <p>
-              They need technology that helps real work move. Helping a customer
-              buy. Helping a team find the right information. Helping an owner
-              see what is actually happening. Turning a useful idea into
-              something people can use.
+              More graduates every year, and plenty of them cannot find work.
+              Employers say the skills are not there. Graduates say nobody will
+              give them a first job. Both sides have a point, and neither is
+              going to fix it by saying it louder.
             </p>
             <p>
-              That is why Aksen is deliberately wider than a website company or
-              a chatbot business. Those are pieces. The job is to understand
-              what a business is trying to do, find where its current setup gets
-              in the way, and build the improvement that is actually worth
-              building.
+              I am not going to solve that from here. What I can do is work with
+              the door open. The tools on this site, the walkthroughs, the notes
+              on the blog: that is the work in public, and the workings are left
+              where somebody else can pick them up. Building an agent is the
+              easy half. Getting one running properly in a real business is the
+              half worth writing about.
             </p>
             <p className="refresh-why-plain">
-              We do not have a customer case study to show you yet, and we are
-              not going to invent one. What we can show you is working software,
-              the free tools above, and a scope and price agreed before anyone
-              spends anything.
+              Businesses I build for get the same deal. You see what the system
+              does, you see exactly where a person still decides, and the scope
+              and price are agreed before anyone spends anything. We have no
+              customer case study yet and we are not going to invent one.
             </p>
             <div className="agency-actions">
               <Link className="agency-button" href="/agent-mapper">
@@ -285,10 +344,10 @@ export default function Home() {
           <Reveal delay={80} className="refresh-why-mark">
             <blockquote>
               <p>
-                Start with a business goal, build the right system, help the
-                team adopt it, and use AI where it improves the result.
+                I would rather show you the thing running than tell you what it
+                could do.
               </p>
-              <cite>Ghana is home. The ambition travels.</cite>
+              <cite>Accra. Built in the open.</cite>
             </blockquote>
           </Reveal>
         </section>

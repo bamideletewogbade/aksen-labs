@@ -199,21 +199,30 @@ export function AdminPipelineList({
             placeholder="Search the loaded records"
           />
         </label>
-        <label>
-          Stage
-          <select
-            value={stageFilter}
-            onChange={(event) => setStageFilter(event.target.value)}
-          >
-            <option value="all">All stages</option>
-            {STAGES.map((stage) => (
-              <option key={stage} value={stage}>
-                {STAGE_LABEL[stage]}
-              </option>
-            ))}
-          </select>
-        </label>
       </div>
+      {/* Stages as chips with counts, instead of a select that hid how many
+          enquiries sat in each stage until you opened it. */}
+      <fieldset className="lead-stage-chips">
+        <legend className="sr-only">Filter by stage</legend>
+        {['all', ...STAGES].map((stage) => {
+          const count =
+            stage === 'all'
+              ? leads.length
+              : leads.filter((lead) => lead.status === stage).length;
+          return (
+            <button
+              key={stage}
+              type="button"
+              aria-pressed={stageFilter === stage}
+              className="lead-stage-chip"
+              onClick={() => setStageFilter(stage)}
+            >
+              {stage === 'all' ? 'All' : STAGE_LABEL[stage]}
+              <span>{count}</span>
+            </button>
+          );
+        })}
+      </fieldset>
       <output className="admin-filter-count">
         {visible.length} matching{' '}
         {visible.length === 1 ? 'enquiry' : 'enquiries'}
@@ -268,6 +277,27 @@ export function AdminPipelineList({
                   <a className="lead-mail" href={`mailto:${lead.email}`}>
                     <Mail size={13} /> {lead.email}
                   </a>
+                )}
+              </div>
+              {/* What you came to do sits beside the name; history and the two
+                  destructive options fold away, because they are opened a few
+                  times a month and made every row three times taller. */}
+              <div className="lead-quick">
+                <Link
+                  className="lead-prepare"
+                  href={`/admin/operations?lead=${encodeURIComponent(lead.id)}`}
+                >
+                  Prepare with AI
+                  <ArrowRight size={14} />
+                </Link>
+                {lead.status === 'won' && (
+                  <button
+                    className="lead-project"
+                    disabled={busyId === lead.id}
+                    onClick={() => void startProject(lead)}
+                  >
+                    Create / open project
+                  </button>
                 )}
               </div>
               <div className="lead-controls">
@@ -338,31 +368,9 @@ export function AdminPipelineList({
                   {failedId === lead.id && <em>Not saved</em>}
                 </span>
               </div>
-              <AdminLeadHistory leadId={lead.id} today={today} />
-              {/* What you came to do, then what you rarely do. The prepare link
-                used to sit inside the name block, where it rendered larger than
-                the company it belonged to and read as a heading.
-
-                A div rather than a <footer>: globals.css styles the bare
-                `footer` element for the public site, dark background and all,
-                and .project-list already carries an override undoing it. */}
-              <div className="lead-footer">
-                <Link
-                  className="lead-prepare"
-                  href={`/admin/operations?lead=${encodeURIComponent(lead.id)}`}
-                >
-                  Prepare with AI
-                  <ArrowRight size={14} />
-                </Link>
-                {lead.status === 'won' && (
-                  <button
-                    className="lead-project"
-                    disabled={busyId === lead.id}
-                    onClick={() => void startProject(lead)}
-                  >
-                    Create / open project
-                  </button>
-                )}
+              <details className="lead-more">
+                <summary>History and record options</summary>
+                <AdminLeadHistory leadId={lead.id} today={today} />
                 {/* Two different acts, kept visibly apart. Erasing is what we do
                   when a person asks, and the privacy notice promises it.
                   Removing is for a test row or a duplicate and destroys the
@@ -395,7 +403,7 @@ export function AdminPipelineList({
                     </StatusNote>
                   )}
                 </div>
-              </div>
+              </details>
             </article>
           );
         })}

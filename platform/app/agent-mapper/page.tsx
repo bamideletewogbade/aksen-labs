@@ -33,11 +33,7 @@ export default async function OpportunityPage({
         <section className="agency-contact-section agency-container opening-contact">
           <Reveal className="agency-contact-copy">
             <p className="agency-eyebrow">DISCUSS YOUR BUSINESS</p>
-            <h1>
-              What would you like
-              <br />
-              <em>to improve?</em>
-            </h1>
+            <h1>What would you like your business to do better?</h1>
             <p>
               Answer three short questions about your goal, location and current
               setup. You’ll see a suggested starting point, then you can send

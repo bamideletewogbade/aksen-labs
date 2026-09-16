@@ -63,9 +63,8 @@ export default async function AdminSettingsPage() {
           <small>SETTINGS</small>
           <h1>Your profile and this deployment</h1>
           <p>
-            Your name is yours to change here. Everything below it is set where
-            the site is deployed, and is shown so you can see what is live
-            without going to look for it.
+            Change how you are addressed. Deployment settings are shown
+            read-only.
           </p>
         </div>
       </header>
@@ -92,10 +91,8 @@ export default async function AdminSettingsPage() {
           </div>
         </div>
         <p className="settings-intro">
-          None of these can be edited from this page, and that is deliberate:
-          they are secrets held by Cloudflare, and a form that appeared to
-          change them would be a way to lock yourself out of the admin from
-          inside the admin.
+          Read-only on purpose: these are Cloudflare secrets, and editing them
+          here could lock you out of the admin.
         </p>
         <dl className="settings-status">
           {deployment.map((item) => (

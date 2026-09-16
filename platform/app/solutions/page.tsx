@@ -19,14 +19,8 @@ export default function ServicesPage() {
         <PageIntro
           variant="services"
           label="OUR SERVICES"
-          title={
-            <>
-              Websites, systems
-              <br />
-              <em>and digital products.</em>
-            </>
-          }
-          text="Help customers find and buy from you, connect the work your team does, or turn a new idea into a product. We agree the scope and price before building."
+          title={<>Four kinds of work. Start with the one that hurts.</>}
+          text="Help customers find and buy from you, connect the work your team already does, make sense of your own numbers, or turn an idea into something people can use. Scope and price are agreed in writing before anything gets built."
           image="agency-commerce-system"
           alt="Connected glass and graphite modules representing a business system"
           target="#capabilities"
@@ -73,11 +67,7 @@ export default function ServicesPage() {
           aria-label="Explore by industry"
         >
           <div className="refresh-section-heading">
-            <h2>
-              Your world.
-              <br />
-              <em>Working better.</em>
-            </h2>
+            <h2>Find the one that sounds like your week.</h2>
             <p>
               Find a familiar challenge and see what a more connected way of
               working could look like in your sector.
@@ -93,11 +83,7 @@ export default function ServicesPage() {
           <Reveal className="agency-container refresh-section refresh-scope">
             <div>
               <p className="agency-eyebrow">A SCOPE THAT FITS</p>
-              <h2>
-                Start focused.
-                <br />
-                <em>Build from there.</em>
-              </h2>
+              <h2>One process first. The rest can wait.</h2>
             </div>
             <div>
               <p>

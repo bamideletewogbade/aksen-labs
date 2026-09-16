@@ -9,14 +9,8 @@ export default function NotFound() {
       <main id="main-content">
         <PageIntro
           label="PAGE NOT FOUND"
-          title={
-            <>
-              A different
-              <br />
-              <em>way forward.</em>
-            </>
-          }
-          text="This page may have moved, or the link may be incorrect."
+          title={<>That page is not here.</>}
+          text="It may have moved, or the link may be wrong. The main pages are in the menu above, and the free tools are a good place to land instead."
         />
         <div className="agency-container refresh-mini-cta">
           <Link className="agency-button" href="/">

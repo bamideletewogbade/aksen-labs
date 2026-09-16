@@ -9,6 +9,7 @@ import {
 import { AdminCreateArticle } from '@/components/admin-create-article';
 import { ApprovalActions } from '@/components/admin-approval-actions';
 import { EditorialDesk } from '@/components/editorial-desk';
+import { AdminTabs } from '@/components/admin-tabs';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +69,6 @@ export default async function AdminContentPage() {
           </p>
         </div>
       </header>
-      <EditorialDesk />
       {/* Absent when nothing is waiting, which is almost always. A queue that
           is empty by design should not occupy space by default, which is the
           argument for it not being in the sidebar either. */}
@@ -101,33 +101,47 @@ export default async function AdminContentPage() {
           </ul>
         </section>
       )}
-      <div className="admin-layout">
-        <section className="admin-panel content-panel">
-          <div className="panel-head">
-            <div>
-              <small>LATEST 30 ARTICLES</small>
-              <h2>
-                {loadFailed
-                  ? 'Records unavailable'
-                  : `${allPosts.length} article${allPosts.length === 1 ? '' : 's'}`}
-              </h2>
-            </div>
-            <BookOpen />
-          </div>
-          {loadFailed ? (
-            <div className="empty-admin" role="alert">
-              <strong>Articles could not be loaded.</strong>
-              <span>Check the database connection and reload.</span>
-            </div>
-          ) : (
-            <AdminContentPanel
-              initialPosts={allPosts}
-              initialAwaiting={awaiting}
-            />
-          )}
-        </section>
-        <AdminCreateArticle />
-      </div>
+      {/* Reading the list, writing a post and finding ideas are three separate
+          visits. Stacked, the idea finder pushed the article list below the
+          fold and the editor squeezed into a sidebar beside it. */}
+      <AdminTabs
+        label="Articles"
+        tabs={[
+          {
+            id: 'articles',
+            label: 'Articles',
+            note: loadFailed ? undefined : allPosts.length,
+            panel: (
+              <section className="admin-panel content-panel">
+                <div className="panel-head">
+                  <div>
+                    <small>LATEST 30 ARTICLES</small>
+                    <h2>
+                      {loadFailed
+                        ? 'Records unavailable'
+                        : `${allPosts.length} article${allPosts.length === 1 ? '' : 's'}`}
+                    </h2>
+                  </div>
+                  <BookOpen />
+                </div>
+                {loadFailed ? (
+                  <div className="empty-admin" role="alert">
+                    <strong>Articles could not be loaded.</strong>
+                    <span>Check the database connection and reload.</span>
+                  </div>
+                ) : (
+                  <AdminContentPanel
+                    initialPosts={allPosts}
+                    initialAwaiting={awaiting}
+                  />
+                )}
+              </section>
+            ),
+          },
+          { id: 'write', label: 'Write', panel: <AdminCreateArticle /> },
+          { id: 'ideas', label: 'Idea finder', panel: <EditorialDesk /> },
+        ]}
+      />
     </section>
   );
 }

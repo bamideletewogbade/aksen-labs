@@ -144,11 +144,7 @@ export default async function PricingPage() {
         <section className="refresh-soft-band" id="packages">
           <div className="agency-container refresh-section pricing-groups">
             <div className="refresh-section-heading">
-              <h2>
-                What things cost,
-                <br />
-                <em>by the work involved.</em>
-              </h2>
+              <h2>Priced by the work involved.</h2>
               <p>
                 Ranges reflect scope, not negotiation. Simpler work sits at the
                 lower end and we will tell you when your need is smaller than
@@ -202,11 +198,7 @@ export default async function PricingPage() {
         </section>
         <section className="agency-container refresh-section pricing-care">
           <div className="refresh-section-heading">
-            <h2>
-              After launch,
-              <br />
-              <em>someone is responsible.</em>
-            </h2>
+            <h2>After launch, somebody has to be responsible for it.</h2>
             <p>
               Software that touches customers needs an owner. Care plans buy
               operating work, not just access. Included hours or tasks, coverage
@@ -266,14 +258,10 @@ export default async function PricingPage() {
             which one a given reader should start with. */}
         <section className="agency-container refresh-section pricing-start">
           <div className="refresh-section-heading">
-            <h2>
-              Where to start,
-              <br />
-              <em>depending on where you are.</em>
-            </h2>
+            <h2>Most people arrive knowing the problem, not the product.</h2>
             <p>
-              Most people arrive knowing the problem rather than the product.
-              Find the line that sounds like you.
+              Find the line that sounds like your situation and it will point
+              you at the right first step.
             </p>
           </div>
           <ul className="pricing-start-list">
