@@ -368,7 +368,7 @@ export async function submitVideo(options: {
 
 export async function pollVideo(
   pollingUrl: string,
-): Promise<{ status: string; unsignedUrls?: string[]; error?: string }> {
+): Promise<{ status: string; unsignedUrls?: string[]; error?: string; costMicros?: number }> {
   const response = await fetch(pollingUrl, {
     headers: { Authorization: `Bearer ${apiKey()}` },
   });
@@ -378,10 +378,12 @@ export async function pollVideo(
     status: string;
     unsigned_urls?: string[];
     error?: string;
+    usage?: { cost?: number };
   };
   return {
     status: data.status,
     unsignedUrls: data.unsigned_urls,
     error: data.error,
+    costMicros: toCostMicros(data.usage?.cost),
   };
 }

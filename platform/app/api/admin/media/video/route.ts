@@ -6,6 +6,7 @@ import { submitVideo, DEFAULT_VIDEO_MODEL } from '@/lib/openrouter';
 import { logAgentRun } from '@/lib/agent-runs';
 import { getDb } from '@/db';
 import { auditEvents } from '@/db/schema';
+import { mediaRenderJobs } from '@/db/schema';
 
 const MAX_REFERENCE_BYTES = 8 * 1024 * 1024;
 const DURATIONS = new Set([4, 5, 8, 10, 15]);
@@ -51,6 +52,13 @@ async function POSTHandler(request: Request) {
       { status: 400 },
     );
 
+  // Do not start a billable render if the job cannot be recovered later.
+  try {
+    await getDb().select({ id: mediaRenderJobs.id }).from(mediaRenderJobs).limit(1);
+  } catch {
+    return NextResponse.json({ error: 'Render tracking is unavailable. Apply the Media Studio migration before generating video.' }, { status: 503 });
+  }
+
   const startedAt = Date.now();
   try {
     const job = await submitVideo({
@@ -60,6 +68,15 @@ async function POSTHandler(request: Request) {
       referenceImages: referenceUrls.map((url) => ({ url })),
     });
     const db = getDb();
+    await db.insert(mediaRenderJobs).values({
+      id: crypto.randomUUID(),
+      ownerId: user.userId,
+      providerJobId: job.id,
+      model: DEFAULT_VIDEO_MODEL,
+      prompt,
+      status: job.status,
+      pollingUrl: job.pollingUrl,
+    });
     await db
       .insert(auditEvents)
       .values({
@@ -81,7 +98,7 @@ async function POSTHandler(request: Request) {
     });
     return NextResponse.json({
       id: job.id,
-      pollingUrl: job.pollingUrl,
+      jobId: job.id,
       status: job.status,
       model: DEFAULT_VIDEO_MODEL,
     });

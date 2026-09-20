@@ -7,7 +7,12 @@ import { PageIntro } from '@/components/page-intro';
 import { PageTabs } from '@/components/page-tabs';
 import { AgentGallery } from '@/components/agent-gallery';
 import { ProductWaitlist } from '@/components/product-waitlist';
-import { freeTools, products, type FreeTool } from '@/lib/product-catalog';
+import {
+  freeTools,
+  isExternal,
+  products,
+  type FreeTool,
+} from '@/lib/product-catalog';
 
 export const metadata: Metadata = {
   title: 'Products and tools | Aksen Labs',
@@ -23,10 +28,10 @@ export const metadata: Metadata = {
  * examples page reachable only from the footer. Three addresses for one
  * question, which is "what can I actually use".
  *
- * The free tools open first, deliberately. They are the only things on the site
- * a visitor can use without talking to anyone, and we have exactly one product,
- * which does not have a public address yet. Leading with the products tab would
- * put the emptiest shelf at the front.
+ * The free tools open first, deliberately. They are what a visitor can use
+ * without leaving the page or talking to anyone. Our one product is open to the
+ * public now, but it lives on its own hosting, so opening on that tab would
+ * lead with the thing that sends people away.
  */
 
 function ToolCards({
@@ -152,8 +157,8 @@ function ProductsPanel() {
         </h2>
         <p>
           Our own products, not client work. They run on their own hosting
-          rather than on this site, so this page describes them and links out
-          the day there is somewhere to link to.
+          rather than on this site, so this page describes them and the button
+          takes you to the product itself.
         </p>
       </div>
       {products.map((product, index) => (
@@ -168,12 +173,27 @@ function ProductsPanel() {
               <p className="product-headline">{product.headline}</p>
               <p>{product.description}</p>
               {/* A product with nowhere to go says so. An address appears here
-                  the day it has one, and not before. */}
+                  the day it has one, and not before. Ours are hosted
+                  separately, so the link leaves the site: a new tab rather than
+                  a navigation, because someone reading the page should still
+                  have it when they come back. */}
               {product.href ? (
-                <Link className="agency-button" href={product.href}>
-                  {product.action}
-                  <ArrowUpRight size={18} />
-                </Link>
+                isExternal(product.href) ? (
+                  <a
+                    className="agency-button"
+                    href={product.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {product.action}
+                    <ArrowUpRight size={18} />
+                  </a>
+                ) : (
+                  <Link className="agency-button" href={product.href}>
+                    {product.action}
+                    <ArrowUpRight size={18} />
+                  </Link>
+                )
               ) : (
                 // The waitlist hangs off the same condition as the button, not
                 // off `available`, because the route behind it accepts a signup

@@ -23,48 +23,70 @@ export type Product = {
   /** Absent until the product is hosted, so the card cannot link nowhere. */
   href?: string;
   action?: string;
+  /** Slugs this product answered to before it was named what it is now. Only
+   *  the waitlist reads them, because its rows were written under the old name
+   *  and the people in them are still owed an email. */
+  formerSlugs?: readonly string[];
 };
+
+/**
+ * Our products run on their own hosting, so a product href leaves this site
+ * while a free tool's href does not. The href is the only thing that says
+ * which, and every surface that renders one has to make the same call: a plain
+ * anchor and a new tab for one, Next's `Link` for the other.
+ */
+export function isExternal(href: string): boolean {
+  return /^https?:\/\//.test(href);
+}
 
 export const products: readonly Product[] = [
   {
-    slug: 'cv-forge',
-    name: 'CV Forge',
+    // It shipped as CV Forge and opened to the public as Aksen Careers. The
+    // name here is the one on the door; the old slug stays in `formerSlugs` so
+    // the waitlist rows written under it still read as a product rather than
+    // as an orphaned string.
+    slug: 'aksen-careers',
+    formerSlugs: ['cv-forge'],
+    name: 'Aksen Careers',
     category: 'Job search',
-    // No public address yet. The card says so rather than offering a link that
-    // goes nowhere or a page that pretends to be the product. `href` is the only
-    // thing that decides: a separate `available` flag saying the same thing was
-    // one more place for the truth to drift, so it is gone.
-    status: 'Built, not yet public',
-    headline: 'One profile. Your whole job search.',
+    // `href` is the only thing that decides whether this is something a visitor
+    // can open: a separate `available` flag saying the same thing was one more
+    // place for the truth to drift, so it is gone. It has an address now, so
+    // the card links out and the waitlist form goes with it.
+    status: 'Live, free to use',
+    headline:
+      'Find local or remote jobs, tailor your CV to each one, apply as yourself.',
     // It began as a CV reviewer. It now covers finding roles, preparing each
     // application and recording what came of it, so the copy here has to carry
     // the whole thing rather than the part it started as.
     description:
-      'It started as a CV builder and reviewer. It now carries the rest of the search too. Save a CV you have checked, find roles, prepare each application against the real advert, and keep a record of what happened next. Nothing is sent until you have read it and approved it.',
+      'Our own job search product, open to anyone. Ask for the work you want in plain words and it reads thousands of live listings to find the ones that fit. Build a CV or improve the one you have, match it against a real advert, and get the application drafted. You read it and you send it. Searching needs no account, and it is free while we build it.',
     stages: [
+      {
+        title: 'The roles',
+        items: [
+          'Ask in plain words, by typing or out loud, and get an answer built for that question',
+          'Thousands of live listings read from company career pages and remote job boards, updated every few hours',
+          'Every result says what it matched on, so you can disagree with it',
+          'Or add a role from any site by its link',
+        ],
+      },
       {
         title: 'Your CV',
         items: [
           'Build one from a short interview, by voice or by typing',
-          'Or bring the CV you have and get it scored and strengthened',
+          'Or bring the CV you have and get it rewritten, with your jobs, dates and titles left as they are',
           'Save the versions you have checked and reuse them',
-          'Export as PDF, Word or plain text',
-        ],
-      },
-      {
-        title: 'The roles',
-        items: [
-          'Search public job feeds, or add a role from any site by its link',
-          'Rank what comes back against the roles, countries and skills you saved',
-          'See who can actually apply before you spend an evening on it',
+          'Download a clean PDF with real text, so screening software can read it',
         ],
       },
       {
         title: 'Each application',
         items: [
-          'Draft a cover letter from your chosen CV and the actual advert',
-          'See the evidence behind each claim and what the advert asks for that you do not have',
-          'Edit it, then approve it. Approved work goes out one at a time, under a daily limit you set',
+          'See what the advert asks for that your CV is missing before you spend an evening on it',
+          'Draft a cover letter from your chosen CV and the actual advert, with the evidence behind each claim',
+          'The questions the form will ask, answered from your CV',
+          'Edit it, then approve it. Nothing goes out until you have read it',
         ],
       },
       {
@@ -77,7 +99,9 @@ export const products: readonly Product[] = [
       },
     ],
     limits:
-      'Applications we send ourselves need an employer whose system we can talk to. Everywhere else it hands you the employer’s own form and keeps the record. A submission is only ever marked confirmed when the employer confirms it.',
+      'It will not invent your visa status, your salary or your start date, and it refuses to answer a form question it cannot evidence from your CV. Applications we send ourselves need an employer whose system we can talk to. Everywhere else it hands you the employer’s own form and keeps the record. A submission is only ever marked confirmed when the employer confirms it.',
+    href: 'https://aksen-careers.bishoptewogbade.workers.dev',
+    action: 'Open Aksen Careers',
   },
 ] as const;
 

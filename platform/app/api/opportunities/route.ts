@@ -7,6 +7,7 @@ import { workflowSuggestion } from '@/lib/workflow-suggestion';
 import { boundedJson } from '@/lib/bounded-json';
 import { currentHour, reserve, visitorKey } from '@/lib/rate-limit';
 import { captureLead, intakeKey } from '@/lib/lead-intake';
+import { parseMapperAnswers } from '@/lib/mapper-questions';
 
 // One person sending a genuine enquiry needs one or two attempts. The shared
 // ceiling keeps a distributed flood from filling the pipeline the founder reads.
@@ -37,21 +38,21 @@ async function POSTHandler(request: Request) {
       // when it is read back in six months.
       `Pricing enquiry: ${pricingSelection.name} (${formatPrice(pricingSelection.price, 'GHS')}, indicative). `
     : '';
-  const answers = Array.isArray(input.answers) ? input.answers : [];
-  // Preserve the older mapper payload while storing the new answers meaningfully.
-  const [first, second, third] = answers;
+  const answers = parseMapperAnswers(input.answers);
+  if (!answers) {
+    return NextResponse.json(
+      { error: 'Choose at least one answer in each of the three steps.' },
+      { status: 400 },
+    );
+  }
+  // Preserve older cached single-answer pages while storing multi-select
+  // answers as readable text in the existing lead columns.
+  const [first, second, third] = answers.map((answer) => answer.join('; '));
   const updatedFormat = input.answerFormat === 'goal-market-setup';
   const work = first;
   const channel = updatedFormat ? third : second;
   const desiredOutcome = updatedFormat ? first : third;
-  const required = [
-    input.name,
-    input.email,
-    input.company,
-    first,
-    second,
-    third,
-  ];
+  const required = [input.name, input.email, first, second, third];
   if (
     required.some(
       (value) => typeof value !== 'string' || value.trim().length === 0,
@@ -59,7 +60,7 @@ async function POSTHandler(request: Request) {
   ) {
     return NextResponse.json(
       {
-        error: 'Name, email, company and three workflow answers are required.',
+        error: 'Name, email and an answer in each step are required.',
       },
       { status: 400 },
     );
@@ -68,7 +69,7 @@ async function POSTHandler(request: Request) {
   const email = String(input.email).trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json(
-      { error: 'Enter a valid work email.' },
+      { error: 'Enter a valid email address.' },
       { status: 400 },
     );
   }
@@ -105,10 +106,32 @@ async function POSTHandler(request: Request) {
       ? input.recommendation.trim().slice(0, 160)
       : '';
   const recommendation = shown || workflowSuggestion(String(work));
+  const otherMarket =
+    answers[1].includes('Another African country') &&
+    typeof input.otherMarket === 'string'
+      ? input.otherMarket.trim().slice(0, 120)
+      : '';
+  const otherTools =
+    answers[2].includes('Something else') &&
+    typeof input.otherTools === 'string'
+      ? input.otherTools.trim().slice(0, 120)
+      : '';
+  const example =
+    typeof input.example === 'string' ? input.example.trim().slice(0, 600) : '';
+  if (answers[1].includes('Another African country') && !otherMarket)
+    return NextResponse.json(
+      { error: 'Name the other market you selected.' },
+      { status: 400 },
+    );
+  if (answers[2].includes('Something else') && !otherTools)
+    return NextResponse.json(
+      { error: 'Name the other tool or channel you selected.' },
+      { status: 400 },
+    );
   const summary =
     pricingPrefix +
     (updatedFormat
-      ? `Goal: ${String(first).slice(0, 180)}. Market: ${String(second).slice(0, 180)}. Current setup: ${String(third).slice(0, 180)}.`
+      ? `Goals: ${first}. Markets: ${second}${otherMarket ? ` (${otherMarket})` : ''}. Current tools: ${third}${otherTools ? ` (${otherTools})` : ''}.${example ? ` Example: ${example}` : ''}`
       : `${String(work)} via ${String(channel)} with a desired outcome of ${String(desiredOutcome)}.`);
 
   // Capture, audit and the two messages all live in one place now, so the
@@ -118,7 +141,7 @@ async function POSTHandler(request: Request) {
     source: pricingSelection ? 'website_pricing' : 'website_mapper',
     name: String(input.name),
     email,
-    company: String(input.company),
+    company: typeof input.company === 'string' ? input.company : '',
     work: String(work),
     channel: String(channel),
     desiredOutcome: String(desiredOutcome),

@@ -1,10 +1,12 @@
 'use client';
 
-import { ArrowRight, Check, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { NodeMark } from '@/components/ui/node-mark';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { workflowSuggestion } from '@/lib/workflow-suggestion';
+import { mapperQuestions, type MapperAnswers } from '@/lib/mapper-questions';
+import { mapperFallback } from '@/lib/mapper-fallback';
 
 type Pilot = {
   title: string;
@@ -15,43 +17,6 @@ type Pilot = {
   humanControl: string;
 };
 
-const questions = [
-  {
-    prompt: 'What would you like your business to do better?',
-    options: [
-      'Sell online or improve the buying experience',
-      'Serve customers better',
-      'Connect internal work and systems',
-      'Understand business performance',
-      'Develop a new digital product',
-      'Help me work out where to start',
-    ],
-  },
-  {
-    prompt: 'Where is your business based or operating?',
-    options: [
-      'Ghana',
-      'Nigeria',
-      'Kenya or East Africa',
-      'South Africa or Southern Africa',
-      'Another African country',
-      'Multiple countries',
-      'Beyond Africa / International',
-    ],
-  },
-  {
-    prompt: 'What does your current setup look like?',
-    options: [
-      'WhatsApp, phone and social media',
-      'Website, email and basic invoicing',
-      'Spreadsheets and manual handoffs',
-      'Multiple disconnected tools and apps',
-      'Starting something new',
-      'Something else / not sure yet',
-    ],
-  },
-];
-
 export function StandaloneMapper({
   pricingSelection,
 }: {
@@ -59,7 +24,11 @@ export function StandaloneMapper({
 }) {
   const [includeSelection, setIncludeSelection] = useState(true);
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<MapperAnswers>([[], [], []]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [otherMarket, setOtherMarket] = useState('');
+  const [otherTools, setOtherTools] = useState('');
+  const [example, setExample] = useState('');
   const [showContact, setShowContact] = useState(false);
   const [contact, setContact] = useState({ name: '', email: '', company: '' });
   const [saveError, setSaveError] = useState('');
@@ -71,8 +40,12 @@ export function StandaloneMapper({
   const [pilotState, setPilotState] = useState<
     'idle' | 'loading' | 'ready' | 'fallback'
   >('idle');
-  const complete = step === questions.length;
-  const title = pilot?.title || workflowSuggestion(answers[0] || '');
+  const complete = step === mapperQuestions.length;
+  const title =
+    pilot?.title ||
+    (answers[0].length === 1
+      ? workflowSuggestion(answers[0][0])
+      : 'Business improvement scoping plan');
 
   useEffect(() => {
     if (!complete) return;
@@ -83,7 +56,14 @@ export function StandaloneMapper({
       signal: controller.signal,
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ answers }),
+      body: JSON.stringify({
+        answers,
+        otherMarket: answers[1].includes('Another African country')
+          ? otherMarket
+          : '',
+        otherTools: answers[2].includes('Something else') ? otherTools : '',
+        example,
+      }),
     })
       .then((response) =>
         response.ok
@@ -98,7 +78,10 @@ export function StandaloneMapper({
       })
       // The mapper still has to answer the visitor when the model is unreachable.
       .catch(() => {
-        if (!cancelled) setPilotState('fallback');
+        if (!cancelled) {
+          setPilot(mapperFallback(answers));
+          setPilotState('fallback');
+        }
       })
       .finally(() => clearTimeout(timeout));
     return () => {
@@ -106,21 +89,55 @@ export function StandaloneMapper({
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [complete, answers]);
+  }, [complete, answers, otherMarket, otherTools, example]);
 
-  function choose(answer: string) {
-    if (step === questions.length - 1) setPilotState('loading');
-    setAnswers((current) => [...current.slice(0, step), answer]);
-    setStep((current) => current + 1);
+  function toggle(option: string) {
+    const question = mapperQuestions[step];
+    const exclusive = 'exclusive' in question ? question.exclusive : null;
+    setSelected((current) => {
+      if (current.includes(option))
+        return current.filter((item) => item !== option);
+      if (option === exclusive) return [option];
+      return [...current.filter((item) => item !== exclusive), option];
+    });
+  }
+
+  function continueFromQuestion() {
+    if (!selected.length) return;
+    const next = answers.map((answer, index) =>
+      index === step ? selected : answer,
+    ) as MapperAnswers;
+    setAnswers(next);
+    if (step === mapperQuestions.length - 1) setPilotState('loading');
+    setStep(step + 1);
+    setSelected(next[step + 1] || []);
+  }
+
+  function editQuestion(index: number) {
+    setStep(index);
+    setSelected(answers[index]);
+    setPilot(null);
+    setPilotState('idle');
+    setShowContact(false);
+    setStatus('idle');
+    setSaveError('');
+    setAcknowledged(false);
   }
 
   function restart() {
-    setAnswers([]);
+    setAnswers([[], [], []]);
+    setSelected([]);
+    setOtherMarket('');
+    setOtherTools('');
+    setExample('');
     setStep(0);
     setShowContact(false);
     setStatus('idle');
     setPilot(null);
     setPilotState('idle');
+    setContact({ name: '', email: '', company: '' });
+    setSaveError('');
+    setAcknowledged(false);
   }
 
   async function save(event: React.SyntheticEvent<HTMLFormElement>) {
@@ -134,6 +151,11 @@ export function StandaloneMapper({
         body: JSON.stringify({
           ...contact,
           answers,
+          otherMarket: answers[1].includes('Another African country')
+            ? otherMarket
+            : '',
+          otherTools: answers[2].includes('Something else') ? otherTools : '',
+          example,
           answerFormat: 'goal-market-setup',
           recommendation: title,
           pricingPackage: includeSelection ? pricingSelection?.name : undefined,
@@ -166,7 +188,7 @@ export function StandaloneMapper({
         </div>
         <div>
           <strong>Find your starting point</strong>
-          <span>Three questions, then an optional enquiry</span>
+          <span>Three short steps, then an optional enquiry</span>
         </div>
         <span className="online">
           <i /> ready
@@ -187,40 +209,141 @@ export function StandaloneMapper({
         <div className="agent-message">
           <span>AK</span>
           <p>
-            Choose what you want to improve. We’ll suggest a starting point
-            based on your answers. Our team confirms the scope and price with
-            you.
+            Choose all the goals and tools that fit. We’ll suggest where to
+            begin; a person on our team will discuss the scope and price with
+            you if you send an enquiry.
           </p>
         </div>
-        {answers.map((answer, index) => (
-          <div className="thread-pair" key={answer}>
-            <div className="user-message">{answer}</div>
-            {index + 1 < questions.length && index + 1 < step && (
-              <div className="agent-message compact">
-                <span>AK</span>
-                <p>{questions[index + 1].prompt}</p>
+        {answers.map(
+          (answer, index) =>
+            index < step && (
+              <div className="thread-pair" key={index}>
+                <div className="user-message">
+                  <span>
+                    {answer.join(', ')}
+                    {index === 1 &&
+                    answer.includes('Another African country') &&
+                    otherMarket
+                      ? ` (${otherMarket})`
+                      : ''}
+                    {index === 2 && answer.includes('Something else') && otherTools
+                      ? ` (${otherTools})`
+                      : ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => editQuestion(index)}
+                    aria-label={`Edit ${mapperQuestions[index].prompt}`}
+                  >
+                    Edit
+                  </button>
+                </div>
+                {index + 1 < mapperQuestions.length && index + 1 < step && (
+                  <div className="agent-message compact">
+                    <span>AK</span>
+                    <p>{mapperQuestions[index + 1].prompt}</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            ),
+        )}
         {!complete ? (
           <div className="choice-panel">
-            <p className="current-question">{questions[step].prompt}</p>
-            <div className="choice-grid">
-              {questions[step].options.map((option) => (
-                <button key={option} onClick={() => choose(option)}>
-                  {option}
-                  <ChevronRight size={15} />
+            <fieldset className="mapper-choice-fieldset">
+              <legend className="current-question">
+                {mapperQuestions[step].prompt}
+              </legend>
+              <p className="mapper-choice-hint">{mapperQuestions[step].hint}</p>
+              <div className="choice-grid">
+                {mapperQuestions[step].options.map((option) => (
+                  <label className="mapper-choice" key={option}>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(option)}
+                      onChange={() => toggle(option)}
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            {step === 1 && selected.includes('Another African country') && (
+              <label className="mapper-extra-label">
+                Which country or countries?
+                <input
+                  value={otherMarket}
+                  onChange={(event) =>
+                    setOtherMarket(event.target.value.slice(0, 120))
+                  }
+                  placeholder="For example, Côte d’Ivoire and Senegal"
+                />
+              </label>
+            )}
+            {step === 2 &&
+              selected.includes('Something else') && (
+                <label className="mapper-extra-label">
+                  What else do you use?
+                  <input
+                    value={otherTools}
+                    onChange={(event) =>
+                      setOtherTools(event.target.value.slice(0, 120))
+                    }
+                    placeholder="For example, a booking app or paper records"
+                  />
+                </label>
+              )}
+            {step === 2 && (
+              <label className="mapper-extra-label">
+                One real example we should understand <span>(optional)</span>
+                <textarea
+                  value={example}
+                  onChange={(event) =>
+                    setExample(event.target.value.slice(0, 600))
+                  }
+                  placeholder="For example, customers ask for stock on WhatsApp, then someone checks a spreadsheet before replying."
+                  rows={3}
+                />
+              </label>
+            )}
+            <div className="mapper-step-actions">
+              {step > 0 && (
+                <button
+                  type="button"
+                  className="mapper-back"
+                  onClick={() => editQuestion(step - 1)}
+                >
+                  <ArrowLeft size={15} /> Back
                 </button>
-              ))}
+              )}
+              <button
+                type="button"
+                className="continue-button"
+                disabled={
+                  !selected.length ||
+                  (step === 1 &&
+                    selected.includes('Another African country') &&
+                    !otherMarket.trim()) ||
+                  (step === 2 &&
+                    selected.includes('Something else') &&
+                    !otherTools.trim())
+                }
+                onClick={continueFromQuestion}
+              >
+                {step === mapperQuestions.length - 1
+                  ? 'See a starting point'
+                  : 'Continue'}{' '}
+                <ArrowRight size={16} />
+              </button>
             </div>
             <div className="mapper-progress">
               <span
-                style={{ width: `${((step + 1) / questions.length) * 100}%` }}
+                style={{
+                  width: `${((step + 1) / mapperQuestions.length) * 100}%`,
+                }}
               />
             </div>
             <small>
-              Question {step + 1} of {questions.length}
+              Step {step + 1} of {mapperQuestions.length}
             </small>
           </div>
         ) : (
@@ -239,6 +362,13 @@ export function StandaloneMapper({
             ) : (
               <>
                 <h3>{title}</h3>
+                {pilotState === 'fallback' && (
+                  <p className="mapper-fallback-note">
+                    The live advisor is unavailable, so this starting point is
+                    based on the choices you made. Our team will review the
+                    details before suggesting a scope.
+                  </p>
+                )}
                 {pilot ? (
                   <>
                     <p>{pilot.summary}</p>
@@ -299,7 +429,7 @@ export function StandaloneMapper({
                   />
                 </label>
                 <label>
-                  Work email
+                  Email address
                   <input
                     required
                     type="email"
@@ -310,9 +440,8 @@ export function StandaloneMapper({
                   />
                 </label>
                 <label>
-                  Company or project
+                  Business or project <span>(optional)</span>
                   <input
-                    required
                     value={contact.company}
                     onChange={(event) =>
                       setContact({ ...contact, company: event.target.value })

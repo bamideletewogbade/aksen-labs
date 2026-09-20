@@ -31,8 +31,14 @@ type Signup = {
   hopedFor: string | null;
 };
 
+/** Rows outlive the name they were written under. A signup made when the
+ *  product was called CV Forge is a person waiting on Aksen Careers, so the
+ *  lookup reads the old slugs too rather than printing a raw string at you. */
 function productName(slug: string): string {
-  return products.find((product) => product.slug === slug)?.name ?? slug;
+  const product = products.find(
+    (entry) => entry.slug === slug || entry.formerSlugs?.includes(slug),
+  );
+  return product?.name ?? slug;
 }
 
 function when(date: Date): string {
@@ -81,6 +87,11 @@ export default async function AdminWaitlistPage() {
   }
 
   const waiting = products.filter((product) => !product.href);
+  // Every product has opened, so nobody new can join and everyone already on
+  // the list is owed the email. That is a different page from one still
+  // collecting addresses, and it should not read like the same one.
+  const allOpen = waiting.length === 0;
+  const opened = products.filter((product) => product.href);
 
   return (
     <section className="admin-main" id="waitlist">
@@ -89,11 +100,12 @@ export default async function AdminWaitlistPage() {
           <small>DEMAND BEFORE LAUNCH</small>
           <h1>Product waitlist</h1>
           <p>
-            People who asked to be told when a product opens, newest first. The
-            products page captures these; nothing is sent to them automatically.
+            {allOpen
+              ? 'People who asked to be told when a product opens, newest first. Everything on the list has opened, so these are addresses to write to once, by hand. Nothing is sent automatically.'
+              : 'People who asked to be told when a product opens, newest first. The products page captures these; nothing is sent to them automatically.'}
           </p>
         </div>
-        <Link href="/products#made-by-us" prefetch={false}>
+        <Link href="/products#our-products" prefetch={false}>
           Open the live page <ArrowUpRight size={16} />
         </Link>
       </header>
@@ -101,12 +113,22 @@ export default async function AdminWaitlistPage() {
       <div className="metric-grid arrive-stagger">
         <article style={{ '--i': 0 } as React.CSSProperties}>
           <span>
-            <Users /> Waiting
+            <Users /> {allOpen ? 'Owed an email' : 'Waiting'}
           </span>
           <strong>{loadFailed ? '—' : totals.total}</strong>
           <small>
             {loadFailed ? (
               'Records unavailable'
+            ) : allOpen ? (
+              opened.length === 1 ? (
+                <>
+                  <b>{opened[0]?.name}</b> has opened, list closed
+                </>
+              ) : (
+                <>
+                  <b>{opened.length} products</b> have opened, list closed
+                </>
+              )
             ) : (
               <>
                 across <b>{waiting.length}</b> unreleased{' '}
@@ -180,8 +202,9 @@ export default async function AdminWaitlistPage() {
             <Users />
             <strong>Nobody has signed up yet.</strong>
             <span>
-              The form sits on the products page under each product that has no
-              public address.
+              {allOpen
+                ? 'The form only appears under a product with no public address, and every product has one, so nothing can arrive here now.'
+                : 'The form sits on the products page under each product that has no public address.'}
             </span>
           </div>
         )}
@@ -189,12 +212,23 @@ export default async function AdminWaitlistPage() {
 
       <aside className="admin-info-note">
         <strong>What happens next</strong>
-        <p>
-          Nothing, until you send it. There is no scheduled email behind this
-          list. When a product opens, write to these addresses once, then give
-          the product a public address in lib/product-catalog.ts, which removes
-          the form from the site and closes the list.
-        </p>
+        {allOpen ? (
+          <p>
+            Nothing, until you send it. There is no scheduled email behind this
+            list. The product now has a public address in
+            lib/product-catalog.ts, so the form is gone from the site and no new
+            signup can arrive. Everyone above asked to be told, and has not
+            been. Write to them once, then this page is a record rather than a
+            queue.
+          </p>
+        ) : (
+          <p>
+            Nothing, until you send it. There is no scheduled email behind this
+            list. When a product opens, write to these addresses once, then give
+            the product a public address in lib/product-catalog.ts, which
+            removes the form from the site and closes the list.
+          </p>
+        )}
       </aside>
     </section>
   );

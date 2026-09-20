@@ -62,14 +62,14 @@ export default function AboutPage() {
               <p className="agency-eyebrow">CLIENT WORK, AND OUR OWN</p>
               <h2>Client work pays for it. Building our own keeps it sharp.</h2>
               <p>
-                CV Forge began as a CV reviewer and now covers the rest of a job
-                search: finding roles, preparing each application against the
-                actual advert, and keeping a record of what came of it.
+                Aksen Careers began as a CV reviewer and now covers the rest of
+                a job search: finding roles, preparing each application against
+                the actual advert, and keeping a record of what came of it.
               </p>
               <p>
-                It is built and in use. A public address is coming, so it is not
-                something you can open today. The free tools on the products
-                page are live right now.
+                It is open to anyone and free while we build it. Searching needs
+                no account. The free tools on the products page are live right
+                now too.
               </p>
               <Link className="agency-text-link" href="/products">
                 Explore our products <ArrowUpRight size={18} />

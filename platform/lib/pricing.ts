@@ -369,9 +369,9 @@ export const pricingFaqs = [
       'Nothing, and there is no account to create. They produce a draft you can read and download. They do not connect to your tools or change anything in your business, so a draft is a starting point for a conversation rather than a trial of paid work. Use one before you decide whether any of the figures on this page are worth discussing.',
   },
   {
-    question: 'Are these prices for CV Forge or the free tools?',
+    question: 'Are these prices for Aksen Careers or the free tools?',
     answer:
-      'No. These are agency service budgets, including building custom products for clients. CV Forge is our own product and has no public address or price yet. The business agents and the demonstrations on this site are free and have no subscription.',
+      'No. These are agency service budgets, including building custom products for clients. Aksen Careers is our own job search product, open to anyone and free while we build it, with no published subscription price. The business agents and the demonstrations on this site are free and have no subscription either.',
   },
 ];
 

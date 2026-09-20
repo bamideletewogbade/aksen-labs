@@ -28,6 +28,7 @@ type GalleryItem = {
   url: string;
   createdAt: string;
 };
+type RenderJob = { id: string; status: string; prompt: string; model: string; createdAt: string; error: string | null; costMicros: number | null };
 
 const ASPECT_RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4'];
 const DURATIONS = [4, 5, 8, 10, 15];
@@ -90,6 +91,7 @@ export function AdminMediaStudio() {
   const [result, setResult] = useState<Result | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [renderJobs, setRenderJobs] = useState<RenderJob[]>([]);
   const [removingAsset, setRemovingAsset] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -103,8 +105,17 @@ export function AdminMediaStudio() {
     }
   }
 
+  async function loadRenderJobs() {
+    try {
+      const response = await fetch('/api/admin/media/video/jobs');
+      const data = await response.json() as { jobs?: RenderJob[] };
+      if (data.jobs) setRenderJobs(data.jobs);
+    } catch { /* render history is supplemental */ }
+  }
+
   useEffect(() => {
     void loadGallery();
+    void loadRenderJobs();
   }, []);
 
   async function removeAsset(id: string) {
@@ -186,41 +197,22 @@ export function AdminMediaStudio() {
     );
   }
 
-  async function saveVideoAsset(url: string, model: string) {
-    try {
-      await fetch('/api/admin/media/save', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          kind: 'video',
-          prompt,
-          model,
-          aspectRatio,
-          url,
-          referenceCount: references.length,
-        }),
-      });
-      await loadGallery();
-    } catch {
-      /* history is best-effort */
-    }
-  }
-
-  async function pollVideoUntilDone(pollingUrl: string, model: string) {
+  async function pollVideoUntilDone(jobId: string) {
     for (let attempt = 0; attempt < 40; attempt += 1) {
       await new Promise((resolve) => setTimeout(resolve, 12_000));
       const response = await fetch(
-        `/api/admin/media/video/status?url=${encodeURIComponent(pollingUrl)}`,
+        `/api/admin/media/video/status?id=${encodeURIComponent(jobId)}`,
       );
       const data = (await response.json()) as {
         status?: string;
-        unsignedUrls?: string[];
+        url?: string;
         error?: string;
       };
-      if (data.status === 'completed' && data.unsignedUrls?.[0]) {
-        setResult({ kind: 'video', url: data.unsignedUrls[0] });
+      if (!response.ok) throw new Error(data.error || 'Could not check the render.');
+      if (data.status === 'completed' && data.url) {
+        setResult({ kind: 'video', url: data.url });
         setStatus('idle');
-        await saveVideoAsset(data.unsignedUrls[0], model);
+        await loadRenderJobs();
         return;
       }
       if (
@@ -228,6 +220,7 @@ export function AdminMediaStudio() {
         data.status === 'cancelled' ||
         data.status === 'expired'
       ) {
+        await loadRenderJobs();
         throw new Error(data.error || 'The video job did not finish.');
       }
       setProgressNote(`Still rendering... (checked ${attempt + 1} times)`);
@@ -277,13 +270,14 @@ export function AdminMediaStudio() {
           }),
         });
         const data = (await response.json()) as {
-          pollingUrl?: string;
+          jobId?: string;
           model?: string;
           error?: string;
         };
-        if (!response.ok || !data.pollingUrl)
+        if (!response.ok || !data.jobId)
           throw new Error(data.error || 'The video job could not be started.');
-        await pollVideoUntilDone(data.pollingUrl, data.model || 'unknown');
+        await loadRenderJobs();
+        await pollVideoUntilDone(data.jobId);
       }
     } catch (error) {
       setStatus('error');
@@ -291,6 +285,17 @@ export function AdminMediaStudio() {
         error instanceof Error ? error.message : 'Something went wrong.',
       );
     }
+  }
+
+  async function checkRender(jobId: string) {
+    try {
+      const response = await fetch(`/api/admin/media/video/status?id=${encodeURIComponent(jobId)}`);
+      const data = await response.json() as { status?: string; url?: string; error?: string };
+      if (!response.ok) throw new Error(data.error || 'Could not check this render.');
+      if (data.status === 'completed' && data.url) setResult({ kind: 'video', url: data.url });
+      setProgressNote(`Render ${data.status || 'unknown'}.`);
+      await loadRenderJobs();
+    } catch (cause) { setStatus('error'); setErrorMessage(cause instanceof Error ? cause.message : 'Could not check this render.'); }
   }
 
   return (
@@ -459,6 +464,13 @@ export function AdminMediaStudio() {
           </div>
         </div>
       )}
+      {renderJobs.length > 0 && <div className="media-gallery"><span>Recent video jobs</span><div className="media-render-jobs">
+        {renderJobs.map((job) => <div className="media-render-job" key={job.id}>
+          <span title={job.prompt}>{job.prompt.slice(0, 90)}{job.prompt.length > 90 ? '…' : ''}</span>
+          <small>{job.status}{job.costMicros != null ? ` · $${(job.costMicros / 1_000_000).toFixed(2)}` : ''}</small>
+          <button type="button" onClick={() => void checkRender(job.id)}>{job.status === 'completed' ? 'Open video' : 'Check status'}</button>
+        </div>)}
+      </div></div>}
       {gallery.length > 0 && (
         <div className="media-gallery">
           <span>Recent generations</span>

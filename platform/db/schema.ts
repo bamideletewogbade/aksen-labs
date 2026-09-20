@@ -6,6 +6,7 @@ import {
   boolean,
   date,
   index,
+  uniqueIndex,
   integer,
   jsonb,
   pgTable,
@@ -328,6 +329,44 @@ export const mediaAssets = pgTable(
     referenceCount: integer('reference_count').notNull().default(0),
   },
   (table) => [index('idx_media_assets_created').on(table.createdAt)],
+);
+export const mediaEpisodes = pgTable(
+  'media_episodes',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id').notNull(),
+    title: text('title').notNull(),
+    topic: text('topic').notNull().default(''),
+    script: text('script').notNull().default(''),
+    scenes: jsonb('scenes').notNull().default([]),
+    sources: jsonb('sources').notNull().default([]),
+    status: text('status').notNull().default('draft'),
+    aspectRatio: text('aspect_ratio').notNull().default('9:16'),
+    createdAt,
+    updatedAt,
+  },
+  (table) => [index('idx_media_episodes_owner_updated').on(table.ownerId, table.updatedAt)],
+);
+export const mediaRenderJobs = pgTable(
+  'media_render_jobs',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id').notNull(),
+    providerJobId: text('provider_job_id').notNull(),
+    model: text('model').notNull(),
+    prompt: text('prompt').notNull(),
+    status: text('status').notNull().default('pending'),
+    pollingUrl: text('polling_url').notNull(),
+    outputUrl: text('output_url'),
+    error: text('error'),
+    costMicros: integer('cost_micros'),
+    createdAt,
+    updatedAt,
+  },
+  (table) => [
+    index('idx_media_render_jobs_owner_created').on(table.ownerId, table.createdAt),
+    uniqueIndex('idx_media_render_jobs_owner_provider').on(table.ownerId, table.providerJobId),
+  ],
 );
 export const auditEvents = pgTable(
   'audit_events',

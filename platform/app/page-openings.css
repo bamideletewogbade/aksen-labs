@@ -688,10 +688,39 @@
   }
   .refresh-site .opening-contact {
     padding-top: 28px;
-    gap: 24px;
+    gap: 14px;
   }
   .opening-contact .agency-contact-copy {
-    padding: 26px;
+    display: contents;
+  }
+  .opening-contact .agency-contact-copy > .agency-eyebrow {
+    order: 0;
+    margin: 0;
+  }
+  .opening-contact .agency-contact-copy > h1 {
+    order: 0;
+    margin: 0;
+  }
+  .opening-contact .agency-contact-copy > p:not(.agency-eyebrow) {
+    order: 0;
+    margin: 0 0 14px;
+  }
+  .opening-contact .mapper-shell {
+    order: 1;
+  }
+  .opening-contact .mapper-thread > .agent-message:first-child {
+    display: none;
+  }
+  .opening-contact .agency-contact-note {
+    order: 2;
+    margin: 0;
+    padding: 18px;
+    border: 0;
+    border-radius: 12px;
+    background: #eaf0df;
+  }
+  .opening-contact .contact-opening-signoff {
+    order: 3;
   }
   .contact-opening-signoff {
     margin-top: 16px;

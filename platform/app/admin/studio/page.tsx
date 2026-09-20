@@ -1,4 +1,6 @@
 import { AdminMediaStudio } from '@/components/admin-media-studio';
+import { AdminEpisodePlanner } from '@/components/admin-episode-planner';
+import './studio-planner.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +20,7 @@ export default function AdminStudioPage() {
         </div>
       </header>
       <div className="studio-layout">
+        <AdminEpisodePlanner />
         <AdminMediaStudio />
       </div>
     </section>

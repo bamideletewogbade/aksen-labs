@@ -712,6 +712,18 @@ h2 em {
   font-size: 14px;
   font-weight: 650;
 }
+.user-message button {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: #174c21;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
 .choice-panel {
   margin: 24px 0 0 37px;
 }
@@ -720,11 +732,46 @@ h2 em {
   color: #cdd5cf;
   font-size: 12px;
 }
+.mapper-choice-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.mapper-choice-fieldset legend { padding: 0; font-size: 16px; font-weight: 650; }
+.mapper-choice-hint { margin: 0 0 15px; color: #94a196; font-size: 13px; line-height: 1.5; }
 .choice-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 9px;
 }
+.mapper-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 11px 13px;
+  border: 1px solid rgba(124, 255, 98, 0.16);
+  border-radius: 8px;
+  color: #c4cec6;
+  background: #0f1711;
+  font-size: 14px;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.mapper-choice:hover { border-color: rgba(124, 255, 98, 0.4); background: #142017; }
+.mapper-choice:has(input:checked) { border-color: var(--signal); color: #edffeb; background: #17311c; }
+.mapper-choice:has(input:focus-visible) { outline: 2px solid var(--signal); outline-offset: 2px; }
+.mapper-choice input { flex: 0 0 auto; width: 18px; height: 18px; margin: 0; accent-color: var(--signal); }
+.mapper-extra-label { display: grid; gap: 8px; margin-top: 18px; color: #cbd7cd; font-size: 13px; }
+.mapper-extra-label span { color: #91a195; }
+.mapper-extra-label input,
+.mapper-extra-label textarea { width: 100%; padding: 11px 12px; border: 1px solid #39513c; border-radius: 8px; background: #0b120d; color: #f3f6f4; font: inherit; font-size: 14px; }
+.mapper-extra-label textarea { resize: vertical; min-height: 86px; }
+.mapper-extra-label input:focus,
+.mapper-extra-label textarea:focus { outline: 2px solid var(--signal); outline-offset: 2px; }
+.mapper-step-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 22px; }
+.mapper-step-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; padding: 9px 14px; border-radius: 7px; font: inherit; font-size: 13px; cursor: pointer; }
+.mapper-step-actions .continue-button { border: 0; background: var(--signal); color: #091609; font-weight: 700; }
+.mapper-step-actions .continue-button:disabled { opacity: 0.4; cursor: not-allowed; }
+.mapper-step-actions .mapper-back { border: 1px solid #304234; color: #cad6cc; background: transparent; }
+.contact-continuation label span { color: #859286; font-size: 11px; text-transform: none; letter-spacing: 0; }
 .choice-grid button {
   display: flex;
   justify-content: space-between;
@@ -788,6 +835,13 @@ h2 em {
   color: #9da79f;
   font-size: 12px;
   line-height: 1.6;
+}
+.recommendation-card .mapper-fallback-note {
+  padding: 10px 12px;
+  border-left: 2px solid var(--signal);
+  color: #c7d5c9;
+  background: rgba(124, 255, 98, 0.06);
+  font-size: 13px;
 }
 .recommendation-card p strong {
   color: white;
@@ -2487,6 +2541,7 @@ footer > span {
   line-height: 1.6;
 }
 .mapper-shell.standalone {
+  align-self: start;
   min-height: 650px;
 }
 

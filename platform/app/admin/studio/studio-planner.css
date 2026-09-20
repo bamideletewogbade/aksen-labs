@@ -1,0 +1,28 @@
+.episode-planner { display: grid; gap: 1rem; min-width: 0; }
+.episode-planner-intro { margin: 0; max-width: 65ch; }
+.episode-planner-actions, .episode-planner-footer, .episode-scene-top, .episode-scenes-head, .episode-planner-meta { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+.episode-planner-actions { justify-content: flex-start; }
+.episode-planner-actions button, .episode-add-scene, .episode-planner-footer button, .episode-scene-top button { display: inline-flex; align-items: center; gap: .4rem; border: 1px solid currentColor; border-radius: .5rem; padding: .55rem .75rem; background: transparent; color: inherit; cursor: pointer; }
+.episode-planner-list > span { display: block; margin-bottom: .4rem; font-weight: 600; }
+.episode-planner-list > div { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .4rem; }
+.episode-planner-list button { flex: none; border: 1px solid currentColor; border-radius: 999px; padding: .4rem .7rem; background: transparent; color: inherit; cursor: pointer; }
+.episode-planner-list button.active { background: #d2f7a4; color: #142411; border-color: #d2f7a4; }
+.episode-planner-fields, .episode-scenes, .episode-scene { display: grid; gap: .8rem; }
+.episode-planner label { display: grid; gap: .35rem; font-weight: 600; min-width: 0; }
+.episode-planner input, .episode-planner textarea, .episode-planner select { width: 100%; min-width: 0; border: 1px solid #7778; border-radius: .5rem; padding: .65rem; background: #fff; color: #171a17; font: inherit; }
+.episode-planner textarea { min-height: 5rem; resize: vertical; }
+.episode-planner textarea.episode-script { min-height: 14rem; }
+.episode-planner-meta label { min-width: 11rem; }
+.episode-scenes-head h3 { margin: 0; }
+.episode-scene { border: 1px solid #7777; border-radius: .75rem; padding: 1rem; }
+.episode-scene-top button { padding: .3rem; }
+.episode-scene-row { display: grid; grid-template-columns: minmax(0, 1fr) 7rem; gap: .75rem; }
+.episode-save { background: #d2f7a4 !important; color: #142411 !important; border-color: #d2f7a4 !important; font-weight: 700; }
+.episode-remove { color: #9c2828 !important; }
+.episode-planner-message { margin: 0; color: #2c6837; }
+.episode-planner button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 560px) { .episode-scene-row { grid-template-columns: 1fr; } }
+.media-render-jobs { display: grid; gap: .5rem; }
+.media-render-job { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; border: 1px solid #7777; border-radius: .5rem; padding: .65rem; }
+.media-render-job > span { flex: 1 1 18rem; }
+.media-render-job button { border: 1px solid currentColor; border-radius: .4rem; background: transparent; color: inherit; padding: .35rem .6rem; cursor: pointer; }

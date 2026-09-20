@@ -3,6 +3,7 @@ import { withRequestLog } from '@/lib/request-log';
 import { NextResponse } from 'next/server';
 import { chatComplete } from '@/lib/openrouter';
 import { logAgentRun } from '@/lib/agent-runs';
+import { parseMapperAnswers } from '@/lib/mapper-questions';
 
 type PilotRecommendation = {
   title: string;
@@ -65,15 +66,10 @@ async function POSTHandler(request: Request) {
     );
   }
 
-  const answers =
-    body && typeof body === 'object'
-      ? (body as Record<string, unknown>).answers
-      : null;
-  if (
-    !Array.isArray(answers) ||
-    answers.length !== 3 ||
-    answers.some((answer) => typeof answer !== 'string' || !answer.trim())
-  ) {
+  const input =
+    body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+  const answers = parseMapperAnswers(input.answers);
+  if (!answers) {
     return NextResponse.json(
       { error: 'Three workflow answers are required.' },
       { status: 400 },
@@ -87,9 +83,19 @@ async function POSTHandler(request: Request) {
       { status: 503 },
     );
 
-  const [goal, market, setup] = answers.map((answer) =>
-    String(answer).trim().slice(0, 180),
-  );
+  const [goal, market, setup] = answers.map((answer) => answer.join('; '));
+  const otherMarket =
+    answers[1].includes('Another African country') &&
+    typeof input.otherMarket === 'string'
+      ? input.otherMarket.trim().slice(0, 120)
+      : '';
+  const otherTools =
+    answers[2].includes('Something else') &&
+    typeof input.otherTools === 'string'
+      ? input.otherTools.trim().slice(0, 120)
+      : '';
+  const example =
+    typeof input.example === 'string' ? input.example.trim().slice(0, 600) : '';
   const startedAt = Date.now();
 
   try {
@@ -108,7 +114,7 @@ async function POSTHandler(request: Request) {
           content: [
             'You are the Aksen Labs digital transformation advisor for ambitious African businesses.',
             'Aksen Labs helps African businesses grow, serve customers better and operate more effectively across 4 capability areas: (1) Customer experience & commerce, (2) Business systems & operations, (3) Data & insight, and (4) Digital products. AI is used as a capability multiplier where it genuinely adds value, but not forced if clean web development, integrated payments, or reliable operational workflows are what is needed.',
-            'Turn three short answers into one practical, scoped digital transformation starting point or project recommendation.',
+            'The visitor may have chosen several goals, markets and existing tools. Respect all of them while proposing one sensible first step, and explain why that step should come first. If their goals conflict or the information is thin, suggest a short scoping conversation rather than pretending to know the answer.',
             'Use plain business language. Never mention APIs, models, embeddings, vector databases, architecture, or technical buzzwords.',
             'Be specific, modest and useful. Do not invent facts about the company. Treat non-Ghanaian locations as possible markets subject to project fit and delivery arrangements.',
             'Describe a proposed project or initial sprint, not a generic pre-packaged software. Never promise instant replies, guaranteed revenues or unsupported timelines.',
@@ -119,7 +125,7 @@ async function POSTHandler(request: Request) {
         },
         {
           role: 'user',
-          content: `Goal to improve: ${goal}\nOperating market: ${market}\nCurrent setup: ${setup}`,
+          content: `Goals to improve: ${goal}\nOperating markets: ${market}${otherMarket ? `; specifically ${otherMarket}` : ''}\nCurrent tools and channels: ${setup}${otherTools ? `; specifically ${otherTools}` : ''}\nReal example from visitor: ${example || 'Not provided'}`,
         },
       ],
     });

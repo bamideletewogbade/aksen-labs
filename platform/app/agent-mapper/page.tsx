@@ -35,9 +35,9 @@ export default async function OpportunityPage({
             <p className="agency-eyebrow">DISCUSS YOUR BUSINESS</p>
             <h1>What would you like your business to do better?</h1>
             <p>
-              Answer three short questions about your goal, location and current
-              setup. You’ll see a suggested starting point, then you can send
-              your enquiry to our team.
+              Choose the goals, markets and tools that fit your business. Add
+              one real example if you like. You’ll get a suggested starting
+              point, then decide whether to send it to our team.
             </p>
             <div className="agency-contact-note">
               <strong>You don’t need a technical brief.</strong>

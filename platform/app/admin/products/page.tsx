@@ -8,7 +8,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { getDb } from '@/db';
-import { freeTools, products } from '@/lib/product-catalog';
+import { freeTools, isExternal, products } from '@/lib/product-catalog';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Public site | Aksen Workspace' };
@@ -122,9 +122,16 @@ export default async function AdminPublicSitePage() {
             <Sparkles /> Usable today
           </span>
           <strong>{live}</strong>
+          {/* These three have to add up to the number above them, so products
+              with an address are counted here too. They did not used to be,
+              because there were none. */}
           <small>
-            <b>{entries.filter((e) => e.kind === 'Tool').length}</b> working
-            tools, <b>{entries.filter((e) => e.kind === 'Demo').length}</b>{' '}
+            <b>
+              {entries.filter((e) => e.kind === 'Product' && e.href).length}
+            </b>{' '}
+            products, <b>{entries.filter((e) => e.kind === 'Tool').length}</b>{' '}
+            working tools,{' '}
+            <b>{entries.filter((e) => e.kind === 'Demo').length}</b>{' '}
             demonstrations
           </small>
         </article>
@@ -189,12 +196,25 @@ export default async function AdminPublicSitePage() {
               <p>{entry.description}</p>
               <div className="site-inventory-actions">
                 {/* Something with no public address has no page to open, and
-                    should say that rather than offer a link going nowhere. */}
+                    should say that rather than offer a link going nowhere. A
+                    product hosted elsewhere is not a route on this app, so it
+                    cannot go through Link: that would 404 inside the admin. */}
                 {entry.href ? (
-                  <Link href={entry.href} prefetch={false}>
-                    {entry.action || 'Open public page'}{' '}
-                    <ArrowUpRight size={15} />
-                  </Link>
+                  isExternal(entry.href) ? (
+                    <a
+                      href={entry.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {entry.action || 'Open public page'}{' '}
+                      <ArrowUpRight size={15} />
+                    </a>
+                  ) : (
+                    <Link href={entry.href} prefetch={false}>
+                      {entry.action || 'Open public page'}{' '}
+                      <ArrowUpRight size={15} />
+                    </Link>
+                  )
                 ) : (
                   <span className="site-unlisted">No public address yet</span>
                 )}
