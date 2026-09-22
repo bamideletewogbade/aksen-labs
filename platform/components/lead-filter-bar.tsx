@@ -51,7 +51,14 @@ export function LeadFilterBar({
   onChange: (filter: LeadFilter) => void;
   shown: number;
 }) {
-  const panelId = useId();
+  // A literal, not useId. The generated id did not survive hydration under this
+  // RSC setup: the server sent one value and the client produced another, React
+  // reported the mismatch as unpatchable and left the button pointing at a panel
+  // id that no longer existed, which is the aria-controls link a screen reader
+  // follows. One filter bar exists per screen, so a fixed id cannot collide, and
+  // this is the only useId in the codebase, which is why this was the only screen
+  // that failed to hydrate.
+  const panelId = 'lead-filter-panel';
   const [open, setOpen] = useState(false);
   // Typing should filter as you type without a round trip, but the count
   // changing under the cursor is distracting, so the number gets a short
