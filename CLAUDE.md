@@ -32,6 +32,7 @@ cd platform && pnpm dev
 ```
 
 - Format `npx oxfmt <files>`, lint `npx oxlint <files>`, typecheck `npx tsc --noEmit`. The repo has pre-existing lint errors in admin components; do not treat them as yours, and do not add more.
+- Test `pnpm test`, or `pnpm test <word>` for the files whose name contains it. Each file in `tests/` is also a plain `node tests/<name>.mjs`. The `*.integration.mjs` ones need `DATABASE_URL` and only ever touch transaction-local temp tables.
 - Public pages live in `app/`, styled by the per-surface CSS files in `app/*.css`. `refresh.css` carries the public site.
 - Comments explain *why*, in the voice of the surrounding code. Match it.
 

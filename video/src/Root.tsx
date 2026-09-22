@@ -6,6 +6,8 @@ import { LaunchFilm, launchFilmDuration } from './compositions/LaunchFilm';
 import { AksenAd, aksenAdDuration } from './compositions/AksenAd';
 import { NaijaOffers, NaijaOverview, NaijaReel, NG_OFFERS, NG_OVERVIEW, NG_REEL } from './compositions/NaijaShowcase';
 import { industries } from '../../marketing/nigeria-kit/config.mjs';
+import episodeManifest from './episode-manifest.json';
+import { MediaEpisode, type EpisodeManifest } from './compositions/MediaEpisode';
 
 /**
  * One story, registered once per shape.
@@ -21,6 +23,15 @@ export function RemotionRoot() {
   const cuts: FormatName[] = ['vertical', 'square', 'wide'];
   return (
     <>
+      <Composition
+        id="media-episode"
+        component={MediaEpisode}
+        durationInFrames={Math.max(1, (episodeManifest.scenes || []).reduce((sum, scene) => sum + Math.round(scene.seconds * fps), 0))}
+        fps={fps}
+        width={episodeManifest.aspectRatio === '16:9' ? 1920 : 1080}
+        height={episodeManifest.aspectRatio === '9:16' ? 1920 : 1080}
+        defaultProps={{ episode: episodeManifest as EpisodeManifest }}
+      />
       {cuts.map((format) => (
         <Composition
           key={format}

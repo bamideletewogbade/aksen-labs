@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import NextImage from 'next/image';
 import { PendingButton } from '@/components/ui/activity';
 import { ConfirmAction } from '@/components/ui/confirm-action';
 
@@ -114,8 +115,14 @@ export function AdminMediaStudio() {
   }
 
   useEffect(() => {
-    void loadGallery();
-    void loadRenderJobs();
+    let active = true;
+    void fetch('/api/admin/media/save').then((response) => response.json() as Promise<{ assets?: GalleryItem[] }>).then((gallery) => {
+      if (active && gallery.assets) setGallery(gallery.assets);
+    }).catch(() => null);
+    void fetch('/api/admin/media/video/jobs').then((response) => response.json() as Promise<{ jobs?: RenderJob[] }>).then((renders) => {
+      if (active && renders.jobs) setRenderJobs(renders.jobs);
+    }).catch(() => null);
+    return () => { active = false; };
   }, []);
 
   async function removeAsset(id: string) {
@@ -252,10 +259,12 @@ export function AdminMediaStudio() {
         const data = (await response.json()) as {
           dataUrl?: string;
           error?: string;
+          warning?: string;
         };
         if (!response.ok || !data.dataUrl)
           throw new Error(data.error || 'The image could not be generated.');
         setResult({ kind: 'image', dataUrl: data.dataUrl });
+        if (data.warning) setProgressNote(data.warning);
         setStatus('idle');
         await loadGallery();
       } else {
@@ -403,7 +412,7 @@ export function AdminMediaStudio() {
           <div className="media-reference-list">
             {references.map((ref) => (
               <div className="media-reference-thumb" key={ref.id}>
-                <img src={ref.dataUrl} alt="Reference" />
+                 <NextImage unoptimized width={80} height={80} src={ref.dataUrl} alt="Reference" />
                 <button
                   type="button"
                   onClick={() => removeReference(ref.id)}
@@ -445,14 +454,14 @@ export function AdminMediaStudio() {
       {result && (
         <div className="media-result">
           {result.kind === 'image' ? (
-            <img src={result.dataUrl} alt="Generated result" />
+             <NextImage unoptimized width={512} height={512} src={result.dataUrl} alt="Generated result" />
           ) : (
             <video src={result.url} controls autoPlay muted loop playsInline />
           )}
           <div className="media-result-actions">
             <a
               href={result.kind === 'image' ? result.dataUrl : result.url}
-              download={`aksen-${mode}-${Date.now()}.${result.kind === 'image' ? 'png' : 'mp4'}`}
+               download={`aksen-${result.kind}.${result.kind === 'image' ? 'png' : 'mp4'}`}
             >
               <Download size={15} /> Download
             </a>
@@ -487,7 +496,7 @@ export function AdminMediaStudio() {
                   title={item.prompt}
                 >
                   {item.kind === 'image' ? (
-                    <img src={item.url} alt={item.prompt} />
+                     <NextImage unoptimized width={256} height={256} src={item.url} alt={item.prompt} />
                   ) : (
                     <video src={item.url} muted />
                   )}

@@ -362,7 +362,7 @@ export function SocialHub({
                           <div>
                             <h3>{provider.label}</h3>
                             <span data-ready={Boolean(profile)}>
-                              {profile ? 'Profile linked' : 'Profile needed'}
+                              {profile ? 'Profile URL saved' : 'Profile URL needed'}
                             </span>
                           </div>
                         </div>
@@ -399,8 +399,8 @@ export function SocialHub({
                         >
                           <strong>
                             {provider.credentialReady
-                              ? 'Developer credentials present'
-                              : 'OAuth setup not configured'}
+                              ? 'App keys present; account connection unverified'
+                              : 'App keys not configured'}
                           </strong>
                           <small>{provider.credentialNames}</small>
                         </div>

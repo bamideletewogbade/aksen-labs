@@ -1,0 +1,5 @@
+{
+  "title": "Episode render preview",
+  "aspectRatio": "9:16",
+  "scenes": [{ "id": "preview", "seconds": 3, "narration": "Episode render preview", "visual": "Add a reviewed episode package to render.", "assetPath": "" }]
+}

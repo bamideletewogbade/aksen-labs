@@ -1,10 +1,10 @@
 import { withRequestLog } from '@/lib/request-log';
 import { adminEmailAllowed } from '@/lib/admin-policy';
 import { NextResponse } from 'next/server';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { getDb } from '@/db';
-import { mediaAssets, auditEvents } from '@/db/schema';
+import { mediaAssets, mediaEpisodes, auditEvents } from '@/db/schema';
 
 function isAdmin(email: string) {
   return adminEmailAllowed(email);
@@ -73,6 +73,7 @@ async function GETHandler() {
   const rows = await db
     .select()
     .from(mediaAssets)
+    .where(eq(mediaAssets.createdBy, user.userId))
     .orderBy(desc(mediaAssets.createdAt))
     .limit(24);
   return NextResponse.json({ assets: rows });
@@ -109,9 +110,15 @@ async function DELETEHandler(request: Request) {
     );
 
   const db = getDb();
+  const episodes = await db.select({ scenes: mediaEpisodes.scenes }).from(mediaEpisodes).where(eq(mediaEpisodes.ownerId, user.userId));
+  if (episodes.some((episode) => Array.isArray(episode.scenes) && episode.scenes.some((scene) => {
+    if (typeof scene !== 'object' || scene === null) return false;
+    const selected = scene as { asset?: { id?: unknown }; background?: { kind?: unknown; id?: unknown } };
+    return selected.asset?.id === id || (selected.background?.kind === 'image' && selected.background.id === id);
+  }))) return NextResponse.json({ error: 'This image is assigned to an episode or its background. Remove it from the scene first.' }, { status: 409 });
   const [removed] = await db
     .delete(mediaAssets)
-    .where(eq(mediaAssets.id, id))
+    .where(and(eq(mediaAssets.id, id), eq(mediaAssets.createdBy, user.userId)))
     .returning({ id: mediaAssets.id, kind: mediaAssets.kind });
   if (!removed)
     return NextResponse.json({ error: 'Asset not found.' }, { status: 404 });

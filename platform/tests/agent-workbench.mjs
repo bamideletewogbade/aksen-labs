@@ -244,9 +244,14 @@ assert.ok(
     key.startsWith('agent-workbench-owner-a-'),
   ),
 );
+// Somewhere in the site chrome, reachable without knowing the URL. Which group
+// it sits in is a layout decision: the main nav was cut to six on purpose and
+// this moved to the footer, which is fine. Matching the old nav-array entry
+// asserted the shape of that decision rather than the thing that matters, so it
+// failed on a move that broke nothing.
 assert.match(
   fs.readFileSync('components/site-chrome.tsx', 'utf8'),
-  /href: '\/business-agents'/,
+  /href=(["'])\/business-agents\1|href: '\/business-agents'/,
 );
 assert.match(
   fs.readFileSync('app/api/business-agents/route.ts', 'utf8'),

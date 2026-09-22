@@ -46,6 +46,13 @@ async function POSTHandler(request: Request) {
       { status: 400 },
     );
 
+  // A billable image should have a place to live before generation begins.
+  try {
+    await getDb().select({ id: mediaAssets.id }).from(mediaAssets).limit(1);
+  } catch {
+    return NextResponse.json({ error: 'Image storage is unavailable. Try again when the gallery is connected.' }, { status: 503 });
+  }
+
   const startedAt = Date.now();
   try {
     const image = await generateImage({
@@ -56,7 +63,7 @@ async function POSTHandler(request: Request) {
     const dataUrl = `data:${image.mediaType};base64,${image.base64}`;
     const db = getDb();
     const assetId = crypto.randomUUID();
-    await db
+    const saved = await db
       .insert(mediaAssets)
       .values({
         id: assetId,
@@ -68,8 +75,9 @@ async function POSTHandler(request: Request) {
         url: dataUrl,
         referenceCount: referenceUrls.length,
       })
-      .catch(() => null);
-    await db
+      .then(() => true)
+      .catch(() => false);
+    if (saved) await db
       .insert(auditEvents)
       .values({
         id: crypto.randomUUID(),
@@ -85,11 +93,11 @@ async function POSTHandler(request: Request) {
       agentName: 'Creative Studio (image)',
       channel: 'admin',
       status: 'success',
-      outcome: prompt.slice(0, 160),
+      outcome: saved ? prompt.slice(0, 160) : 'Image generated but could not be saved',
       durationMs: Date.now() - startedAt,
       costMicros: image.costMicros,
     });
-    return NextResponse.json({ id: assetId, dataUrl, model: image.model });
+    return NextResponse.json({ id: saved ? assetId : null, saved, dataUrl, model: image.model, ...(saved ? {} : { warning: 'Image generated but not saved to the gallery. Download it now.' }) });
   } catch {
     await logAgentRun({
       agentName: 'Creative Studio (image)',

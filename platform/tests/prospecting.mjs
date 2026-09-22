@@ -129,6 +129,11 @@ const mods = {
   '@/lib/scout-limits': uri(
     compile(fs.readFileSync('lib/scout-limits.ts', 'utf8')),
   ),
+  // Also real. It has no imports of its own, and a stub would only assert that
+  // the cadence the test invented is the cadence the test accepts.
+  '@/lib/automation-schedule': uri(
+    compile(fs.readFileSync('lib/automation-schedule.ts', 'utf8')),
+  ),
 };
 const code = compile(
   fs.readFileSync('app/api/admin/prospects/route.ts', 'utf8'),

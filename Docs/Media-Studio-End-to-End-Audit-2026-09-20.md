@@ -1,0 +1,67 @@
+# Media Studio end-to-end audit — 20 September 2026
+
+## Verdict and evidence boundary
+
+Media Studio is a promising **founder pilot**, not yet a dependable create-to-publish system. It can turn a YouTube link plus the founder's notes into original angles, draft an episode, generate assets, review claims, and render a local MP4 from an approved kit. It cannot yet produce a complete spoken-avatar episode or publish it from Aksen Labs.
+
+Evidence checked today: current repository paths, local environment variable presence (values not exposed), the configured Neon schema and aggregate counts, local TypeScript/build/validation tests, and current official provider documentation. The configured database has `media_episodes` and `media_render_jobs` with workflow columns, but holds **0 episodes, 0 video jobs, and 1 generated image**. That image occupies approximately **1.89 million URL characters** inline. The hosted site's database, signed-in journey, generated-video output, and a real one-minute episode were not tested today.
+
+## Workflow map
+
+| Stage | Present state | Main gap or optimization |
+| --- | --- | --- |
+| Inspiration | Strict YouTube URL parsing; public metadata when `YOUTUBE_API_KEY` exists; user's notes and take; three original angles. | No video watch/transcription or stored source snapshot. The key is missing locally. Preserve a timestamped note, source type, and claim provenance for every factual point. |
+| Agent choices | Reference reader, idea mapper, optional Jev fit signal, script architect show visible status. Jev is shadow only. | Status rail ends at draft handoff. Persist workflow events and cost, and show the same state through generation, render, review, and distribution. Do not treat Jev confidence as proof of a claim. |
+| Script and scenes | Editable script, scenes, scene assets, scene order, background, fit, cuts/fades, captions, channel copy, proof checks. | Script and scene narration can diverge; durations are not checked against speech or clip length. Add a timed transcript and a scene manifest with exact media/audio durations. |
+| Image generation | OpenRouter image API, up to four image references, generated image saved in Neon. | Images are base64 data URLs in DB and shipped in gallery JSON. Move binary to object storage, serve thumbnails, paginate metadata. The single current image already adds about 1.89M characters. |
+| Video generation | OpenRouter async job, fixed Seedance 2.0 Mini, 4/5/8/10/15-second UI choices; owner-scoped job history. | No live capability/price check, budget preview, webhook, durable output copy, or retry policy. Client polls every 12 seconds for up to eight minutes; jobs are not reconciled in the background. |
+| Presenter and audio | Scene type says presenter; generated clip can provide audio; still-image scenes show text. | There is no connected consented personal-avatar provider, recorded voice track, voice clone, or narration mix. This is the biggest product gap for the requested one-minute founder format. |
+| Render | Approved episode exports a browser ZIP; local Remotion produces MP4, with scene backgrounds and captions. | No hosted render service, render-job record, cloud output, in-app final preview, waveform/caption alignment, or output QA. `zipSync` holds up to 150 MB of media in browser memory. The local script writes a shared manifest, so concurrent renders in the same checkout would collide. |
+| Review | Draft → in review → approved; open proof checks block approval; approved draft required for render-kit export. | Approval is for the plan, not a particular MP4. Add immutable version/content hash, final video QC, and a separate post approval. Clearly distinguish verified evidence from illustrative examples. |
+| Distribution | Captions for LinkedIn, Instagram, TikTok, and YouTube are stored with episode. Social Hub saves profile links and AI drafts. | No OAuth account connection, media upload, publish queue, receipts, status reconciliation, or analytics. Social Hub setup UI does not include YouTube. Local platform credentials are absent. |
+| Learning and business value | Generic agent run/cost logging and audit events exist in parts of the path. | No per-episode total cost, minutes to publish, revision count, platform outcomes, link attribution, or content experiments. These are required before optimization or pricing claims. |
+
+## Concrete code risks found
+
+1. **Generated output can disappear.** Video is streamed from OpenRouter on demand; OpenRouter documents temporary retention for async video. `media_render_jobs.status='completed'` does not mean a durable playable asset exists. Copy completion output promptly into owned storage. [OpenRouter video guide](https://openrouter.ai/docs/guides/overview/multimodal/video-generation).
+2. **A billable submit can outlive its record.** Video submission checks DB availability first, but provider submission and DB insert are separate. An insert failure after a successful paid submit leaves an orphaned provider job. Reserve a local job ID before submission, persist submission state, then reconcile uncertain outcomes rather than retrying blindly.
+3. **Scene timing is unconstrained by source media.** The episode schema permits scenes up to 300 seconds; the hard-coded video model currently supports 4–15 seconds. A 22-second scene may receive a much shorter clip. Probe assets before approval and choose trim, loop, still hold, or generate extension explicitly. OpenRouter's public video-model catalog currently shows Seedance 2.0 Mini at 4–15 seconds and Seedance 2.5 at 4–30 seconds; capability and pricing must be read live at selection time. [OpenRouter video models API](https://openrouter.ai/docs/api/api-reference/video-generation/list-videos-models).
+4. **The final voice is not designed.** The renderer captions each scene's whole narration but still-image scenes have no spoken audio. The preview does not model a synchronized founder voice. Make narration audio a first-class, consented asset and align short caption chunks to the audio before calling the result finished.
+5. **Approval can overstate quality.** The review gate checks presence of script, media, caption, and resolved proof checks, but not alignment between spoken text and scene lines, factual support beyond the manually added checks, clip duration, audible speech, safe-area legibility, or final MP4 quality. Add deterministic checks and human final-preview approval.
+6. **Image gallery payload grows with media.** The gallery GET selects the full `url` for up to 24 assets. With today's one 1.89M-character data URL, this is already a large JSON transfer. Split metadata from binary and generate thumbnails after moving to object storage.
+7. **The render kit is a transfer tool, not a cloud render architecture.** A synchronous 150 MB ZIP can freeze or exhaust a mobile browser. For production, store scene assets once, create an immutable manifest, render in a separate worker, and save the MP4 back to storage.
+8. **Account readiness is not connection readiness.** Social Hub correctly labels app-key presence separately from verified account access. No actual OAuth or publish route exists. Add connection state, token refresh/revocation, channel-specific media constraints, explicit posting approval, idempotency key, and a receipt per attempt. YouTube uploads require OAuth and unverified API projects can be limited to private uploads; TikTok Direct Post needs approved scope and audit for public visibility. [YouTube upload API](https://developers.google.com/youtube/v3/docs/videos/insert), [TikTok Direct Post](https://developers.tiktok.com/docs/en/content-posting-api-get-started).
+9. **A background image could be deleted while an episode used it.** The gallery deletion check covered foreground scene assets but not `scene.background`. Fixed in this audit pass.
+10. **Image persistence was reported too optimistically.** Image generation previously swallowed a DB insert error while returning an ID. Fixed in this audit pass: the route checks storage before generation and returns a visible warning with the image data if a later save fails.
+
+## Recommended architecture
+
+Keep one canonical `EpisodeVersion` with script, scene timing, evidence checks, aspect ratio, channel copy, and hashes of every media input. Use a small adapter per layer:
+
+`reference → original angle → reviewed script → scene plan → asset jobs → timed audio/captions → rendered MP4 → final review → per-channel publish job → receipt → analytics`
+
+Persist state and events at each arrow. The UI should display **waiting, working, needs review, done, failed** with an actor/model, timestamp, cost, and retry action. A worker owns long-running generation/render jobs; the browser only observes them. Use provider webhooks or scheduled reconciliation for terminal states, signed callbacks, bounded retries, and an `unknown/needs reconciliation` state for uncertain paid operations. OpenRouter documents signed webhooks for video completion. [OpenRouter video guide](https://openrouter.ai/docs/guides/overview/multimodal/video-generation).
+
+Use an R2 binding or equivalent object storage for original uploads, generated clips, avatar outputs, narration, thumbnails, manifests, and final MP4s. Keep metadata and ownership in Neon. For larger videos use direct/multipart uploads rather than proxying all bytes through a Worker or zipping them in the browser. Hosting currently has `r2: null`. [Cloudflare R2 Workers API](https://developers.cloudflare.com/r2/get-started/workers-api/), [R2 upload guidance](https://developers.cloudflare.com/r2/objects/upload-objects/).
+
+Keep **presenter** separate from general video generation. A personal-avatar adapter should require the owner's consent, generate or accept synchronized voice/video, and expose an actual output asset. A B-roll adapter can select Seedance Mini for inexpensive short clips, then evaluate Seedance 2.5 or other models for longer/quality-sensitive scenes. Run a small blinded quality/cost/timing comparison on *your own* footage before locking a provider. A provider with a documented consent flow is preferable to assuming every general video model will accept a real face; Synthesia documents its personal-avatar and live consent flow. [Synthesia personal avatars](https://docs.synthesia.io/docs/personal-avatars).
+
+Use Jev where a **typed choice** helps: concept fit, proof triage, a publish-risk flag, or whether a scene needs human review. Keep the result in shadow mode until a labeled set shows it improves decisions. It is not a scriptwriter, fact checker, or renderer. [Cloudflare Jev model](https://developers.cloudflare.com/ai/models/typesafe/jev/).
+
+## Delivery sequence
+
+**Now: make one real episode.** Obtain your footage and consent, choose a personal-avatar or real-camera pilot, add a timed voice track, store all binaries durably, render one 60–80-second episode, inspect audio/captions/frame safe areas, and get final human sign-off. Track minutes and cost for each step. A 10–15-second real founder hook plus original diagrams/B-roll is a useful baseline to compare with a fully synthetic presenter.
+
+**Next: automate the repeatable path.** Add immutable versions, asset validation, webhooks/reconciliation, hosted rendering, in-app final preview, and a complete agent progress timeline. Generate at least three episodes end to end before optimizing model routing from measured failure rates, time, cost, and editorial rework.
+
+**Then: distribute and learn.** Start with a single social connector and manual final approval. Add upload receipts, retries with reconciliation, post URLs, and platform outcomes before a second connector. LinkedIn is a plausible B2B-first pilot; YouTube is a plausible searchable library. Choose based on where the founder can sustain posting and measure qualified conversations, not platform fashion. LinkedIn video upload needs authorized access and a versioned API. [LinkedIn Videos API](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/videos-api?view=li-lms-2026-05).
+
+**Later: monetize.** Prove repeatable delivery as an Aksen managed content service, then package reusable workspace software. A viable meter is approved video minutes plus storage and connected channels, with included generation credits, transparent overage, and human review. Do not price from nominal model seconds alone; include failed generations, retries, editing, avatar licensing, storage, and support.
+
+## Product decisions to settle
+
+1. Is the first release a founder-only production tool, or a client-facing product? **Recommendation:** founder-only until three complete episodes are produced and measured.
+2. What level of likeness is required: real camera, hybrid real hook, or full avatar? **Recommendation:** test all three with the same script and compare trust, time, and cost.
+3. Is the finished video expected to have a cloned voice, a recording, or a licensed synthetic voice? **Recommendation:** choose the voice before building more visual automation, because it controls scene timing and captions.
+4. Which one channel should get the first authenticated publishing connector? **Recommendation:** decide from your next six weeks of actual publishing and desired leads; keep manual upload available while app access is reviewed.
+5. What is the maximum cost and turnaround per approved minute? **Recommendation:** set a pilot ceiling before adding automated retries or higher-priced models.

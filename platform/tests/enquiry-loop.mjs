@@ -16,6 +16,8 @@ globalThis.eq = {
   inserted: [],
   audits: [],
   sends: [],
+  // Intake key to lead id, standing in for the partial unique index.
+  keys: new Map(),
   configured: true,
   failFounder: false,
   failAck: false,
@@ -25,10 +27,44 @@ const modules = {
   'drizzle-orm': uri(
     'export const sql=(strings,...values)=>({text:strings.join("?"),values})',
   ),
-  '@/db': uri(`export const getDb=()=>({
-    execute:async q=>{const [bucket,limit]=q.values;const used=eq.counts.get(bucket)||0;if(used>=limit)return {rows:[]};eq.counts.set(bucket,used+1);return {rows:[{requests:used+1}]}},
+  // Four statements reach execute now that capture lives in lead-intake: the
+  // two allowance reservations, the lead insert, and the lookup that follows a
+  // suppressed duplicate. They share one connection, so the mock tells them
+  // apart by their text rather than by the order they arrive in.
+  '@/db': uri(`
+    // The insert names its columns, so the row is rebuilt from the statement
+    // itself. A hand-written column list here would quietly mismap the values
+    // the first time the real one is reordered.
+    const columns = text =>
+      text.split('(')[1].split(')')[0].split(',').map(name =>
+        name.trim().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()));
+    export const getDb=()=>({
+    execute:async q=>{
+      if(q.text.includes('INSERT INTO opportunities')){
+        const row=Object.fromEntries(columns(q.text).map((name,i)=>[name,q.values[i]]));
+        // ON CONFLICT (intake_key) DO NOTHING, modelled rather than stubbed.
+        // The retry path in lead-intake only runs because the real index
+        // suppresses a row, so a mock that always inserts never reaches it.
+        if(row.intakeKey&&eq.keys.has(row.intakeKey))return {rows:[]};
+        if(row.intakeKey)eq.keys.set(row.intakeKey,row.id);
+        eq.inserted.push(row);
+        return {rows:[{id:row.id}]};
+      }
+      if(q.text.includes('SELECT id FROM opportunities'))
+        return {rows:[{id:eq.keys.get(q.values[0])}]};
+      const [bucket,limit]=q.values;const used=eq.counts.get(bucket)||0;if(used>=limit)return {rows:[]};eq.counts.set(bucket,used+1);return {rows:[{requests:used+1}]}},
     insert:table=>({values:async row=>{if(table==='audit_events'){if(eq.failAudit)throw Error('SECRET AUDIT');eq.audits.push(row)}else eq.inserted.push(row)}})
   })`),
+  // Never throws, matching the real one: a queue that is not migrated yet
+  // returns 'unconfigured' and the lead is still captured. eq.failFounder and
+  // eq.failAck model exactly that, in place of the provider throwing, because
+  // nothing on this path calls a provider during the request any more.
+  '@/lib/outbox': uri(`export async function enqueue(message){
+    const founder=!message.dedupeKey.startsWith('lead-ack');
+    if(founder?eq.failFounder:eq.failAck)return {id:message.dedupeKey,status:'unconfigured'};
+    eq.sends.push(message);
+    return {id:message.dedupeKey,status:'queued'};
+  }`),
   '@/db/schema': uri(
     "export const auditEvents='audit_events';export const opportunities='opportunities';",
   ),
@@ -47,16 +83,13 @@ const modules = {
   'next/server': uri(
     'export const NextResponse={json:(body,init)=>Response.json(body,init)};',
   ),
+  // No send function: nothing on this path reaches a provider during the
+  // request now. What is left is the configuration the two predicates in
+  // lead-notification read, which is what the sandbox and offline cases turn.
   '@/lib/resend': uri(`
     export const EMAIL_REPLY_TO='founder@example.test';
     export const emailConfig=()=>({configured:eq.configured,from:eq.from||'no-reply@example.test',replyTo:'founder@example.test'});
-    export const validEmail=v=>/^[^\\s@<>]+@[^\\s@<>]+\\.[^\\s@<>]+$/.test(v);
-    export async function sendResendEmail(input){
-      const founder=input.id.startsWith('lead-ack')===false;
-      if(founder&&eq.failFounder)throw Error('SECRET FOUNDER');
-      if(!founder&&eq.failAck)throw Error('SECRET ACK');
-      eq.sends.push(input);return 'provider-'+input.id;
-    }`),
+    export const validEmail=v=>/^[^\\s@<>]+@[^\\s@<>]+\\.[^\\s@<>]+$/.test(v);`),
 };
 const rewrite = (file) =>
   compile(fs.readFileSync(file, 'utf8')).replace(
@@ -70,6 +103,12 @@ modules['@/lib/currency'] = uri(rewrite('lib/currency.ts'));
 modules['@/lib/rate-limit'] = uri(rewrite('lib/rate-limit.ts'));
 modules['@/lib/bounded-json'] = uri(rewrite('lib/bounded-json.ts'));
 modules['@/lib/lead-notification'] = uri(rewrite('lib/lead-notification.ts'));
+// Real, and the point of the file. Capture, audit and the two queued messages
+// moved out of the route into lead-intake, so a stub here would test the route
+// against an idea of capture rather than the one every lead now goes through.
+// Registered after lead-notification, which its own rewrite resolves against.
+modules['@/lib/mapper-questions'] = uri(rewrite('lib/mapper-questions.ts'));
+modules['@/lib/lead-intake'] = uri(rewrite('lib/lead-intake.ts'));
 // Set before the route is imported, since the stub reads it at call time and
 // the assertion below compares the stored owner against it.
 process.env.ADMIN_OWNER_ID = 'test_workspace_owner';
@@ -93,6 +132,15 @@ const post = (body = valid, headers = {}) =>
     }),
   );
 const from = (address) => ({ 'cf-connecting-ip': address });
+// Each scenario below is a different person. The intake key is built from the
+// address, the answers and the hour, and the company name reaches none of the
+// three, so cases that differed only by company would be one lead and every
+// case after the first would be asserting against a suppressed duplicate.
+const enquiry = (company) => ({
+  ...valid,
+  company,
+  email: `${company.split(' ')[0].toLowerCase()}@example.test`,
+});
 
 // Validation still rejects incomplete enquiries before anything is stored.
 for (const body of [
@@ -143,27 +191,22 @@ assert.match(founderMail.body, /ama@example\.test/);
 assert.equal(ackMail.recipient, 'ama@example.test');
 assert.ok(!/founder@example\.test/.test(ackMail.body));
 assert.ok(eq.audits.some((row) => row.action === 'lead.created'));
-assert.ok(eq.audits.some((row) => row.action === 'lead.notified'));
+assert.ok(eq.audits.some((row) => row.action === 'lead.queued'));
 
-// A failed announcement is recorded against the enquiry, never lost silently,
-// and never turns a captured lead into an error for the visitor.
+// A queue that cannot take the announcement is recorded against the enquiry,
+// never lost silently, and never turns a captured lead into an error for the
+// visitor.
 eq.failFounder = true;
-const quiet = await post(
-  { ...valid, company: 'Quiet Co' },
-  from('198.51.100.3'),
-);
+const quiet = await post(enquiry('Quiet Co'), from('198.51.100.3'));
 assert.equal(quiet.status, 201);
 assert.equal(eq.inserted.length, 2);
-assert.ok(eq.audits.some((row) => row.action === 'lead.notification_failed'));
+assert.ok(eq.audits.some((row) => row.action === 'lead.queue_failed'));
 assert.ok(!(await quiet.clone().text()).includes('SECRET'));
 eq.failFounder = false;
 
 // With no email provider configured the enquiry is still captured.
 eq.configured = false;
-const offline = await post(
-  { ...valid, company: 'Offline Co' },
-  from('198.51.100.4'),
-);
+const offline = await post(enquiry('Offline Co'), from('198.51.100.4'));
 assert.equal(offline.status, 201);
 assert.equal((await offline.json()).acknowledged, false);
 assert.equal(eq.inserted.length, 3);
@@ -171,10 +214,7 @@ eq.configured = true;
 
 // A failing audit write cannot discard an enquiry that is already stored.
 eq.failAudit = true;
-const noisy = await post(
-  { ...valid, company: 'Audit Co' },
-  from('198.51.100.5'),
-);
+const noisy = await post(enquiry('Audit Co'), from('198.51.100.5'));
 assert.equal(noisy.status, 201);
 assert.equal(eq.inserted.length, 4);
 assert.ok(!(await noisy.text()).includes('SECRET'));
@@ -185,16 +225,39 @@ eq.failAudit = false;
 // The enquiry is still stored and still announced to the founder.
 eq.from = 'onboarding@resend.dev';
 eq.sends.length = 0;
-const sandbox = await post(
-  { ...valid, company: 'Sandbox Co' },
-  from('198.51.100.6'),
-);
+const sandbox = await post(enquiry('Sandbox Co'), from('198.51.100.6'));
 assert.equal(sandbox.status, 201);
 assert.equal((await sandbox.json()).acknowledged, false);
 assert.equal(eq.sends.length, 1);
 assert.equal(eq.sends[0].recipient, 'founder@example.test');
 assert.ok(eq.inserted.some((row) => row.company === 'Sandbox Co'));
 eq.from = undefined;
+
+// The same submission arriving twice is one lead. A visitor whose connection
+// drops after the insert presses the button again, and the founder must not
+// have to work out which of two identical rows is the real enquiry. The second
+// attempt is told the same thing as the first, so the retry is invisible to
+// them, and it queues nothing: a duplicate that re-announced itself would be a
+// second email about a customer who only ever wrote once.
+const twice = enquiry('Repeat Co');
+const leads = eq.inserted.length;
+eq.sends.length = 0;
+eq.audits.length = 0;
+const firstTry = await post(twice, from('198.51.100.7'));
+const queued = eq.sends.length;
+const secondTry = await post(twice, from('198.51.100.7'));
+assert.equal(firstTry.status, 201);
+assert.equal(secondTry.status, 201);
+assert.equal(eq.inserted.length, leads + 1, 'the retry stored a second lead');
+assert.equal(queued, 2);
+assert.equal(eq.sends.length, queued, 'the retry queued a second announcement');
+// Same id back, so a client that retried cannot end up holding a reference to
+// a lead the founder will never see.
+assert.equal((await secondTry.json()).id, (await firstTry.json()).id);
+assert.equal(
+  eq.audits.filter((row) => row.action === 'lead.created').length,
+  1,
+);
 
 // One visitor is limited; another is unaffected.
 eq.counts.clear();
@@ -217,5 +280,5 @@ assert.equal(full.status, 429);
 assert.match((await full.json()).error, /cannot accept enquiries/);
 
 console.log(
-  'PASS: bounded body, validation before storage, per-visitor and shared enquiry allowances with hashed addresses, founder notification, sender acknowledgement, recorded delivery outcome, and a captured lead surviving audit, provider and configuration failure. Database and email provider mocked; no message sent.',
+  'PASS: bounded body, validation before storage, per-visitor and shared enquiry allowances with hashed addresses, founder announcement and sender acknowledgement queued to the outbox, recorded queue outcome, one lead from a repeated submission, and a captured lead surviving audit, queue and configuration failure. Database and outbox mocked; nothing queued leaves the test.',
 );
