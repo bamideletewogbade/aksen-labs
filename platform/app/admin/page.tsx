@@ -259,7 +259,7 @@ export default async function AdminPage() {
           )
           .join(' · '),
         actionText: 'Review Invoices',
-        href: '/admin/workspaces',
+        href: '/admin/workspaces?tab=finance',
       });
     }
 
@@ -483,7 +483,7 @@ export default async function AdminPage() {
               <strong>{activeProjects}</strong>
               <small>projects underway</small>
             </Link>
-            <Link href="/admin/workspaces">
+            <Link href="/admin/workspaces?tab=finance">
               <span>
                 <Wallet /> Cash collected
               </span>
@@ -495,7 +495,7 @@ export default async function AdminPage() {
               </small>
             </Link>
             <Link
-              href="/admin/workspaces"
+              href="/admin/workspaces?tab=finance"
               className={totalOverdueCount > 0 ? 'needs-attention' : ''}
             >
               <span>
@@ -534,7 +534,7 @@ export default async function AdminPage() {
                   <small>FINANCIAL LEDGER &amp; OPERATING BURN</small>
                   <h2 id="financials-heading">Business health &amp; unit economics</h2>
                 </div>
-                <Link href="/admin/workspaces">Open finances</Link>
+                <Link href="/admin/workspaces?tab=finance">Open finances</Link>
               </div>
 
               <div className="founder-financial-grid">
@@ -587,9 +587,23 @@ export default async function AdminPage() {
                   <span>
                     <strong>{overdueSummary}</strong> is past agreed payment terms.
                   </span>
-                  <Link href="/admin/workspaces">Review now &rarr;</Link>
+                  <Link href="/admin/workspaces?tab=finance">Review now &rarr;</Link>
                 </div>
               )}
+            </section>
+
+            <section
+              className="founder-card founder-priority"
+              aria-labelledby="priority-heading"
+            >
+              <div className="founder-card-head">
+                <div>
+                  <small>EXECUTIVE COCKPIT · STRATEGIC PRIORITIES</small>
+                  <h2 id="priority-heading">Next best actions &amp; AI recommendations</h2>
+                </div>
+                <span>{actions.length} priorities</span>
+              </div>
+              <FounderActionQueue actions={actions} />
             </section>
 
             <section
@@ -607,20 +621,6 @@ export default async function AdminPage() {
                 </span>
               </div>
               <FounderActivityChart data={activity} />
-            </section>
-
-            <section
-              className="founder-card founder-priority"
-              aria-labelledby="priority-heading"
-            >
-              <div className="founder-card-head">
-                <div>
-                  <small>EXECUTIVE COCKPIT · JEV STRATEGY</small>
-                  <h2 id="priority-heading">Next best actions &amp; AI recommendations</h2>
-                </div>
-                <span>{actions.length} priorities</span>
-              </div>
-              <FounderActionQueue actions={actions} />
             </section>
 
             <section

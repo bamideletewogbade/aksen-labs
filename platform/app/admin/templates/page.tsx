@@ -17,7 +17,7 @@ export default async function Page({
           <h1>Document templates studio</h1>
           <p>
             Standard operating documents for discovery, agreement, delivery, launch and
-            ongoing care. Grounded in Erhart & Jev frameworks for frictionless client conversion.
+            ongoing care. Grounded in clear client scope and high-conviction delivery.
           </p>
           <p className="admin-header-aside">
             <Link href="/admin/operations">

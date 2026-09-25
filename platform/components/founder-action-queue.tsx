@@ -34,17 +34,17 @@ export function FounderActionQueue({
       { id: 'all', label: 'All', count: actions.length },
       {
         id: 'ai_strategic',
-        label: '⚡ AI Opportunities',
+        label: 'Strategic Growth',
         count: actions.filter((a) => a.category === 'ai_strategic').length,
       },
       {
         id: 'urgent',
-        label: '🚨 Urgent & Cash',
+        label: 'Urgent & Cash',
         count: actions.filter((a) => a.category === 'urgent').length,
       },
       {
         id: 'delivery',
-        label: '🚀 Delivery & Care',
+        label: 'Delivery & Gates',
         count: actions.filter(
           (a) => a.category === 'delivery' || a.category === 'decision',
         ).length,

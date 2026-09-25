@@ -23,6 +23,7 @@ import {
   ArrowUpRight,
   ChevronDown,
   Share2,
+  Kanban,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -60,17 +61,17 @@ const groups = [
     // inbound interest underneath work already won.
     label: 'Sales',
     items: [
+      {
+        href: '/admin/pipeline',
+        label: 'Sales pipeline',
+        icon: Kanban,
+      },
       { href: '/admin/prospects', label: 'Find leads', icon: Search },
       { href: '/admin/support', label: 'Messages', icon: MessageSquareText },
       // People waiting on a product rather than asking about a service. They
       // arrive through the products page, not the enquiry funnel, so they never
       // appear in the pipeline and would otherwise have nowhere to be read.
       { href: '/admin/waitlist', label: 'Product waitlist', icon: MailPlus },
-      {
-        href: '/admin/pipeline',
-        label: 'Sales pipeline',
-        icon: MessageSquareText,
-      },
       { href: '/admin/email', label: 'Email drafts', icon: Mail },
     ],
   },

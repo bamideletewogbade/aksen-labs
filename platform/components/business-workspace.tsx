@@ -78,7 +78,11 @@ async function request(body: Record<string, unknown>) {
   return data;
 }
 
-export function BusinessWorkspace() {
+export function BusinessWorkspace({
+  initialTab = 'finance',
+}: {
+  initialTab?: string;
+} = {}) {
   const [businesses, setBusinesses] = useState<Business[]>([]),
     [businessId, setBusinessId] = useState('');
   const [data, setData] = useState<Data | null>(null),
@@ -86,7 +90,7 @@ export function BusinessWorkspace() {
     [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false),
     [loading, setLoading] = useState(true),
-    [tab, setTab] = useState('documents');
+    [tab, setTab] = useState(initialTab);
   const [create, setCreate] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
     [projectId, setProjectId] = useState('');
@@ -361,14 +365,14 @@ export function BusinessWorkspace() {
             </div>
             <Tabs value={tab} onValueChange={(value) => setTab(String(value))}>
               <TabsList className="ws-tabs">
+                <TabsTrigger value="finance">
+                  <Wallet size={17} /> Financials &amp; Invoices
+                </TabsTrigger>
                 <TabsTrigger value="documents">
-                  <FolderOpen size={17} /> Documents
+                  <FolderOpen size={17} /> Documents &amp; Files
                 </TabsTrigger>
                 <TabsTrigger value="assistant">
-                  <FilePenLine size={17} /> Assistant
-                </TabsTrigger>
-                <TabsTrigger value="finance">
-                  <Wallet size={17} /> Financials
+                  <FilePenLine size={17} /> Document Assistant
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="documents">
