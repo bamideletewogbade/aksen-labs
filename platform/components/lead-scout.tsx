@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { SkeletonRows, Spinner } from '@/components/ui/activity';
 import { LeadFilterBar } from '@/components/lead-filter-bar';
 import { LeadSchedule } from '@/components/lead-schedule';
+import { LeadImporter } from '@/components/lead-importer';
 import { AdminTabs } from '@/components/admin-tabs';
 import {
   EMPTY_FILTER,
@@ -74,6 +75,72 @@ const researchAgents = [
     job: 'Deduplicates and saves records for your review.',
   },
 ] as const;
+
+export const JEV_MARKET_PRESETS = [
+  {
+    id: 'tema-logistics',
+    label: '🚢 Tema Port Logistics & Clearing',
+    description: 'Customs clearance, freight forwarders, bonded warehouses',
+    target: `## Objective\nFind active freight forwarders, customs clearance agents, and logistics providers based in or operating around Tema, Ghana.\n\n## Target Profiles\n- Customs clearing agencies, freight forwarders, and bonded warehouse operators\n- Operating around Tema Port and the Industrial Area\n- Key decision-makers: Managing Director, Operations Manager, Head of Clearance\n\n## Good Fit Signals\n- Active company website or verifiable Ghana business directory listing\n- Handles high-volume documentation, cargo tracking, or shipping manifests\n- 5–50 employees with local phone or email contact\n\n## Avoid\n- Informal individual runner clearing agents without registered company office\n- Multinational shipping lines with locked global IT infrastructure`,
+  },
+  {
+    id: 'tema-wholesalers',
+    label: '📦 Tema Industrial & FMCG Wholesalers',
+    description: 'Bulk distributors, building suppliers, industrial packaging',
+    target: `## Objective\nFind B2B distributors, building material suppliers, and FMCG wholesalers located in the Tema Industrial Area, Ghana.\n\n## Target Profiles\n- Wholesalers supplying commercial contractors, manufacturing plants, or retail chains\n- Key decision-makers: Managing Director, Commercial Director, Head of Supply Chain\n\n## Good Fit Signals\n- Heavy volume of repeat orders and proforma invoicing\n- Operating physical warehouse/depot facilities in Tema\n- Verifiable digital footprint or local business directory presence\n\n## Avoid\n- Micro retail stalls, container kiosks, or individual street retailers`,
+  },
+  {
+    id: 'ghana-clinics',
+    label: '🏥 Private Diagnostics & Clinics',
+    description: 'Specialist medical clinics, diagnostic labs, dental practices',
+    target: `## Objective\nIdentify established private medical clinics, diagnostic imaging centers, and specialist practices in Accra and Tema, Ghana.\n\n## Target Profiles\n- Multi-specialist clinics, dental clinics, diagnostic imaging and pathology labs\n- Key decision-makers: Medical Director, Practice Manager, Chief Administrator\n\n## Good Fit Signals\n- Private healthcare facilities serving corporate and middle/high-income patients\n- Inbound patient booking via phone/WhatsApp that could benefit from automated scheduling and intake\n- Active physical address in Tema or Accra with contact telephone\n\n## Avoid\n- Public government polyclinics and community health posts (CHPS)\n- Single-practitioner informal herbal medicine shops`,
+  },
+  {
+    id: 'custom-furniture',
+    label: '🪑 High-End Custom Furniture & Joinery',
+    description: 'Custom joinery, architectural fixtures, commercial fit-outs',
+    target: `## Objective\nFind premium custom furniture makers, joinery workshops, and architectural woodcrafters in Ghana.\n\n## Target Profiles\n- Custom residential and commercial furniture makers, office fit-out contractors\n- Key decision-makers: Managing Director, Creative Director, Head of Production\n\n## Good Fit Signals\n- High-ticket projects ($1,500–$25,000+ per order)\n- Needs structured client project scoping, milestone invoicing, and digital client review\n- Established showroom, factory, or commercial workshop\n\n## Avoid\n- Roadside informal carpenters without digital presence or corporate registration`,
+  },
+  {
+    id: 'commercial-real-estate',
+    label: '🏢 Real Estate & Property Developers',
+    description: 'Commercial developers, gated estates, facility managers',
+    target: `## Objective\nFind commercial property developers, estate management companies, and corporate real estate firms in Accra and Tema, Ghana.\n\n## Target Profiles\n- Property development firms, gated community developers, facility management agencies\n- Key decision-makers: Managing Partner, Development Director, Head of Sales\n\n## Good Fit Signals\n- Actively selling or leasing commercial spaces, apartments, or industrial warehouses\n- Needs inbound enquiry qualification, client intake, and automated lease agreements\n- Active website or project showcase listings\n\n## Avoid\n- Freelance individual property brokers or unregulated agents`,
+  },
+];
+
+export function sharpenQueryWithJev(raw: string): string {
+  const text = raw.trim().toLowerCase();
+
+  let location = 'Ghana (Tema / Greater Accra)';
+  if (text.includes('tema')) location = 'Tema, Ghana';
+  else if (text.includes('accra')) location = 'Accra, Ghana';
+  else if (text.includes('kumasi')) location = 'Kumasi, Ghana';
+  else if (text.includes('takoradi')) location = 'Takoradi, Ghana';
+
+  if (/logistics|freight|clearing|port|cargo|shipping|forwarding|harbour/.test(text)) {
+    return `## Objective\nFind active freight forwarders, customs clearance agents, and logistics providers based in or operating around ${location}.\n\n## Target Profiles\n- Customs clearing agencies, freight forwarders, and bonded warehouse operators\n- Operating around port terminals and industrial hubs\n- Key decision-makers: Managing Director, Operations Manager, Head of Clearance\n\n## Good Fit Signals\n- Heavy documentation workflows needing client portal or workflow automation\n- Active operations, verified office in ${location}\n- 5–50 employees with local phone or email contact\n\n## Avoid\n- Individual motorcycle dispatch or informal courier runners\n- Multinationals with locked global procurement (e.g. Maersk global)`;
+  }
+
+  if (/furniture|wood|interior|decor|joinery|fitout|kitchen|cabinet/.test(text)) {
+    return `## Objective\nIdentify established custom furniture workshops, joineries, and interior decor specialists in ${location}.\n\n## Target Profiles\n- Residential/commercial furniture makers, custom joineries, architectural woodcrafters\n- Key decision-makers: Managing Director, Creative Director, Workshop Head\n\n## Good Fit Signals\n- High-ticket custom projects ($1,500–$25,000+ per order)\n- Manual quotation, milestone billing, and customer sign-off needs\n- Active commercial workshop or showroom\n\n## Avoid\n- Informal roadside workshops with no online presence or verifiable registration`;
+  }
+
+  if (/clinic|hospital|doctor|health|dental|medical|diagnost|pharma|patient/.test(text)) {
+    return `## Objective\nFind established private clinics, diagnostic centers, and specialist medical practices in ${location}.\n\n## Target Profiles\n- Multi-specialist clinics, dental clinics, imaging/lab centers, private surgical suites\n- Key decision-makers: Medical Director, Practice Manager, Chief Operations Officer\n\n## Good Fit Signals\n- Manual patient booking and WhatsApp enquiry volume needing automated intake\n- Established private facility with 5+ staff\n- Active telephone and physical address\n\n## Avoid\n- Public government health posts or CHPS compounds\n- Unregistered single-practitioner herbal shops`;
+  }
+
+  if (/wholesale|distribut|fmcg|supplier|bulk|warehouse|industrial|factory|manufactur/.test(text)) {
+    return `## Objective\nIdentify established B2B wholesalers, industrial suppliers, and FMCG distributors operating in ${location}.\n\n## Target Profiles\n- Commercial distributors supplying retailers, contractors, or factories\n- Key decision-makers: Managing Director, Commercial Director, Head of Supply Chain\n\n## Good Fit Signals\n- High-ticket repeat wholesale orders, manual proforma invoicing\n- Physical depot/warehouse facility\n- Verifiable business registration or directory listing\n\n## Avoid\n- Retail corner stores or small market kiosks`;
+  }
+
+  if (/real estate|property|developer|apartment|housing|estate|broker|lease|land/.test(text)) {
+    return `## Objective\nFind commercial property developers, serviced apartment operators, and facility management firms in ${location}.\n\n## Target Profiles\n- Real estate developers, gated community managers, commercial property agents\n- Key decision-makers: Managing Partner, Development Director, Head of Leasing\n\n## Good Fit Signals\n- Active pipeline of commercial or residential units for sale or lease\n- Inbound enquiry volume needing lead qualification and lease document generation\n- Active website or official listings\n\n## Avoid\n- Freelance individual property brokers without registered company offices`;
+  }
+
+  return `## Objective\nFind established B2B service providers, logistics operators, commercial distributors, and professional businesses operating in ${location}.\n\n## Target Profiles\n- Independent B2B companies (logistics, wholesale supply, specialized contracting, commercial services)\n- Decision-makers: Managing Director, General Manager, Head of Operations\n- Annual turnover roughly $150k–$3M equivalent\n\n## Good Fit Signals\n- Active commercial operations with verifiable business website or official directory listing\n- Receptive to operational AI automation, digital invoicing, or client portal systems\n- Public telephone or verified corporate email\n\n## Avoid\n- Informal micro-retail stalls, street traders, or roadside kiosks\n- Government monopolies or global multinationals with overseas procurement headquarters`;
+}
+
 type Readiness = {
   database: boolean;
   missingTables: string[];
@@ -123,27 +190,31 @@ export function LeadScout() {
     !!data?.campaign?.running_until &&
     new Date(data.campaign.running_until).getTime() > checkedAt;
   const researchBlocked =
-    !data?.campaign?.enabled ||
-    !data.aiConfigured ||
-    data.remainingRuns === 0 ||
+    (data?.campaign ? !data.campaign.enabled : false) ||
+    !data?.aiConfigured ||
+    data?.remainingRuns === 0 ||
     running;
+  const canDiscover =
+    !busy &&
+    !loading &&
+    validTarget &&
+    !researchBlocked;
+
   const reason = loading
     ? 'Loading your saved search…'
     : !data
       ? 'Refresh to load your saved search.'
-      : !data.campaign
-        ? 'Save a target to enable discovery.'
-        : unsaved
-          ? 'Save your target changes before searching.'
-          : !data.aiConfigured
-            ? 'The AI connection needs configuration.'
-            : !data.campaign.enabled
-              ? 'Searches are paused. Resume to discover or enrich leads.'
-              : data.remainingRuns === 0
-                ? 'Daily research allowance used. It resets at midnight UTC.'
-                : running
-                  ? 'A search is already running. Refresh to check its progress.'
-                  : 'Ready to discover businesses.';
+      : !data.aiConfigured
+        ? 'The AI connection needs configuration.'
+        : data.campaign && !data.campaign.enabled
+          ? 'Searches are paused. Resume to discover or enrich leads.'
+          : data.remainingRuns === 0
+            ? 'Daily research allowance used. It resets at midnight UTC.'
+            : running
+              ? 'A search is already running. Refresh to check its progress.'
+              : unsaved
+                ? 'Target updated. Click "Save & Find" to search with these criteria.'
+                : 'Ready to discover businesses.';
   const latestRunId = data?.runs[0]?.id;
   const shownEvents = liveEvents.length
     ? liveEvents
@@ -171,12 +242,13 @@ export function LeadScout() {
       .catch((e) => setError(e instanceof Error ? e.message : 'Load failed.'))
       .finally(() => setLoading(false));
   }, [load]);
+
   async function act(
     action: string,
     id?: string,
     extra?: Record<string, unknown>,
-  ) {
-    if (locked.current) return;
+  ): Promise<boolean> {
+    if (locked.current) return false;
     locked.current = true;
     setPending(action + (id ? ':' + id : ''));
     setBusy(true);
@@ -187,7 +259,7 @@ export function LeadScout() {
       if (action === 'refresh') {
         await load();
         setMessage('Queue refreshed.');
-        return;
+        return true;
       }
       const response = await fetch('/api/admin/prospects', {
         method: 'POST',
@@ -231,7 +303,7 @@ export function LeadScout() {
         }
         setMessage(finalNote || 'Research complete.');
         await load();
-        return;
+        return true;
       }
       const result = (await response.json()) as {
         error?: string;
@@ -250,6 +322,7 @@ export function LeadScout() {
           'The action succeeded, but the queue could not refresh. Use Refresh before repeating it.',
         ),
       );
+      return true;
     } catch (e) {
       if (action === 'discover' || action === 'enrich')
         await load().catch(() => undefined);
@@ -260,6 +333,7 @@ export function LeadScout() {
             ? e.message
             : 'Action failed.',
       );
+      return false;
     } finally {
       locked.current = false;
       setPending('');
@@ -267,6 +341,20 @@ export function LeadScout() {
       setBusy(false);
     }
   }
+
+  async function saveAndDiscover() {
+    if (locked.current || busy || loading) return;
+    if (!validTarget) {
+      setError('Describe a target market in at least 10 characters.');
+      return;
+    }
+    if (unsaved || !data?.campaign) {
+      const ok = await act('configure');
+      if (!ok) return;
+    }
+    await act('discover');
+  }
+
   const newLeads = (data?.leads || []).filter(
     (lead) => lead.status === 'new',
   ).length;
@@ -286,14 +374,84 @@ export function LeadScout() {
             label: 'Search',
             panel: (
               <>
+                {newLeads > 0 && (
+                  <div className="scout-queue-banner">
+                    <div className="scout-queue-banner-content">
+                      <span className="scout-queue-badge">{newLeads} UNREVIEWED</span>
+                      <div className="scout-queue-banner-text">
+                        <strong>
+                          {newLeads} researched {newLeads === 1 ? 'business is' : 'businesses are'} waiting in your review queue.
+                        </strong>
+                        <p>
+                          Review company evidence and shortlist strong fits before spending more research runs.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="scout-queue-banner-cta"
+                      onClick={() => setTab('queue')}
+                    >
+                      Review {newLeads} {newLeads === 1 ? 'Lead' : 'Leads'} &rarr;
+                    </button>
+                  </div>
+                )}
+
                 <section className="scout-panel">
-                  <h2>Find businesses worth a conversation</h2>
-                  <p>
-                    Search public company information, review the evidence and
-                    move suitable prospects into Enquiries. No outreach is sent.
-                  </p>
+                  <div className="scout-panel-header">
+                    <div>
+                      <h2>Find businesses worth a conversation</h2>
+                      <p>
+                        Search public company information, review the evidence and
+                        move suitable prospects into Enquiries. No outreach is sent.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Jev Market Presets */}
+                  <div className="scout-presets-box">
+                    <div className="scout-presets-header">
+                      <span className="scout-presets-title">⚡ Jev Market Presets</span>
+                      <small className="scout-presets-subtitle">Select a proven local B2B niche to load targeting rules</small>
+                    </div>
+                    <div className="scout-presets-list">
+                      {JEV_MARKET_PRESETS.map((preset) => (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          className="scout-preset-pill"
+                          disabled={busy || loading}
+                          title={preset.description}
+                          onClick={() => {
+                            dirty.current = true;
+                            setTarget(preset.target);
+                            setMessage(`Loaded preset: ${preset.label.replace(/^[^\s]+\s/, '')}`);
+                          }}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="scout-target-head">
-                    <label htmlFor="scout-target">Target market</label>
+                    <div className="scout-target-label-row">
+                      <label htmlFor="scout-target">Target market</label>
+                      <button
+                        type="button"
+                        className="scout-sharpen-btn"
+                        disabled={busy || loading || !target.trim()}
+                        title="Refine your input into a structured 4-part B2B brief using Jev's qualification rules"
+                        onClick={() => {
+                          const sharpened = sharpenQueryWithJev(target);
+                          dirty.current = true;
+                          setTarget(sharpened);
+                          setMessage('✨ Target brief sharpened with Jev’s qualification rules.');
+                        }}
+                      >
+                        ✨ Sharpen with Jev
+                      </button>
+                    </div>
                     <span
                       className={
                         target.length > maxTarget * 0.9
@@ -345,20 +503,24 @@ export function LeadScout() {
                   </p>
                   <div className="scout-actions">
                     <button
+                      className="scout-primary"
+                      disabled={!canDiscover}
+                      aria-describedby="scout-search-status"
+                      onClick={saveAndDiscover}
+                    >
+                      {busy && pending === 'discover'
+                        ? 'Discovering…'
+                        : unsaved
+                          ? '⚡ Save & Find up to 5 businesses'
+                          : 'Find up to 5 businesses'}
+                    </button>
+                    <button
                       disabled={
                         busy || loading || !data || !validTarget || !unsaved
                       }
                       onClick={() => act('configure')}
                     >
-                      Save target
-                    </button>
-                    <button
-                      className="scout-primary"
-                      disabled={busy || loading || researchBlocked || unsaved}
-                      aria-describedby="scout-search-status"
-                      onClick={() => act('discover')}
-                    >
-                      Find up to 5 businesses
+                      Save target only
                     </button>
                     {data?.campaign && (
                       <button
@@ -377,6 +539,13 @@ export function LeadScout() {
                       onClick={() => act('refresh')}
                     >
                       Refresh
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy || loading}
+                      onClick={() => setTab('import')}
+                    >
+                      📥 Import leads
                     </button>
                   </div>
                   <p id="scout-search-status" className="scout-search-status">
@@ -490,6 +659,16 @@ export function LeadScout() {
             panel: (
               <section>
                 <h2 className="scout-sr-only">Prospect review queue</h2>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.75rem' }}>
+                  <button
+                    type="button"
+                    className="scout-preset-pill"
+                    onClick={() => setTab('import')}
+                    title="Import new target accounts from documents, notes, CSV or JSON"
+                  >
+                    📥 Import leads from brief / CSV
+                  </button>
+                </div>
                 <LeadFilterBar
                   leads={data?.leads || []}
                   filter={filter}
@@ -627,6 +806,18 @@ export function LeadScout() {
                   ))}
                 </div>
               </section>
+            ),
+          },
+          {
+            id: 'import',
+            label: 'Import',
+            panel: (
+              <LeadImporter
+                onImportComplete={async () => {
+                  await load();
+                  setTab('queue');
+                }}
+              />
             ),
           },
           {

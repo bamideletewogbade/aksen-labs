@@ -49,10 +49,6 @@ const groups = [
     label: 'Today',
     items: [
       { href: '/admin', label: 'Home', icon: Activity },
-      // Named for what the page holds, not for what prepared it. A robot icon
-      // beside "Client drafts" describes the tool rather than the destination,
-      // and every one of these drafts is read by a person before it goes out.
-      { href: '/admin/operations', label: 'Client drafts', icon: FilePenLine },
       { href: '/admin/agent-desk', label: 'AI tools', icon: ClipboardList },
     ],
   },
@@ -86,7 +82,9 @@ const groups = [
         label: 'Client projects',
         icon: BriefcaseBusiness,
       },
-      { href: '/admin/workspaces', label: 'Clients & invoices', icon: Receipt },
+      { href: '/admin/operations', label: 'Client drafts', icon: FilePenLine },
+      { href: '/admin/templates', label: 'Document templates', icon: ScrollText },
+      { href: '/admin/workspaces', label: 'Finances & invoices', icon: Receipt },
     ],
   },
   {
@@ -109,7 +107,7 @@ const groups = [
   {
     label: 'Manage',
     items: [
-      { href: '/admin/agents', label: 'AI usage', icon: Gauge },
+      { href: '/admin/agents', label: 'AI usage & model costs', icon: Gauge },
       { href: '/admin/audit', label: 'Activity history', icon: ScrollText },
       {
         href: '/admin/support/knowledge',

@@ -9,6 +9,26 @@ import {
   reviewProspectQuery,
   type ProspectProgress,
 } from '@/lib/prospecting';
+
+function safeUrl(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length > 1500) return null;
+  try {
+    const u = new URL(value);
+    if (
+      !['https:', 'http:'].includes(u.protocol) ||
+      u.username ||
+      u.password ||
+      u.port ||
+      !u.hostname.includes('.') ||
+      /(^[\d.]+$|:|\.local$|\.internal$|\.localhost$)/i.test(u.hostname)
+    )
+      return null;
+    u.hash = '';
+    return u.href;
+  } catch {
+    return null;
+  }
+}
 import {
   dailyResearchRuns,
   remainingResearchRuns,
@@ -132,14 +152,16 @@ async function post(request: Request) {
   let body;
   try {
     // The target brief is a prompt and may run to targetMaxLength characters,
-    // so the body cap has to clear it with room for the rest of the payload.
-    // At the previous 4 KB default a full-length brief was refused here,
-    // before the validation below could report anything useful about it.
-    body = await boundedJson(request, targetMaxLength + 4096);
+    // so the body cap has to clear targetMaxLength + 4096 with room for the rest.
+    // Batch imports also need headroom up to 512 KB.
+    body = await boundedJson(
+      request,
+      Math.max(targetMaxLength + 4096, 512 * 1024),
+    );
   } catch {
     return Response.json(
       {
-        error: `Provide a valid request under ${Math.round((targetMaxLength + 4096) / 1024)} KB.`,
+        error: `Provide a valid request under ${Math.round(Math.max(targetMaxLength + 4096, 512 * 1024) / 1024)} KB.`,
       },
       { status: 400 },
     );
@@ -206,15 +228,121 @@ async function post(request: Request) {
         }),
       });
     }
-    const campaign = await db.execute(
+
+    let campaign = await db.execute(
       sql`SELECT id FROM prospect_campaigns WHERE owner_id=${user.userId}`,
     );
-    if (!campaign.rows.length)
-      return Response.json(
-        { error: 'Save your search target first.' },
-        { status: 400 },
-      );
+    if (!campaign.rows.length) {
+      if (body.action === 'import') {
+        campaign = await db.execute(
+          sql`INSERT INTO prospect_campaigns(id,owner_id,target) VALUES(${crypto.randomUUID()},${user.userId},'Ghana B2B target accounts') RETURNING id`,
+        );
+      } else {
+        return Response.json(
+          { error: 'Save your search target first.' },
+          { status: 400 },
+        );
+      }
+    }
     const campaignId = String(campaign.rows[0].id);
+
+    if (body.action === 'import') {
+      const rawLeads = Array.isArray(body.leads) ? body.leads : [];
+      if (!rawLeads.length)
+        return Response.json(
+          { error: 'Provide at least one lead to import.' },
+          { status: 400 },
+        );
+      if (rawLeads.length > 50)
+        return Response.json(
+          { error: 'Import up to 50 leads at a time.' },
+          { status: 400 },
+        );
+
+      let imported = 0;
+      for (const item of rawLeads) {
+        if (!item || typeof item !== 'object') continue;
+        const company =
+          typeof item.company === 'string'
+            ? item.company.trim().slice(0, 160)
+            : '';
+        const rawWebsite =
+          typeof item.website === 'string' ? item.website.trim() : '';
+        const website = safeUrl(
+          rawWebsite.startsWith('http://') || rawWebsite.startsWith('https://')
+            ? rawWebsite
+            : `https://${rawWebsite}`,
+        );
+        if (!company || !website) continue;
+        const domain = new URL(website).hostname.replace(/^www\./, '');
+
+        const contacts = Array.isArray(item.contacts)
+          ? item.contacts
+              .filter((c: unknown) => c && typeof c === 'object')
+              .map((c: Record<string, unknown>) => ({
+                kind: ['email', 'phone', 'linkedin', 'x'].includes(String(c.kind))
+                  ? String(c.kind)
+                  : 'email',
+                value: String(c.value || '').trim().slice(0, 200),
+                source: String(c.source || website).trim().slice(0, 500),
+                excerpt: String(c.excerpt || c.value || '').trim().slice(0, 300),
+              }))
+              .filter((c: { value: string }) => c.value)
+          : [];
+
+        const sources = Array.isArray(item.sources)
+          ? item.sources
+              .filter((s: unknown) => s && typeof s === 'object')
+              .map((s: Record<string, unknown>) => ({
+                url: safeUrl(String(s.url || website)) || website,
+                title: String(s.title || company).trim().slice(0, 200),
+                content: String(s.content || item.description || '').trim().slice(0, 1500),
+              }))
+          : [
+              {
+                url: website,
+                title: `${company} Official Website`,
+                content: String(item.description || '').trim().slice(0, 1500),
+              },
+            ];
+
+        const leadData = {
+          company,
+          website,
+          domain,
+          description:
+            typeof item.description === 'string'
+              ? item.description.trim().slice(0, 1000)
+              : '',
+          opportunity:
+            typeof item.opportunity === 'string'
+              ? item.opportunity.trim().slice(0, 1000)
+              : '',
+          contacts,
+          sources,
+          checkedAt: new Date().toISOString(),
+        };
+
+        const res = await db.execute(
+          sql`INSERT INTO prospect_leads(id, owner_id, campaign_id, company, website, domain, data, status)
+              VALUES(${crypto.randomUUID()}, ${user.userId}, ${campaignId}, ${company}, ${website}, ${domain}, ${JSON.stringify(leadData)}::jsonb, 'new')
+              ON CONFLICT(owner_id, domain) DO UPDATE
+              SET company=EXCLUDED.company, website=EXCLUDED.website, data=EXCLUDED.data, updated_at=now()
+              RETURNING id`,
+        );
+        if (res.rows.length) imported++;
+      }
+
+      await db.execute(
+        sql`INSERT INTO audit_events(id, actor_id, actor_type, action, entity_type, entity_id)
+            VALUES(${crypto.randomUUID()}, ${user.userId}, 'user', 'prospect.imported', 'prospect_batch', ${campaignId})`,
+      );
+
+      return Response.json({
+        note: `Imported ${imported} ${imported === 1 ? 'business' : 'businesses'} into the review queue.`,
+        imported,
+      });
+    }
     if (body.action === 'pause' || body.action === 'resume') {
       await db.execute(
         sql`UPDATE prospect_campaigns SET enabled=${body.action === 'resume'} WHERE id=${campaignId} AND owner_id=${user.userId}`,

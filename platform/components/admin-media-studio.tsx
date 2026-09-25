@@ -5,7 +5,7 @@ import {
   ImagePlus,
   Loader2,
   Plus,
-  Image,
+  Image as ImageIcon,
   FilePenLine,
   Video,
   X,
@@ -80,7 +80,11 @@ function timeAgo(iso: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export function AdminMediaStudio() {
+export function AdminMediaStudio({
+  onNavigateToPlanner,
+}: {
+  onNavigateToPlanner?: () => void;
+} = {}) {
   const [mode, setMode] = useState<Mode>('image');
   const [prompt, setPrompt] = useState('');
   const [aspectRatio, setAspectRatio] = useState('1:1');
@@ -134,8 +138,6 @@ export function AdminMediaStudio() {
         body: JSON.stringify({ id }),
       });
       if (!response.ok) throw new Error('remove failed');
-      // Dropped locally rather than refetched, so the grid does not reshuffle
-      // while someone is looking at it.
       setGallery((current) => current.filter((item) => item.id !== id));
     } catch {
       setErrorMessage('That generation could not be removed.');
@@ -308,218 +310,274 @@ export function AdminMediaStudio() {
   }
 
   return (
-    <section className="admin-panel media-studio-panel">
-      <div className="panel-head">
+    <section className="admin-panel media-studio-panel studio-workstation">
+      <div className="panel-head studio-panel-head">
         <div>
-          <small>CREATIVE STUDIO</small>
-          <h2>Generate a marketing asset</h2>
+          <small>ASSET STUDIO</small>
+          <h2>Generate marketing visuals &amp; video clips</h2>
         </div>
-        <Image />
-      </div>
-      <div className="create-tabs">
-        <button
-          type="button"
-          className={mode === 'image' ? 'active' : ''}
-          onClick={() => {
-            setMode('image');
-            setResult(null);
-            setStatus('idle');
-          }}
-        >
-          <ImagePlus /> Image
-        </button>
-        <button
-          type="button"
-          className={mode === 'video' ? 'active' : ''}
-          onClick={() => {
-            setMode('video');
-            setResult(null);
-            setStatus('idle');
-          }}
-        >
-          <Video /> Video
-        </button>
-      </div>
-      <form className="admin-create-form media-studio-form" onSubmit={submit}>
-        <label>
-          Describe what you want
-          <textarea
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            required
-            placeholder="A calm product shot of our brand colours on a wooden desk, morning light"
-          />
-        </label>
-        <div className="media-preset-row">
-          {STYLE_PRESETS.map((preset) => (
-            <button
-              type="button"
-              key={preset.label}
-              onClick={() => applyPreset(preset.snippet)}
-            >
-              {preset.label}
-            </button>
-          ))}
+        <div className="studio-mode-toggle">
           <button
             type="button"
-            className="media-enhance-button"
-            onClick={enhancePrompt}
-            disabled={!prompt.trim() || enhancing}
+            className={mode === 'image' ? 'active' : ''}
+            onClick={() => {
+              setMode('image');
+              setResult(null);
+              setStatus('idle');
+            }}
           >
-            {enhancing ? (
-              <Loader2 size={13} className="icon-spin" />
-            ) : (
-              <FilePenLine size={13} />
-            )}{' '}
-            Enhance
+            <ImagePlus size={15} /> Image
+          </button>
+          <button
+            type="button"
+            className={mode === 'video' ? 'active' : ''}
+            onClick={() => {
+              setMode('video');
+              setResult(null);
+              setStatus('idle');
+            }}
+          >
+            <Video size={15} /> Video
           </button>
         </div>
-        <div className="media-studio-row">
-          <label>
-            Aspect ratio
-            <select
-              value={aspectRatio}
-              onChange={(event) => setAspectRatio(event.target.value)}
-            >
-              {ASPECT_RATIOS.map((ratio) => (
-                <option key={ratio} value={ratio}>
-                  {ratio}
-                </option>
-              ))}
-            </select>
-          </label>
-          {mode === 'video' && (
-            <label>
-              Duration
-              <select
-                value={duration}
-                onChange={(event) => setDuration(Number(event.target.value))}
-              >
-                {DURATIONS.map((value) => (
-                  <option key={value} value={value}>
-                    {value}s
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-        </div>
-        <div className="media-reference-field">
-          <span>
-            Reference images (optional, up to 4) — style guides or examples to
-            match
-          </span>
-          <div className="media-reference-list">
-            {references.map((ref) => (
-              <div className="media-reference-thumb" key={ref.id}>
-                 <NextImage unoptimized width={80} height={80} src={ref.dataUrl} alt="Reference" />
+      </div>
+
+      <div className="studio-workstation-grid">
+        {/* Left Column: Creator Controls */}
+        <div className="studio-workstation-left">
+          <form className="admin-create-form media-studio-form" onSubmit={submit}>
+            <div className="studio-field-card">
+              <div className="studio-field-label-row">
+                <label htmlFor="studio-prompt-input">
+                  Describe what you want
+                </label>
                 <button
                   type="button"
-                  onClick={() => removeReference(ref.id)}
-                  aria-label="Remove reference"
+                  className="media-enhance-button"
+                  onClick={enhancePrompt}
+                  disabled={!prompt.trim() || enhancing}
+                  title="Enhance prompt with AI"
                 >
-                  <X size={13} />
+                  {enhancing ? (
+                    <Loader2 size={13} className="icon-spin" />
+                  ) : (
+                    <FilePenLine size={13} />
+                  )}{' '}
+                  Enhance prompt
                 </button>
               </div>
-            ))}
-            {references.length < 4 && (
-              <button
-                type="button"
-                className="media-reference-add"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Plus size={16} />
-              </button>
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            hidden
-            onChange={(event) => addReferenceFiles(event.target.files)}
-          />
-        </div>
-        <PendingButton
-          className="create-submit"
-          pending={status === 'working'}
-          pendingLabel={progressNote || 'Working'}
-          disabled={!prompt.trim()}
-        >
-          Generate {mode} <Image />
-        </PendingButton>
-        {status === 'error' && <p className="form-error">{errorMessage}</p>}
-      </form>
-      {result && (
-        <div className="media-result">
-          {result.kind === 'image' ? (
-             <NextImage unoptimized width={512} height={512} src={result.dataUrl} alt="Generated result" />
-          ) : (
-            <video src={result.url} controls autoPlay muted loop playsInline />
-          )}
-          <div className="media-result-actions">
-            <a
-              href={result.kind === 'image' ? result.dataUrl : result.url}
-               download={`aksen-${result.kind}.${result.kind === 'image' ? 'png' : 'mp4'}`}
-            >
-              <Download size={15} /> Download
-            </a>
-            {result.kind === 'image' && references.length < 4 && (
-              <button type="button" onClick={useResultAsReference}>
-                <ImagePlus size={15} /> Use as a reference
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-      {renderJobs.length > 0 && <div className="media-gallery"><span>Recent video jobs</span><div className="media-render-jobs">
-        {renderJobs.map((job) => <div className="media-render-job" key={job.id}>
-          <span title={job.prompt}>{job.prompt.slice(0, 90)}{job.prompt.length > 90 ? '…' : ''}</span>
-          <small>{job.status}{job.costMicros != null ? ` · $${(job.costMicros / 1_000_000).toFixed(2)}` : ''}</small>
-          <button type="button" onClick={() => void checkRender(job.id)}>{job.status === 'completed' ? 'Open video' : 'Check status'}</button>
-        </div>)}
-      </div></div>}
-      {gallery.length > 0 && (
-        <div className="media-gallery">
-          <span>Recent generations</span>
-          <div className="media-gallery-grid">
-            {gallery.map((item) => (
-              // A figure rather than a nested button: the tile itself is a
-              // button that reuses the prompt, and a remove control inside it
-              // would have been a button inside a button, which is invalid and
-              // behaves differently in every browser.
-              <figure className="media-gallery-item" key={item.id}>
-                <button
-                  type="button"
-                  onClick={() => reuseFromGallery(item)}
-                  title={item.prompt}
+              <textarea
+                id="studio-prompt-input"
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                required
+                rows={3}
+                placeholder={
+                  mode === 'image'
+                    ? "A calm product shot of our brand colours on a wooden desk, morning light"
+                    : "Smooth cinematic pan across our brand dashboard on a sleek tablet screen"
+                }
+              />
+              <div className="media-preset-row">
+                <span className="preset-label">Presets:</span>
+                {STYLE_PRESETS.map((preset) => (
+                  <button
+                    type="button"
+                    key={preset.label}
+                    onClick={() => applyPreset(preset.snippet)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="studio-settings-grid">
+              <label>
+                Aspect ratio
+                <select
+                  value={aspectRatio}
+                  onChange={(event) => setAspectRatio(event.target.value)}
                 >
-                  {item.kind === 'image' ? (
-                     <NextImage unoptimized width={256} height={256} src={item.url} alt={item.prompt} />
-                  ) : (
-                    <video src={item.url} muted />
-                  )}
-                  <span>
-                    {item.kind === 'video' && <Video size={11} />}{' '}
-                    {timeAgo(item.createdAt)}
-                  </span>
-                </button>
-                <ConfirmAction
-                  className="media-gallery-remove"
-                  label="Remove"
-                  confirmLabel="Remove"
-                  pendingLabel="Removing"
-                  title="Remove this generation from the gallery"
-                  pending={removingAsset === item.id}
-                  disabled={removingAsset !== null}
-                  onConfirm={() => void removeAsset(item.id)}
-                />
-              </figure>
-            ))}
+                  {ASPECT_RATIOS.map((ratio) => (
+                    <option key={ratio} value={ratio}>
+                      {ratio} {ratio === '1:1' ? '(Square)' : ratio === '16:9' ? '(Landscape)' : ratio === '9:16' ? '(Vertical)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {mode === 'video' ? (
+                <label>
+                  Duration
+                  <select
+                    value={duration}
+                    onChange={(event) => setDuration(Number(event.target.value))}
+                  >
+                    {DURATIONS.map((value) => (
+                      <option key={value} value={value}>
+                        {value}s
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : (
+                <div className="studio-setting-hint">
+                  <span>Format</span>
+                  <small>High resolution PNG</small>
+                </div>
+              )}
+            </div>
+
+            <div className="media-reference-field">
+              <div className="media-reference-header">
+                <span>Reference images <small>(optional, up to 4)</small></span>
+                <small>{references.length}/4</small>
+              </div>
+              <div className="media-reference-list">
+                {references.map((ref) => (
+                  <div className="media-reference-thumb" key={ref.id}>
+                    <NextImage unoptimized width={80} height={80} src={ref.dataUrl} alt="Reference" />
+                    <button
+                      type="button"
+                      onClick={() => removeReference(ref.id)}
+                      aria-label="Remove reference"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                ))}
+                {references.length < 4 && (
+                  <button
+                    type="button"
+                    className="media-reference-add"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Upload reference image"
+                  >
+                    <Plus size={16} />
+                    <span>Add</span>
+                  </button>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={(event) => addReferenceFiles(event.target.files)}
+              />
+            </div>
+
+            <PendingButton
+              className="create-submit studio-generate-btn"
+              pending={status === 'working'}
+              pendingLabel={progressNote || 'Working'}
+              disabled={!prompt.trim()}
+            >
+              Generate {mode} <ImageIcon size={15} />
+            </PendingButton>
+            {status === 'error' && <p className="form-error">{errorMessage}</p>}
+          </form>
+        </div>
+
+        {/* Right Column: Active Output & Library */}
+        <div className="studio-workstation-right">
+          {result && (
+            <div className="media-result studio-featured-result">
+              <div className="media-result-head">
+                <strong>Generated result</strong>
+              </div>
+              <div className="media-result-media">
+                {result.kind === 'image' ? (
+                  <NextImage unoptimized width={512} height={512} src={result.dataUrl} alt="Generated result" />
+                ) : (
+                  <video src={result.url} controls autoPlay muted loop playsInline />
+                )}
+              </div>
+              <div className="media-result-actions">
+                <a
+                  href={result.kind === 'image' ? result.dataUrl : result.url}
+                  download={`aksen-${result.kind}.${result.kind === 'image' ? 'png' : 'mp4'}`}
+                >
+                  <Download size={15} /> Download
+                </a>
+                {result.kind === 'image' && references.length < 4 && (
+                  <button type="button" onClick={useResultAsReference}>
+                    <ImagePlus size={15} /> Use as reference
+                  </button>
+                )}
+                {onNavigateToPlanner && (
+                  <button type="button" onClick={onNavigateToPlanner} className="studio-to-planner-btn">
+                    Open Episode Planner &rarr;
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {renderJobs.length > 0 && (
+            <div className="media-gallery studio-jobs-card">
+              <div className="studio-gallery-head">
+                <span>Recent video renders</span>
+                <small>{renderJobs.length} jobs</small>
+              </div>
+              <div className="media-render-jobs">
+                {renderJobs.slice(0, 4).map((job) => (
+                  <div className="media-render-job" key={job.id}>
+                    <span title={job.prompt}>{job.prompt.slice(0, 65)}{job.prompt.length > 65 ? '…' : ''}</span>
+                    <small>{job.status}{job.costMicros != null ? ` · $${(job.costMicros / 1_000_000).toFixed(2)}` : ''}</small>
+                    <button type="button" onClick={() => void checkRender(job.id)}>
+                      {job.status === 'completed' ? 'Open video' : 'Check status'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="media-gallery studio-gallery-card">
+            <div className="studio-gallery-head">
+              <span>Recent generations</span>
+              <small>{gallery.length} items</small>
+            </div>
+            {gallery.length === 0 ? (
+              <p className="studio-gallery-empty">Generated images and video renders will be saved here for quick reuse.</p>
+            ) : (
+              <div className="media-gallery-grid">
+                {gallery.map((item) => (
+                  <figure className="media-gallery-item" key={item.id}>
+                    <button
+                      type="button"
+                      onClick={() => reuseFromGallery(item)}
+                      title={item.prompt}
+                    >
+                      {item.kind === 'image' ? (
+                        <NextImage unoptimized width={256} height={256} src={item.url} alt={item.prompt} />
+                      ) : (
+                        <video src={item.url} muted />
+                      )}
+                      <span>
+                        {item.kind === 'video' && <Video size={11} />}{' '}
+                        {timeAgo(item.createdAt)}
+                      </span>
+                    </button>
+                    <ConfirmAction
+                      className="media-gallery-remove"
+                      label="Remove"
+                      confirmLabel="Remove"
+                      pendingLabel="Removing"
+                      title="Remove this generation from the gallery"
+                      pending={removingAsset === item.id}
+                      disabled={removingAsset !== null}
+                      onConfirm={() => void removeAsset(item.id)}
+                    />
+                  </figure>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }

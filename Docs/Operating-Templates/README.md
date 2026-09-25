@@ -15,3 +15,5 @@ Editable working documents, also available in /admin/templates. Replace brackete
 - [Monthly service review](care.md) — Retain
 - [Relationship email sequence](email-sequence.md) — Retain
 - [Billing readiness checklist](billing.md) — Agree
+- [Client gap & readiness audit](gap-audit.md) — Discover
+- [Free prototype & proof proposal](value-prototype.md) — Agree

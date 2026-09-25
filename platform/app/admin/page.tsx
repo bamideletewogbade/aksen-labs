@@ -5,11 +5,14 @@ import {
   ClipboardList,
   BriefcaseBusiness,
   CalendarClock,
-  CheckCircle2,
   CircleDollarSign,
   Radar,
   ShieldAlert,
   Users,
+  Wallet,
+  Gauge,
+  AlertCircle,
+  TrendingUp,
 } from 'lucide-react';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { getDb } from '@/db';
@@ -17,18 +20,14 @@ import {
   FounderActivityChart,
   type FounderActivityPoint,
 } from '@/components/founder-activity-chart';
+import {
+  FounderActionQueue,
+  type FounderAction,
+} from '@/components/founder-action-queue';
 import { money } from '@/lib/workspace-rules';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Home | Aksen Workspace' };
-
-type Action = {
-  id: string;
-  tone: 'urgent' | 'decision' | 'work';
-  label: string;
-  detail: string;
-  href: string;
-};
 
 type ProjectPulse = {
   id: string;
@@ -60,7 +59,7 @@ export default async function AdminPage() {
   let databaseReady = true;
   let pipeline: { stage: string; count: number }[] = [];
   let projects: ProjectPulse[] = [];
-  let actions: Action[] = [];
+  let actions: FounderAction[] = [];
   let activeProjects = 0;
   let leadsToReview = 0;
   let openConversations = 0;
@@ -68,6 +67,13 @@ export default async function AdminPage() {
   let activity: FounderActivityPoint[] = [];
   let overdueByCurrency: { currency: string; amount: number; count: number }[] =
     [];
+  let collectedByCurrency: { currency: string; amount: number; count: number }[] =
+    [];
+  let outstandingByCurrency: { currency: string; amount: number; count: number }[] =
+    [];
+  let aiBurnMicros = 0;
+  let aiRunsCount = 0;
+  let avgDurationMs = 0;
 
   try {
     const db = getDb();
@@ -78,6 +84,11 @@ export default async function AdminPage() {
       followUpResult,
       invoiceResult,
       activityResult,
+      newLeadsResult,
+      stalledProposalsResult,
+      recentEpisodesResult,
+      financialsResult,
+      aiBurnResult,
     ] = await Promise.all([
       db.execute(sql`
           SELECT
@@ -140,6 +151,43 @@ export default async function AdminPage() {
           LEFT JOIN lead_counts USING(day)
           LEFT JOIN ai_counts USING(day)
           ORDER BY days.day`),
+      db.execute(sql`
+          SELECT id,company,name,recommendation,desired_outcome,created_at
+          FROM opportunities
+          WHERE (owner_id=${owner} OR owner_id IS NULL)
+            AND status = 'new'
+          ORDER BY created_at DESC
+          LIMIT 3`),
+      db.execute(sql`
+          SELECT id,company,name,desired_outcome,updated_at
+          FROM opportunities
+          WHERE (owner_id=${owner} OR owner_id IS NULL)
+            AND status = 'proposal'
+            AND updated_at <= CURRENT_DATE - INTERVAL '3 days'
+          ORDER BY updated_at ASC
+          LIMIT 2`),
+      db.execute(sql`
+          SELECT count(*)::int AS count
+          FROM media_episodes
+          WHERE owner_id=${owner}
+            AND created_at >= CURRENT_DATE - INTERVAL '7 days'`),
+      db.execute(sql`
+          SELECT f.currency,
+                 sum(CASE WHEN f.kind = 'receipt' THEN f.total_minor ELSE 0 END)::bigint AS collected_minor,
+                 count(CASE WHEN f.kind = 'receipt' THEN 1 END)::int AS receipt_count,
+                 sum(CASE WHEN f.kind = 'invoice' AND f.status = 'issued' THEN (f.total_minor - f.paid_minor) ELSE 0 END)::bigint AS outstanding_minor,
+                 count(CASE WHEN f.kind = 'invoice' AND f.status = 'issued' AND (f.total_minor - f.paid_minor) > 0 THEN 1 END)::int AS outstanding_count
+          FROM business_financials f
+          JOIN business_workspaces b ON b.id=f.business_id
+          WHERE b.owner_id=${owner}
+          GROUP BY f.currency`),
+      db.execute(sql`
+          SELECT coalesce(sum(cost_micros), 0)::bigint AS cost_micros,
+                 count(*)::int AS runs_count,
+                 coalesce(avg(duration_ms), 0)::int AS avg_duration_ms
+          FROM agent_runs
+          WHERE created_at >= date_trunc('month', CURRENT_DATE)
+            AND (trace->>'ownerId'=${owner} OR trace->>'ownerId' IS NULL)`),
     ]);
 
     const summary = summaryResult.rows[0] as
@@ -166,60 +214,222 @@ export default async function AdminPage() {
       amount: Number(row.amount),
       count: Number(row.count),
     }));
+    collectedByCurrency = financialsResult.rows
+      .filter((row) => Number(row.collected_minor) > 0)
+      .map((row) => ({
+        currency: String(row.currency),
+        amount: Number(row.collected_minor),
+        count: Number(row.receipt_count),
+      }));
+    outstandingByCurrency = financialsResult.rows
+      .filter((row) => Number(row.outstanding_minor) > 0)
+      .map((row) => ({
+        currency: String(row.currency),
+        amount: Number(row.outstanding_minor),
+        count: Number(row.outstanding_count),
+      }));
+
+    const aiBurnRow = aiBurnResult.rows[0] as
+      | Record<string, unknown>
+      | undefined;
+    aiBurnMicros = Number(aiBurnRow?.cost_micros ?? 0);
+    aiRunsCount = Number(aiBurnRow?.runs_count ?? 0);
+    avgDurationMs = Number(aiBurnRow?.avg_duration_ms ?? 0);
+
     activity = activityResult.rows.map((row) => ({
       label: String(row.label),
       leads: Number(row.leads),
       aiRuns: Number(row.ai_runs),
     }));
 
-    actions = followUpResult.rows.map((row) => ({
-      id: `follow-up-${String(row.id)}`,
-      tone: 'urgent',
-      label: `Follow up with ${String(row.company)}`,
-      detail: `${textValue(row.next_action, 'Review enquiry')} · due ${String(row.follow_up_at)}`,
-      href: `/admin/pipeline?q=${encodeURIComponent(String(row.company))}`,
-    }));
-    if (pendingApprovals)
-      actions.push({
-        id: 'approvals',
-        tone: 'decision',
-        label: `${pendingApprovals} ${pendingApprovals === 1 ? 'decision needs' : 'decisions need'} your review`,
-        detail: 'Nothing proceeds until you approve or reject it.',
-        href: '/admin/approvals',
-      });
-    if (leadsToReview)
-      actions.push({
-        id: 'lead-review',
-        tone: 'work',
-        label: `Review ${leadsToReview} researched ${leadsToReview === 1 ? 'lead' : 'leads'}`,
-        detail: 'Shortlist a strong fit or dismiss it from the queue.',
-        href: '/admin/prospects',
-      });
-    if (overdueByCurrency.length)
-      actions.unshift({
-        id: 'overdue',
+    const rawActions: FounderAction[] = [];
+
+    // 1. Critical Cashflow Leaks (Overdue invoices)
+    if (overdueByCurrency.length) {
+      rawActions.push({
+        id: 'overdue-invoices',
+        category: 'urgent',
+        badge: 'Cashflow',
         tone: 'urgent',
-        label: 'Overdue invoices need attention',
+        label: 'Overdue invoices past agreed terms',
         detail: overdueByCurrency
           .map(
             (item) =>
-              `${money(item.amount, item.currency)} across ${item.count}`,
+              `${money(item.amount, item.currency)} across ${item.count} invoices`,
           )
           .join(' · '),
+        actionText: 'Review Invoices',
         href: '/admin/workspaces',
       });
-    actions = actions.slice(0, 6);
+    }
+
+    // 2. Inbound Fit Audit
+    for (const lead of newLeadsResult.rows) {
+      const company = String(lead.company || 'Unknown');
+      rawActions.push({
+        id: `ai-audit-${String(lead.id)}`,
+        category: 'ai_strategic',
+        badge: 'Inbound Fit',
+        tone: 'ai',
+        label: `Audit fit & prepare brief for ${company}`,
+        detail: `${textValue(lead.name, 'Enquirer')} · ${textValue(lead.recommendation, 'Inbound lead')}`,
+        actionText: 'Run Fit Audit',
+        href: `/admin/operations?lead=${encodeURIComponent(String(lead.id))}&task=lead_audit`,
+      });
+    }
+
+    // 3. Stalled Proposal Follow-up
+    for (const proposal of stalledProposalsResult.rows) {
+      const company = String(proposal.company || 'Unknown');
+      rawActions.push({
+        id: `ai-stalled-${String(proposal.id)}`,
+        category: 'ai_strategic',
+        badge: 'Follow-up',
+        tone: 'ai',
+        label: `Unblock proposal for ${company}`,
+        detail: 'Proposal has been pending for 3+ days without a decision.',
+        actionText: 'Draft Follow-up',
+        href: `/admin/operations?lead=${encodeURIComponent(String(proposal.id))}&task=jev_followup`,
+      });
+    }
+
+    // 4. Delivery: At-Risk Projects
+    for (const proj of projects) {
+      if (proj.health === 'at_risk') {
+        rawActions.push({
+          id: `proj-risk-${proj.id}`,
+          category: 'delivery',
+          badge: 'Project At Risk',
+          tone: 'urgent',
+          label: `Unblock at-risk project: ${proj.name}`,
+          detail: `${proj.client} · Health marked at risk. Immediate alignment needed.`,
+          actionText: 'Open Project',
+          href: '/admin/projects',
+        });
+      }
+    }
+
+    // 5. Urgent Follow-ups Due Today
+    for (const row of followUpResult.rows) {
+      rawActions.push({
+        id: `follow-up-${String(row.id)}`,
+        category: 'urgent',
+        badge: 'Follow-Up Due',
+        tone: 'urgent',
+        label: `Follow up with ${String(row.company)}`,
+        detail: `${textValue(row.next_action, 'Review enquiry')} · due ${String(row.follow_up_at)}`,
+        actionText: 'Review Lead',
+        href: `/admin/pipeline?q=${encodeURIComponent(String(row.company))}`,
+      });
+    }
+
+    // 6. Delivery: Acceptance Gate & UAT Checklist
+    for (const proj of projects) {
+      if (proj.health !== 'at_risk' && proj.progress >= 75) {
+        rawActions.push({
+          id: `proj-gate-${proj.id}`,
+          category: 'delivery',
+          badge: 'Acceptance Gate',
+          tone: 'delivery',
+          label: `Prepare UAT acceptance for ${proj.name}`,
+          detail: `${proj.client} · ${proj.progress}% progress · Gate: ${proj.gate}`,
+          actionText: 'Open UAT',
+          href: '/admin/templates',
+        });
+      }
+    }
+
+    // 7. Founder Decisions / Approvals
+    if (pendingApprovals) {
+      rawActions.push({
+        id: 'approvals',
+        category: 'decision',
+        badge: 'Approval Gate',
+        tone: 'decision',
+        label: `${pendingApprovals} ${pendingApprovals === 1 ? 'decision needs' : 'decisions need'} review`,
+        detail: 'Client articles or deliverables paused pending your sign-off.',
+        actionText: 'Review Approvals',
+        href: '/admin/approvals',
+      });
+    }
+
+    // 8. AI Growth: Inbound Media Cadence
+    const recentEpisodesCount = Number(
+      recentEpisodesResult.rows[0]?.count ?? 0,
+    );
+    if (recentEpisodesCount === 0) {
+      rawActions.push({
+        id: 'media-cadence',
+        category: 'ai_strategic',
+        badge: 'Inbound Growth',
+        tone: 'ai',
+        label: 'Create weekly case study or media episode',
+        detail: 'Zero media episodes created in the past 7 days.',
+        actionText: 'Open Studio',
+        href: '/admin/studio',
+      });
+    }
+
+    // 9. Researched Leads Review
+    if (leadsToReview) {
+      rawActions.push({
+        id: 'lead-review',
+        category: 'urgent',
+        badge: 'Prospect Queue',
+        tone: 'decision',
+        label: `Review ${leadsToReview} researched ${leadsToReview === 1 ? 'lead' : 'leads'}`,
+        detail: 'Shortlist a strong fit or dismiss from queue.',
+        actionText: 'Review Leads',
+        href: '/admin/prospects',
+      });
+    }
+
+    actions = rawActions.slice(0, 8);
   } catch {
     databaseReady = false;
   }
 
   const totalPipeline = pipeline.reduce((sum, item) => sum + item.count, 0);
   const pipelineMap = new Map(pipeline.map((item) => [item.stage, item.count]));
-  const cashPosition = overdueByCurrency.length
-    ? overdueByCurrency
+
+  const cashCollectedSummary = collectedByCurrency.length
+    ? collectedByCurrency
+        .map((item) => money(item.amount, item.currency))
+        .join(' + ')
+    : 'None yet';
+
+  const receivablesSummary = outstandingByCurrency.length
+    ? outstandingByCurrency
         .map((item) => money(item.amount, item.currency))
         .join(' + ')
     : 'Clear';
+
+  const overdueSummary = overdueByCurrency.length
+    ? overdueByCurrency
+        .map((item) => money(item.amount, item.currency))
+        .join(' + ')
+    : 'Zero overdue';
+
+  const aiBurnDollars = aiBurnMicros / 1_000_000;
+  const aiBurnFormatted =
+    aiBurnDollars >= 1
+      ? `$${aiBurnDollars.toFixed(2)} USD`
+      : aiBurnDollars > 0
+        ? `$${aiBurnDollars.toFixed(3)} USD`
+        : '$0.00 USD';
+
+  const totalReceiptsCount = collectedByCurrency.reduce(
+    (sum, c) => sum + c.count,
+    0,
+  );
+  const totalOutstandingCount = outstandingByCurrency.reduce(
+    (sum, c) => sum + c.count,
+    0,
+  );
+  const totalOverdueCount = overdueByCurrency.reduce(
+    (sum, c) => sum + c.count,
+    0,
+  );
 
   return (
     <section className="admin-main founder-overview" id="overview">
@@ -273,30 +483,115 @@ export default async function AdminPage() {
               <strong>{activeProjects}</strong>
               <small>projects underway</small>
             </Link>
-            <Link
-              href="/admin/workspaces"
-              className={overdueByCurrency.length ? 'needs-attention' : ''}
-            >
+            <Link href="/admin/workspaces">
               <span>
-                <CircleDollarSign /> Overdue cash
+                <Wallet /> Cash collected
               </span>
-              <strong>{cashPosition}</strong>
+              <strong>{cashCollectedSummary}</strong>
               <small>
-                {overdueByCurrency.length
-                  ? 'past agreed terms'
-                  : 'nothing past due'}
+                {totalReceiptsCount > 0
+                  ? `${totalReceiptsCount} paid receipts MTD`
+                  : 'no receipts this month'}
               </small>
             </Link>
-            <Link href="/admin/support">
+            <Link
+              href="/admin/workspaces"
+              className={totalOverdueCount > 0 ? 'needs-attention' : ''}
+            >
               <span>
-                <CalendarClock /> Open conversations
+                <CircleDollarSign /> Receivables
               </span>
-              <strong>{openConversations}</strong>
-              <small>need resolution</small>
+              <strong>{receivablesSummary}</strong>
+              <small>
+                {totalOverdueCount > 0
+                  ? `${totalOverdueCount} overdue terms`
+                  : totalOutstandingCount > 0
+                    ? `${totalOutstandingCount} pending invoices`
+                    : 'all invoices cleared'}
+              </small>
+            </Link>
+            <Link href="/admin/agents">
+              <span>
+                <Gauge /> AI model spend
+              </span>
+              <strong>{aiBurnFormatted}</strong>
+              <small>
+                {aiRunsCount > 0
+                  ? `${aiRunsCount} model runs MTD`
+                  : 'zero inference burn'}
+              </small>
             </Link>
           </section>
 
           <div className="founder-grid">
+            {/* Financial Ledger & Operating Burn Card */}
+            <section
+              className="founder-card founder-financials"
+              aria-labelledby="financials-heading"
+            >
+              <div className="founder-card-head">
+                <div>
+                  <small>FINANCIAL LEDGER &amp; OPERATING BURN</small>
+                  <h2 id="financials-heading">Business health &amp; unit economics</h2>
+                </div>
+                <Link href="/admin/workspaces">Open finances</Link>
+              </div>
+
+              <div className="founder-financial-grid">
+                <div className="fin-metric-block">
+                  <span className="fin-metric-label">
+                    <Wallet size={14} /> Cash Collected (MTD)
+                  </span>
+                  <strong className="fin-metric-val revenue">{cashCollectedSummary}</strong>
+                  <small>
+                    {totalReceiptsCount} paid client {totalReceiptsCount === 1 ? 'receipt' : 'receipts'} this month
+                  </small>
+                </div>
+
+                <div className="fin-metric-block">
+                  <span className="fin-metric-label">
+                    <CircleDollarSign size={14} /> Outstanding Receivables
+                  </span>
+                  <strong className="fin-metric-val pending">{receivablesSummary}</strong>
+                  <small>
+                    {totalOutstandingCount} issued {totalOutstandingCount === 1 ? 'invoice' : 'invoices'} pending
+                  </small>
+                </div>
+
+                <div className="fin-metric-block">
+                  <span className="fin-metric-label">
+                    <Gauge size={14} /> AI Model Spend (MTD)
+                  </span>
+                  <strong className="fin-metric-val burn">{aiBurnFormatted}</strong>
+                  <small>
+                    {aiRunsCount} runs · {(avgDurationMs / 1000).toFixed(1)}s avg latency
+                  </small>
+                </div>
+
+                <div className="fin-metric-block">
+                  <span className="fin-metric-label">
+                    <TrendingUp size={14} /> Model Unit Economics
+                  </span>
+                  <strong className="fin-metric-val net">
+                    {aiRunsCount > 0
+                      ? `$${((aiBurnMicros / aiRunsCount) / 1_000_000).toFixed(3)}/run`
+                      : '$0.00/run'}
+                  </strong>
+                  <small>Average inference cost per task</small>
+                </div>
+              </div>
+
+              {overdueByCurrency.length > 0 && (
+                <div className="fin-overdue-alert">
+                  <AlertCircle size={16} />
+                  <span>
+                    <strong>{overdueSummary}</strong> is past agreed payment terms.
+                  </span>
+                  <Link href="/admin/workspaces">Review now &rarr;</Link>
+                </div>
+              )}
+            </section>
+
             <section
               className="founder-card founder-trend"
               aria-labelledby="activity-heading"
@@ -313,42 +608,19 @@ export default async function AdminPage() {
               </div>
               <FounderActivityChart data={activity} />
             </section>
+
             <section
               className="founder-card founder-priority"
               aria-labelledby="priority-heading"
             >
               <div className="founder-card-head">
                 <div>
-                  <small>YOUR QUEUE</small>
-                  <h2 id="priority-heading">Next best actions</h2>
+                  <small>EXECUTIVE COCKPIT · JEV STRATEGY</small>
+                  <h2 id="priority-heading">Next best actions &amp; AI recommendations</h2>
                 </div>
-                <span>{actions.length} open</span>
+                <span>{actions.length} priorities</span>
               </div>
-              {actions.length ? (
-                <ol className="founder-action-list">
-                  {actions.map((action) => (
-                    <li key={action.id}>
-                      <i
-                        className={`action-signal ${action.tone}`}
-                        aria-hidden="true"
-                      />
-                      <span>
-                        <strong>{action.label}</strong>
-                        <small>{action.detail}</small>
-                      </span>
-                      <Link href={action.href} aria-label={action.label}>
-                        <ArrowRight />
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <div className="founder-clear">
-                  <CheckCircle2 />
-                  <strong>You’re clear for now.</strong>
-                  <span>No overdue follow-ups, reviews or invoices.</span>
-                </div>
-              )}
+              <FounderActionQueue actions={actions} />
             </section>
 
             <section

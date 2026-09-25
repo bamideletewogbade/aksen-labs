@@ -29,7 +29,7 @@ It exists so that the founder and any AI agent working on this business start fr
 | **Mission** | Help African businesses prosper through the effective use of technology |
 | **Public promise** | Technology that helps your business grow |
 | **Base** | Ghana. Open to Nigeria, the rest of Africa and beyond, subject to actual delivery ability |
-| **Run by** | Adeyinka (founder, and currently the entire delivery team) |
+| **Run by** | Bishop (founder, and currently the entire delivery team) |
 | **Revenue to date** | None |
 | **Paying customers** | None |
 
@@ -107,7 +107,11 @@ This is the argument the company turns on, so it has to be true inside our own p
 
 ## 4. Where the business actually stands
 
-*As at 15 September 2026.*
+*As at 22 September 2026. The two numbers were re-checked on that date and had not moved.*
+
+- **The founder is now full-time on Aksen.** The role at AIC ended. This is the largest change since this brief was written, and section 5 has been updated for it. It removes the capacity ceiling and removes the last external excuse for the two numbers below.
+- **Seven days passed between the daily operating system being set up and this check, with no entries in `Docs/Daily-Log.md`.** In the same period the Media Studio shipped with six supporting documents, plus avatar, voice and distribution work, and a further session went into admin test tooling. The log's own last line on 15 September reads "Tomorrow starts with S-01, a message to an actual client, before anything else gets built." That did not happen.
+- **An external strategic review arrived 22 September**, written by Kevin from the platform and the public material without access to this brief. It reached the same four conclusions as section 7: human in the loop is the strongest asset, the company is pre-proof, internal tool building must stop, and one narrow offer should lead. It proposes a different wedge from the one in section 1. The comparison, the market data behind it and the open decisions are in the Business Alignment doc.
 
 - **Cedis invoiced: 0. Cedis collected: 0. Paying customers: 0.**
 - **Sales pipeline: empty.** The admin pipeline screen reads "Nothing in the pipeline yet."
@@ -142,7 +146,11 @@ At 50%: a 36-hour build costs GHS 4,320, so the floor is about **GHS 9,240**.
 
 **Qualifying rule.** Monthly gross benefit minus care and usage cost must be positive, and simple payback should clear roughly six months, using the client's own numbers rather than ours.
 
-**The binding constraint is capacity, not demand.** The "working case" (8 builds, 36 care months, GHS 204,000) needs about 648 delivery hours. At 25 hours a week over 46 weeks with 35% reserved for sales and admin, roughly 747 hours remain. **At 15 hours a week it does not fit at all.** Before planning any year, write down the hours actually available per week and check the plan against them. This is the number most likely to be wrong.
+**The binding constraint was capacity. As of 22 September 2026 it is demand.** The "working case" (8 builds, 36 care months, GHS 204,000) needs about 648 delivery hours. At 25 hours a week over 46 weeks with 35% reserved for sales and admin, roughly 747 hours remain. At 15 hours a week it does not fit at all, which was the governing number while the founder held a full-time role elsewhere.
+
+That role ended. Aksen Labs is now the founder's main work with no fixed hour ceiling, so the working case is arithmetically reachable and the cautious case is no longer the only honest plan.
+
+**This is a smaller change than it looks.** Hours were never the scarce thing. The scarce things are conversations with owners and cedis invoiced, and both are still zero. More available hours spent building makes that imbalance worse, not better. Read the new capacity as permission to sell harder, never as permission to build more. Still write down the hours actually available per week and check any plan against them; the number has changed, the discipline has not.
 
 **Ghana comparators** (4 September, vendor offers not willingness to pay): Coriable website chatbots GHS 8,000–18,000, WhatsApp assistants GHS 15,000–40,000, workflow automation GHS 20,000–120,000. AutomateGhana's Kasabot GHS 800–1,500/mo, no setup fee. BVM Digital audit GHS 1,500, full-stack GHS 12,000–25,000.
 
@@ -253,7 +261,9 @@ Asked for directly, so this is a straight answer rather than a balanced one.
 
 **7. Charge for the pilot, even if it feels early.** The GHS 2,500 assessment exists. Free work produces a case study nobody respects, a client who does not turn up to meetings, and no information about willingness to pay, which is the one thing that is still unknown.
 
-**8. Be honest about hours.** The pricing guide's own arithmetic says that at fifteen hours a week the working case does not fit. Alongside a full-time role elsewhere, fifteen hours is the optimistic number. That is not a reason to stop; it is a reason to plan the cautious case (4 builds, GHS 81,000) and be pleasantly surprised, instead of planning the working case and failing arithmetic rather than execution. It is also worth having thought about the overlap with BVM Digital before a prospect raises it.
+**8. Be honest about hours.** *Rewritten 22 September 2026; the original is in section 9.* This item used to say that fifteen hours a week alongside another job made the working case impossible, and to plan the cautious case instead. The other job has gone and the hours are now full-time, so that arithmetic no longer binds.
+
+The honesty this item was asking for still applies, pointed at a different number. The question is no longer "how many hours are there" but "how many of them went into selling". A full-time week that produces forty hours of building and no conversations is a worse outcome than the fifteen-hour week was, because it burns more of the founder's life to reach the same zero. Count the hours that went into SELL, weekly, and treat a week with none as a failed week however much shipped. It is also still worth having thought about the overlap with BVM Digital before a prospect raises it.
 
 **9. Track two numbers, weekly, in public.** *Conversations with owners this week.* *Cedis invoiced this month.* Not features shipped, not tests passing, not pages redesigned. If both are zero for three weeks running, the strategy is wrong and no amount of building will fix it.
 
@@ -265,6 +275,7 @@ Asked for directly, so this is a straight answer rather than a balanced one.
 
 | Source | What it holds |
 | --- | --- |
+| Business Alignment doc | Shared record with Kevin: the two readings compared, sourced Ghana market figures, the open wedge decision, and a dated log of what was said against when it shipped. Lives as a document at `claude.ai/code/artifact/31bd5b6c-226c-4e1f-93a4-c8b8b3e3fc19`, not in this repository, because it is edited by two people. 22 September. |
 | `Docs/Business-OS.md` | How the business is run daily: the three lanes, the scoreboard, the ledger stages. |
 | `Docs/Revenue-Ledger.md` | Every money-making mechanism, as a pipeline from Noticed to Earning. |
 | `Docs/Queue.md` | Pre-decided daily work, nothing over 25 minutes. |
@@ -289,6 +300,10 @@ Newest first. One line each: what was decided, when, and why.
 
 | Date | Decision |
 | --- | --- |
+| 2026-09-22 | Founder full-time on Aksen Labs; the AIC role ended. Section 5's capacity arithmetic updated: the binding constraint moves from capacity to demand. Section 7 item 8 rewritten; its original text is preserved below. The working case (8 builds, GHS 204,000) is now arithmetically reachable, which is permission to sell harder and not permission to build more. |
+| 2026-09-22 | External strategic review received from Kevin, written without access to this brief. Independently reached section 7's conclusions on human in the loop, pre-proof status, stopping internal tooling and leading with one narrow offer. Logged as agreement, not as a new decision. |
+| 2026-09-22 | Wedge decision opened, not closed. The review proposes productised ops and support drafting sold to professional services; section 1 says owner-led retail losing WhatsApp orders. Recommendation on file is to lead with order capture and hold professional services as the second offer, on the grounds that the public argument for it is already built and the professional services vertical already has purpose-built competitors selling into Ghana. Awaiting Kevin's agreement before this becomes a decision. |
+| 2026-09-22 | Business alignment kept as a document, not an admin module, following the 15 September precedent below. Market figures researched and cited there rather than repeated here. |
 | 2026-09-16 | Nigeria referral test through friends, against the section 6 "no Nigeria expansion" line, by founder decision. Entry prices in naira (free call, Lead Pack ₦29,900, Business Check ₦49,900, Starter Page ₦99,000, Order Desk ₦149,000, Bookings ₦179,000, custom from ₦450,000, care from ₦19,900/mo), fixed scope and hour-capped. No ads budget, no sector pages. Kit in `marketing/nigeria-kit/`, reasoning in `Docs/Nigeria-Friends-Kit-and-Pricing-2026-09-16.md`. Public link for now: aksen-labs.bishoptewogbade.workers.dev. |
 | 2026-09-16 | Admin review: every screen checked with fictional seed data and a text-contrast script. Long screens split into tabs (Lead Scout, Social Hub, Articles, AI usage, Pipeline) with one shared `AdminTabs` component; invisible dark-theme text fixed in `admin-light.css`. No new modules. |
 | 2026-09-15 | Outbound messages go through one durable outbox (`lib/outbox.ts`), and every lead through one intake (`lib/lead-intake.ts`) tagged by source. A second channel later is a new `channel` value, not a second delivery path. Heartbeat moved to every ten minutes so an acknowledgement is not an hour behind the enquiry. |
@@ -301,3 +316,13 @@ Newest first. One line each: what was decided, when, and why.
 | 2026-09-14 | Aksen Folio renamed CV Forge, removed from the site, awaiting a public address. |
 | 2026-09-10 | Managed operations published at GHS 4,000–18,000/mo, replacing the GHS 3,000 test floor. |
 | 2026-09-07 | Category fixed as digital transformation agency; Ghana is the base, not the limit. |
+
+### Superseded text
+
+Kept because a record of what we believed and when is worth more than a tidy document.
+
+**Section 7, item 8. Written 16 September, stopped being true 22 September**, when the founder's other role ended:
+
+> **8. Be honest about hours.** The pricing guide's own arithmetic says that at fifteen hours a week the working case does not fit. Alongside a full-time role elsewhere, fifteen hours is the optimistic number. That is not a reason to stop; it is a reason to plan the cautious case (4 builds, GHS 81,000) and be pleasantly surprised, instead of planning the working case and failing arithmetic rather than execution. It is also worth having thought about the overlap with BVM Digital before a prospect raises it.
+
+Worth reading now and again. The item was right that the plan had to match the hours. It was wrong only about which number was scarce, and that mistake was invisible while the hours were genuinely short.

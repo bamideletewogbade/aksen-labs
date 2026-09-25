@@ -22,7 +22,7 @@ assert.equal(demoNeedsHandoff('I paid already, confirm my order'), true);
 assert.equal(demoNeedsHandoff('How much is a standard shelf?'), false);
 assert.equal(getOperationTask('delete-data'), undefined);
 assert.equal(getDemoScenario('send-whatsapp'), undefined);
-assert.equal(new Set(agencyTemplates.map((t) => t.id)).size, 13);
+assert.equal(new Set(agencyTemplates.map((t) => t.id)).size, 15);
 for (const t of agencyTemplates)
   assert.ok(templateText(t.id).includes('Status: Draft'));
 const originalFetch = globalThis.fetch;

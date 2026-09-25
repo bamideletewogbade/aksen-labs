@@ -38,7 +38,7 @@ export default function AboutPage() {
             <p>
               The job is working out which of those is actually costing you
               money, building the fix, and leaving your team able to run it
-              without me. Sometimes that is a shop. Sometimes it is shared
+              without us. Sometimes that is a shop. Sometimes it is shared
               customer records, reporting that tells you something you did not
               know, or a service you did not offer before.
             </p>

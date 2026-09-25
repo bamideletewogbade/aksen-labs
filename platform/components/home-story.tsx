@@ -206,9 +206,8 @@ export function ProofGallery() {
         </div>
       </div>
       <p className="proof-note">
-        Screens from the running software, captured by script rather than drawn
-        for this page. We have no client result to show you yet, and we are not
-        going to invent one.{' '}
+        Screens captured directly from our live software rather than marketing
+        mockups. Real running tools, built in the open with verifiable workings.{' '}
         <Link className="agency-text-link" href="/products">
           See what is open today <ArrowUpRight size={16} />
         </Link>

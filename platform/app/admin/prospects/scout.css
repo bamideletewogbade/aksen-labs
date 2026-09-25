@@ -64,6 +64,129 @@
   box-shadow: 0 0 0 3px rgba(189, 233, 151, 0.16);
   outline: none;
 }
+/* Review Queue Callout Banner */
+.admin-refresh .scout-queue-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #edf8e7;
+  border: 1px solid #b8e2a3;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.admin-refresh .scout-queue-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.admin-refresh .scout-queue-badge {
+  background: #235c34;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.admin-refresh .scout-queue-banner-text strong {
+  display: block;
+  font-size: 15px;
+  color: #11241a;
+  margin-bottom: 2px;
+}
+.admin-refresh .scout-queue-banner-text p {
+  margin: 0;
+  font-size: 13px;
+  color: #3b4e42;
+}
+.admin-refresh .scout-queue-banner-cta {
+  background: #235c34 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 600;
+  padding: 10px 18px !important;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.admin-refresh .scout-queue-banner-cta:hover {
+  background: #174224 !important;
+}
+
+/* Jev Market Presets */
+.admin-refresh .scout-presets-box {
+  margin: 18px 0 16px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e2ece0;
+  border-radius: 10px;
+}
+.admin-refresh .scout-presets-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.admin-refresh .scout-presets-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1b4d2e;
+}
+.admin-refresh .scout-presets-subtitle {
+  font-size: 12px;
+  color: #56685c;
+}
+.admin-refresh .scout-presets-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.admin-refresh .scout-preset-pill {
+  font-size: 12px !important;
+  min-height: 32px !important;
+  padding: 6px 12px !important;
+  background: #f4f8f1 !important;
+  border: 1px solid #d4e5cc !important;
+  border-radius: 20px !important;
+  color: #1b4429 !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.admin-refresh .scout-preset-pill:hover:not(:disabled) {
+  background: #e2f2d9 !important;
+  border-color: #9dcf83 !important;
+  color: #0d381c !important;
+  transform: translateY(-1px);
+}
+
+/* Sharpen with Jev */
+.admin-refresh .scout-target-label-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-refresh .scout-sharpen-btn {
+  font-size: 12px !important;
+  min-height: 28px !important;
+  padding: 3px 10px !important;
+  background: #ebf5e3 !important;
+  border: 1px solid #c2e1b1 !important;
+  border-radius: 6px !important;
+  color: #1b5329 !important;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.admin-refresh .scout-sharpen-btn:hover:not(:disabled) {
+  background: #d8eed0 !important;
+  border-color: #9dcf83 !important;
+}
+
 .admin-refresh .scout-target-head {
   display: flex;
   align-items: baseline;
@@ -819,3 +942,182 @@
     animation: none;
   }
 }
+
+/* Lead Importer Styles */
+.admin-refresh .scout-importer {
+  border: 1px solid #d5e2d0;
+  background: #f7faf4;
+}
+.admin-refresh .scout-import-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+.admin-refresh .scout-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px !important;
+  min-height: 38px !important;
+  background: #ffffff !important;
+  border: 1px solid #d4e5cc !important;
+  border-radius: 8px !important;
+  color: #2b3d32 !important;
+  font-size: 0.9rem !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.admin-refresh .scout-mode-pill.active {
+  background: #dcf3bd !important;
+  border-color: #9dcf83 !important;
+  color: #1d5b3c !important;
+  font-weight: 600;
+}
+.admin-refresh .scout-import-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.admin-refresh .scout-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.admin-refresh .scout-single-lead-form {
+  margin-top: 14px;
+}
+.admin-refresh .scout-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.admin-refresh .scout-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+.admin-refresh .scout-form-grid label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2b3d32;
+  margin-bottom: 4px;
+}
+.admin-refresh .scout-form-grid input {
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+.admin-refresh .scout-preview-table-container {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #dbe6d6;
+}
+.admin-refresh .scout-preview-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.admin-refresh .scout-preview-header h3 {
+  font-size: 1.15rem;
+  margin: 0;
+}
+.admin-refresh .scout-import-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-refresh .scout-import-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #e0ebdc;
+  border-radius: 8px;
+  transition: opacity 140ms ease;
+}
+.admin-refresh .scout-import-row.unselected {
+  opacity: 0.55;
+  background: #fafcfa;
+}
+.admin-refresh .scout-import-row-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.admin-refresh .scout-import-row-main input[type='checkbox'] {
+  margin-top: 4px;
+  accent-color: #2f7d32;
+  width: 16px;
+  height: 16px;
+}
+.admin-refresh .scout-import-details {
+  flex: 1;
+  min-width: 0;
+}
+.admin-refresh .scout-import-company {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.admin-refresh .scout-import-company strong {
+  font-size: 1rem;
+  color: #11241a;
+}
+.admin-refresh .scout-import-company a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #2c6b2f;
+  text-decoration: underline;
+}
+.admin-refresh .scout-import-gap {
+  font-size: 0.86rem;
+  color: #3b4e42;
+  margin: 2px 0 6px !important;
+  line-height: 1.45;
+}
+.admin-refresh .scout-import-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.admin-refresh .scout-contact-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: #f0f7ec;
+  border: 1px solid #d4e8cc;
+  border-radius: 5px;
+  font-size: 0.76rem;
+  color: #1d5b3c;
+  font-family: var(--font-geist-mono), monospace;
+}
+.admin-refresh .scout-remove-row-btn {
+  padding: 6px !important;
+  min-height: auto !important;
+  border: none !important;
+  background: transparent !important;
+  color: #924037 !important;
+  cursor: pointer;
+  border-radius: 4px !important;
+}
+.admin-refresh .scout-remove-row-btn:hover {
+  background: #fde8e5 !important;
+}
+@media (max-width: 700px) {
+  .admin-refresh .scout-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

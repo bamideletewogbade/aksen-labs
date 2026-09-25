@@ -1,5 +1,4 @@
-import { AdminMediaStudio } from '@/components/admin-media-studio';
-import { AdminEpisodePlanner } from '@/components/admin-episode-planner';
+import { AdminStudioDesk } from '@/components/admin-studio-desk';
 import './studio-planner.css';
 
 export const dynamic = 'force-dynamic';
@@ -9,19 +8,17 @@ export const metadata = { title: 'Create media | Aksen Workspace' };
 export default function AdminStudioPage() {
   return (
     <section className="admin-main studio-main" id="studio">
-      <header className="admin-header">
+      <header className="admin-header studio-header">
         <div>
           <small>CREATIVE STUDIO</small>
           <h1>Create media</h1>
           <p>
-            Create draft images and videos from a brief and references. Review
-            each asset before publishing.
+            Produce marketing visuals, short video clips, and structured multi-scene episodes.
           </p>
         </div>
       </header>
       <div className="studio-layout">
-        <AdminEpisodePlanner />
-        <AdminMediaStudio />
+        <AdminStudioDesk />
       </div>
     </section>
   );

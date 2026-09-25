@@ -1666,7 +1666,8 @@ footer > span {
   font-weight: 700;
 }
 .studio-layout {
-  max-width: 620px;
+  max-width: 1400px;
+  width: 100%;
   margin-top: 13px;
 }
 .media-studio-panel {

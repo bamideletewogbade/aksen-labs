@@ -287,8 +287,22 @@ export function AdminPipelineList({
                   className="lead-prepare"
                   href={`/admin/operations?lead=${encodeURIComponent(lead.id)}`}
                 >
-                  Prepare with AI
+                  Prepare draft
                   <ArrowRight size={14} />
+                </Link>
+                <Link
+                  className="lead-prepare lead-audit-btn"
+                  title="Prepare Erhart 3-Gap Audit"
+                  href={`/admin/operations?lead=${encodeURIComponent(lead.id)}&task=lead_audit`}
+                >
+                  ⚡ 3-Gap audit
+                </Link>
+                <Link
+                  className="lead-prepare lead-jev-btn"
+                  title="Prepare Jev 3-angle follow-up"
+                  href={`/admin/operations?lead=${encodeURIComponent(lead.id)}&task=jev_followup`}
+                >
+                  ✨ Jev follow-up
                 </Link>
                 {lead.status === 'won' && (
                   <button

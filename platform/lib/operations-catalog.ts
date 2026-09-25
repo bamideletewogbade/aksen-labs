@@ -6,6 +6,18 @@ export const operationTasks = [
       'Assess fit using only the record. Return known facts, unknowns, a suggested service, three discovery questions and the next human action. Do not treat a score as verified buying intent.',
   },
   {
+    id: 'lead_audit',
+    name: 'Erhart 3-gap audit & score',
+    prompt:
+      'Analyze the enquiry and produce an Adam Erhart-style Asynchronous Gap Audit. Return: 1) Readiness / Capture Score (0-100% based on their current digital friction), 2) Exactly 3 specific operational gaps (lead leakage, manual delay, missing 24/7 capture), 3) A 3-part concrete fix (Clean knowledge, 24/7 capture, monthly care), 4) A frictionless low-commitment next step (flat monthly retainer, cancel anytime, no high-pressure sales calls required; simply reply to review or proceed). Never invent customer facts.',
+  },
+  {
+    id: 'jev_followup',
+    name: 'Jev creative follow-up (3 angles)',
+    prompt:
+      'Draft 3 distinct creative follow-up email options for this lead using Jev criteria (founder fit, practical concrete example, honest proof). Angle 1: Erhart 3-Gap Audit (objective score and 3 clear gaps). Angle 2: Value-in-Advance Working Prototype (we build a free custom simulation first, judge before committing). Angle 3: Operational Hours-Saved ROI (concrete estimate of repetitive inquiries saved). Include clear subject lines and a single frictionless call to action for each: reply directly, no 30-minute sales call needed.',
+  },
+  {
     id: 'discovery',
     name: 'Prepare discovery',
     prompt:

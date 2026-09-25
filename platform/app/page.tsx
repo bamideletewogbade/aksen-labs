@@ -42,71 +42,7 @@ export default function Home() {
             uses on purpose. Every other section opens with a clause and a
             turn; if this one did too, the page would read as a rhythm rather
             than as somebody talking. */}
-        <section className="agency-container refresh-section refresh-what">
-          <Reveal className="refresh-what-lead">
-            <p className="agency-eyebrow">WHAT AKSEN IS</p>
-            <h2>The first business we rebuilt was our own.</h2>
-            <p>
-              Aksen Labs is a digital transformation studio in Accra. The plain
-              version: we take how your business actually runs, the enquiries,
-              the orders, the records, the chasing, and build the digital
-              version of it. Then we hand it over and help your team use it.
-            </p>
-            <p>
-              I started with Aksen. This site and the workspace behind it are
-              one codebase, and the workspace is where the leads, projects,
-              invoices and approvals for this company live. So when I tell you a
-              system like this is worth having, it is because I run on one.
-            </p>
-          </Reveal>
-          <Reveal delay={70} className="refresh-what-cards">
-            <Link className="refresh-what-card" href="/solutions">
-              <span className="refresh-what-index">01</span>
-              <h3>The work</h3>
-              <p>
-                Websites and shops, connected records, reporting, and agents
-                that take the repetitive part off your team. Four areas. We
-                start with whichever one is costing you most.
-              </p>
-              <span className="refresh-what-go">
-                What we build <ArrowUpRight size={16} />
-              </span>
-            </Link>
-            <Link className="refresh-what-card" href="/products">
-              <span className="refresh-what-index">02</span>
-              <h3>The lab</h3>
-              <p>
-                Small AI tools you can open right now, and walkthroughs you can
-                press. Built here, kept live, free to use with no account.
-              </p>
-              <span className="refresh-what-go">
-                Open the tools <ArrowUpRight size={16} />
-              </span>
-            </Link>
-            <Link className="refresh-what-card" href="/blog">
-              <span className="refresh-what-index">03</span>
-              <h3>The notes</h3>
-              <p>
-                Where we follow AI, who is worth reading on LinkedIn and
-                elsewhere, and what it takes to run an agent in a real business
-                rather than a demo.
-              </p>
-              <span className="refresh-what-go">
-                Read the notes <ArrowUpRight size={16} />
-              </span>
-            </Link>
-          </Reveal>
-          <Reveal delay={110}>
-            <p className="refresh-what-route">
-              Wherever you start, the route is the same. Work out what to
-              change, build it, get your team using it, then improve it. You
-              agree each step before it happens, and you can stop after any one
-              of them.
-            </p>
-          </Reveal>
-        </section>
-
-        {/* Start where the reader already is: a specific evening, and a number
+        {/* 1. Start where the reader already is: a specific evening, and a number
             they can check against their own phone. */}
         <section className="refresh-problem">
           <div className="agency-container refresh-problem-grid">
@@ -133,7 +69,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* The answer to the evening above, followed step by step so nobody has
+        {/* 2. The answer to the evening above, followed step by step so nobody has
             to take our word for who does what. */}
         <section
           id="one-enquiry"
@@ -162,7 +98,7 @@ export default function Home() {
           </Reveal>
         </section>
 
-        {/* The argument the company turns on. It gets its own dark band because
+        {/* 3. The argument the company turns on. It gets its own dark band because
             it is the objection every owner arrives with. */}
         <section className="refresh-line">
           <div className="agency-container refresh-line-grid">
@@ -207,18 +143,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Only now the menu. A service list read before the story above is a
-            list of words; read after it, each line has a picture behind it. */}
+        {/* 4. What Aksen Is & The Four Capability Areas. */}
         <section id="what-we-do" className="agency-container refresh-section">
           <Reveal className="refresh-section-heading">
             <div>
-              <p className="agency-eyebrow">WHAT WE DO</p>
+              <p className="agency-eyebrow">WHAT AKSEN DOES</p>
               <h2>Four areas, and you do not have to buy all four.</h2>
             </div>
             <p>
-              The WhatsApp agent is one job out of four. Websites and shops,
-              connected records, reporting you can act on, and products built
-              from scratch. Start with the part you want to improve.
+              The WhatsApp assistant is one job out of four. Aksen Labs is a
+              digital transformation agency based in Ghana. We rebuild how
+              your business actually runs: customer experience and commerce,
+              business systems and operations, data and insight, and custom
+              digital products.
             </p>
           </Reveal>
           <ServiceList />
@@ -308,29 +245,28 @@ export default function Home() {
           <Reveal className="refresh-why-copy">
             <p className="agency-eyebrow">WHY THIS EXISTS</p>
             <h2>
-              Africa gets the youngest workforce on earth.
+              African businesses are built on relentless ambition.
               <br />
-              <em>The argument about jobs has already started.</em>
+              <em>The systems they run on should match that energy.</em>
             </h2>
             <p>
-              More graduates every year, and plenty of them cannot find work.
-              Employers say the skills are not there. Graduates say nobody will
-              give them a first job. Both sides have a point, and neither is
-              going to fix it by saying it louder.
+              Across Accra, Lagos and beyond, founders build thriving companies
+              against real friction: fragmented tools, manual message backlogs,
+              unreliable syncs, and software built for San Francisco instead of
+              West Africa.
             </p>
             <p>
-              I am not going to solve that from here. What I can do is work with
-              the door open. The tools on this site, the walkthroughs, the notes
-              on the blog: that is the work in public, and the workings are left
-              where somebody else can pick them up. Building an agent is the
-              easy half. Getting one running properly in a real business is the
-              half worth writing about.
+              We started Aksen Labs to change that. Not with generic advice or
+              bloated enterprise contracts, but with dependable, connected
+              technology built for how African commerce actually works. We work
+              with the door open: the tools on this site, our walkthroughs, and
+              our technical notes are shared in public.
             </p>
             <p className="refresh-why-plain">
-              Businesses I build for get the same deal. You see what the system
-              does, you see exactly where a person still decides, and the scope
-              and price are agreed before anyone spends anything. We have no
-              customer case study yet and we are not going to invent one.
+              Clients who partner with us get the exact same deal: you see
+              working software running before you commit, human judgement
+              remains firmly in control of critical decisions, and scope and
+              pricing are agreed in writing before anyone spends a cedi.
             </p>
             <div className="agency-actions">
               <Link className="agency-button" href="/agent-mapper">

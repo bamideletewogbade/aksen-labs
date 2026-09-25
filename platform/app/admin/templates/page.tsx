@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { OperationsDesk } from '@/components/operations-desk';
 export const metadata = { title: 'Document templates | Aksen Workspace' };
 export default async function Page({
@@ -11,11 +13,16 @@ export default async function Page({
     <section className="admin-main">
       <header className="admin-header">
         <div>
-          <small>AGENCY OPERATIONS</small>
-          <h1>Document templates</h1>
+          <small>CLIENT WORK & AGENCY OPERATIONS</small>
+          <h1>Document templates studio</h1>
           <p>
-            Reusable documents for discovery, agreement, delivery, launch and
-            ongoing care.
+            Standard operating documents for discovery, agreement, delivery, launch and
+            ongoing care. Grounded in Erhart & Jev frameworks for frictionless client conversion.
+          </p>
+          <p className="admin-header-aside">
+            <Link href="/admin/operations">
+              Prepare client drafts with AI <ArrowUpRight size={15} />
+            </Link>
           </p>
         </div>
       </header>

@@ -11,6 +11,11 @@ while poking around is doing that to the real data the deployed site is using.
 There is no separate development database today. Until there is, treat the
 local admin as production with a different address bar.
 
+`pnpm e2e` reads `E2E_DATABASE_URL` if you set one, and falls back to the live
+`DATABASE_URL` with a warning. A branch of the live database, made once in the
+Neon console and pasted into `.env` as `E2E_DATABASE_URL`, is what turns that
+run from looking at real records into being allowed to click things in them.
+
 ## Start it
 
 ```
@@ -60,19 +65,21 @@ differently in production than it did in dev.
 ## Checks before pushing
 
 ```
-node tests/currency.mjs
-node tests/enquiry-loop.mjs
-node tests/support-knowledge.mjs
-node tests/crm-records.mjs
-node tests/contact-channels.mjs
-node tests/scout-limits.mjs
-node tests/prospecting.mjs
-node tests/admin-password.mjs
-node tests/agent-workbench.mjs
-node tests/agency-motion.mjs
+pnpm test
 pnpm lint
 pnpm build
 ```
+
+`pnpm test` runs everything in `tests/`. It used to be a list of ten `node
+tests/<name>.mjs` lines copied into this file, which meant the twenty-two other
+tests were only run by whoever remembered they existed. `pnpm test <word>`
+narrows it while you work on one thing.
+
+`pnpm e2e` is the separate one: it starts a dev server, signs itself in and
+opens all twenty-two admin screens in a real browser, looking for pages that
+render fine when called directly and break in front of a person. Slower, and it
+reads the live database, so it is a before-pushing check rather than a
+while-editing one.
 
 `pnpm build` succeeding is **not** a typecheck. It has passed with real type
 errors in it more than once, including two that would have printed
