@@ -16,7 +16,7 @@ Always first. Never optional.
 - [ ] **S-02** Message Ope about the three Lagos decor brands (≈10m). One WhatsApp number, no website, exactly the core offer. Ask for a twenty-minute call, do not pitch in the message.
 - [ ] **S-03** Message the Efe Organics founder (≈10m). No owned channel, all sales through a reseller. Ask what happens when a customer messages her directly.
 - [ ] **S-04** Write the twenty-minute diagnostic script (≈20m). The five Friend's Guide questions, asked before explaining anything. Save to `Docs/Owner-Conversations.md`.
-- [ ] **S-05** Write the one-page assessment offer note (≈25m). GHS 2,500, one process, what they get, what it does not include. R-001 cannot be sold without it.
+- [ ] **S-05** Write the one-page free assessment note (≈25m). Free for every business: what they get, what happens after, and that money is discussed only if a fix is worth building. (Was a GHS 2,500 offer note; the assessment became free on 28 September.)
 - [ ] **S-06** List ten Accra businesses that sell over WhatsApp with no order system (≈20m). Owner-led retail or made-to-order. Lead Scout exists for this.
 - [ ] **S-07** List ten more (≈20m)
 - [ ] **S-08** Book one conversation from the list (≈15m)

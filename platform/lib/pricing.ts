@@ -35,13 +35,17 @@ export const stages: PricingStage[] = [
   {
     number: '01',
     title: 'Assess',
-    price: { kind: 'exact', from: 1500, set: { NGN: { from: 180000 } } },
-    cadence: 'fixed',
-    text: 'One process examined properly before anyone builds anything. If the assessment shows the work is not worth doing, we say so.',
+    // Free for every business, decided 28 September 2026. The job is to help
+    // an owner see where orders, customers or time are slipping, not to charge
+    // them for being told. Money comes up after this, and only if a fix is
+    // worth building. It was GHS 1,500 before that.
+    price: { kind: 'custom', label: 'Free' },
+    cadence: 'for every business',
+    text: 'We look at how your business runs today and find where orders, customers or time are slipping. You pay nothing for this. We talk about money only if there is a fix worth building, and if there is not, we say so.',
     includes: [
-      'Discovery session with the people doing the work',
-      'Current workflow mapped with a baseline measure',
-      'Written implementation scope and estimate',
+      'A conversation about how your business works now',
+      'Where orders, leads or time are slipping, and what that costs you',
+      'A written summary with the smallest fix worth doing, including ones you can make yourself',
     ],
   },
   {
@@ -307,7 +311,7 @@ export const startingPoints: { need: string; step: string; href: string }[] = [
   },
   {
     need: 'You have a workflow problem but the scope is unclear',
-    step: 'Assessment first',
+    step: 'Free assessment first',
     href: '/how-it-works',
   },
   {
@@ -327,21 +331,21 @@ export const startingPoints: { need: string; step: string; href: string }[] = [
   },
 ];
 
-// The assessment figure appears in these answers and in stages[0]. Written out
-// twice it drifts, which is how the published build price once disagreed with
-// the pricing page. Quoted in cedis deliberately: the answer is about what the
+// The build figure appears in these answers and in stages[1]. Written out twice
+// it drifts, which is how the published build price once disagreed with the
+// pricing page. Quoted in cedis deliberately: the answer is about what the
 // contract says, and the contract is in cedis.
-const assessmentFee = formatPrice(stages[0].price, 'GHS');
+const buildFrom = formatPrice(stages[1].price, 'GHS');
 
 export const pricingFaqs = [
   {
-    question: `Do I need the ${assessmentFee} assessment?`,
+    question: 'Do I have to pay for the assessment?',
     answer:
-      'For an unclear workflow or a complex system, we recommend a separate assessment of one process. A straightforward project with a clear brief can go directly to a quotation. We agree the assessment scope before you pay.',
+      'No. The assessment is free for every business. We look at how you work, find where orders, customers or time are slipping, and give you a written summary with the smallest fix worth doing. Some fixes you can make yourself, and we will say so.',
   },
   {
-    question: 'Is the assessment included in the build price?',
-    answer: `No. The ${assessmentFee} pays for the assessment and written implementation scope. It is additional to the build and is not automatically credited. Any agreed credit will be stated in your proposal. You can stop after the assessment without commissioning a build.`,
+    question: 'When do we talk about money?',
+    answer: `After the assessment, and only if there is something worth building. We then write a quotation for the agreed scope, and you decide. Builds start at ${buildFrom.replace(/^From /, '')}. If the assessment shows nothing worth building, that is where it ends and you owe nothing.`,
   },
   {
     question: 'What does monthly care actually cover?',

@@ -2,6 +2,8 @@
 
 Recorded 2026-09-10. Two parts: a review of the four services as things the site can render and sell, and an operating guide for turning the published pricing into a profitable business. Historical figures come from the September 4 launch strategy, the Services & Pricing Guide and the decision ledger. The September 10 website revision below supersedes earlier public-pricing recommendations; financial scenarios remain illustrative. Nothing here is a validated market price or a commitment to a client.
 
+> **Changed 28 September 2026: the assessment is free for every business.** Every "GHS 2,500 assessment" below, including the assessment revenue in the scenario table, no longer applies. The scenarios now need their assessment column read as zero revenue and non-zero delivery hours. The current ladder is in section 5 of the operating brief and `platform/lib/pricing.ts`.
+
 ## Part 1 — Do the four services make sense to render?
 
 `lib/agency-content.ts` defines four services, rendered on the homepage (`ServiceList`) and `/solutions`. They match D-002 and the September 7 positioning, and they are grouped the way an owner-led business recognises its own problems rather than by technology. As a public taxonomy they hold up.

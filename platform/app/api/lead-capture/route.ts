@@ -109,7 +109,7 @@ async function POSTHandler(request: Request) {
     summary: tool ? `Ran ${tool}. ${note}` : note,
     recommendation: 'Ran a free tool and asked for a copy',
     channel: source === 'business_agent' ? 'Free business agent' : 'Website',
-    nextAction: 'Read what they wrote, then offer the assessment',
+    nextAction: 'Read what they wrote, then offer the free assessment',
     intakeKey: await intakeKey(source, email, note),
     detail: { tool, sentDraft: !!draft },
     acknowledgement: draft

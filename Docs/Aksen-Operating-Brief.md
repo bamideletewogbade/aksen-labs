@@ -132,7 +132,7 @@ From the pricing and profitability guide, 10 September.
 
 | Stage | Price | Job it does |
 | --- | --- | --- |
-| Assess | GHS 2,500 fixed, one agreed process | Converts curiosity into paid work; stops you quoting blind |
+| Assess | **Free** for every business, since 28 September 2026 | Finds the bottleneck with the owner, earns the right to quote, stops you quoting blind |
 | Build | From GHS 6,500, quoted *after* assessment | The revenue event |
 | Operate | From GHS 900/mo website care; managed operations GHS 4,000–18,000/mo | The compounding part; the reason the business is worth owning |
 
@@ -191,13 +191,13 @@ The goal is evidence, not a sale.
 
 **Exit test:** 20 logged conversations, and you can quote the three sentences owners actually used to describe the problem. If those sentences do not match the homepage, the homepage changes.
 
-### Phase 2: Sell three assessments (weeks 3–8, overlaps Phase 1)
+### Phase 2: Turn free assessments into quotes (weeks 3–8, overlaps Phase 1)
 
-- [ ] Offer the GHS 2,500 assessment on one agreed process to every qualified conversation
-- [ ] Three paid and collected
+- [ ] Offer the free assessment to every owner with a real problem
 - [ ] For each: estimate their current quoting and rework effort, the value of avoidable errors, implementation cost, recurring care and provider usage. Separate time saved from cash saved
+- [ ] A written quotation to every assessment that finds a fix worth building
 
-**Exit test:** GHS 7,500 invoiced and in the account. Not promised. In the account.
+**Exit test:** not yet set. The old test was GHS 7,500 from three paid assessments, which stopped applying on 28 September 2026 when the assessment became free. The first cedis now arrive with the first build in Phase 3. The founder sets the new number; until then, count quotations sent.
 
 ### Phase 3: Deliver one build (weeks 6–14)
 
@@ -259,7 +259,7 @@ Asked for directly, so this is a straight answer rather than a balanced one.
 
 **6. Twenty conversations, not one deal.** TFS is a single stalled negotiation being treated as a pipeline. One deal that goes quiet takes the whole company's morale with it. Twenty conversations makes any single silence uninteresting, and it is the only way to find out whether the offer is wrong before building more of it.
 
-**7. Charge for the pilot, even if it feels early.** The GHS 2,500 assessment exists. Free work produces a case study nobody respects, a client who does not turn up to meetings, and no information about willingness to pay, which is the one thing that is still unknown.
+**7. Overruled 28 September 2026.** This item argued for charging for the assessment. The founder made it free, because the aim is to help owners rather than drain their cash before anything is built. The original text is preserved under Superseded text below. The risk it named still applies to the build: the first paid work is where willingness to pay gets tested, so quote it properly.
 
 **8. Be honest about hours.** *Rewritten 22 September 2026; the original is in section 9.* This item used to say that fifteen hours a week alongside another job made the working case impossible, and to plan the cautious case instead. The other job has gone and the hours are now full-time, so that arithmetic no longer binds.
 
@@ -300,6 +300,7 @@ Newest first. One line each: what was decided, when, and why.
 
 | Date | Decision |
 | --- | --- |
+| 2026-09-28 | **The assessment is free for every business.** The aim is to help owners, not to drain their cash before anything is built; money is discussed after the first conversation has found the bottleneck, and only if a fix is worth building. It replaces a paid assessment that this brief priced at GHS 2,500 and the website at GHS 1,500, a mismatch found the same day. Website, support assistant, drafting prompts and templates updated; R-001 and R-008 killed in the ledger; Phase 2 reframed and its exit test left for the founder to set; section 7 item 7 overruled, original kept below. Still to decide: the Nigeria kit's paid Business Check (₦49,900) in `marketing/nigeria-kit/`, not changed because its images are already rendered and may have been shared. |
 | 2026-09-27 | Admin "AI tools" renamed **Free tools** and moved under Sales. It now lists only the three public agents, for two jobs: seeing what a visitor gets and running one on a prospect's notes before a call. "Compare a purchase" deleted. Five generic private tools shelved, not deleted (`shelved: true` in `lib/agent-workbench.ts`): they do nothing a chat assistant does not, and none moves a sale while there are no paying clients. The payment tool removed: told to include a payment link, a model invents one. Paystack lookups now sit on the invoice in Finances, with no model in between. |
 | 2026-09-22 | Founder full-time on Aksen Labs; the AIC role ended. Section 5's capacity arithmetic updated: the binding constraint moves from capacity to demand. Section 7 item 8 rewritten; its original text is preserved below. The working case (8 builds, GHS 204,000) is now arithmetically reachable, which is permission to sell harder and not permission to build more. |
 | 2026-09-22 | External strategic review received from Kevin, written without access to this brief. Independently reached section 7's conclusions on human in the loop, pre-proof status, stopping internal tooling and leading with one narrow offer. Logged as agreement, not as a new decision. |
@@ -327,3 +328,7 @@ Kept because a record of what we believed and when is worth more than a tidy doc
 > **8. Be honest about hours.** The pricing guide's own arithmetic says that at fifteen hours a week the working case does not fit. Alongside a full-time role elsewhere, fifteen hours is the optimistic number. That is not a reason to stop; it is a reason to plan the cautious case (4 builds, GHS 81,000) and be pleasantly surprised, instead of planning the working case and failing arithmetic rather than execution. It is also worth having thought about the overlap with BVM Digital before a prospect raises it.
 
 Worth reading now and again. The item was right that the plan had to match the hours. It was wrong only about which number was scarce, and that mistake was invisible while the hours were genuinely short.
+
+**Section 7, item 7. Written 16 September, overruled by the founder 28 September**, when the assessment became free:
+
+> **7. Charge for the pilot, even if it feels early.** The GHS 2,500 assessment exists. Free work produces a case study nobody respects, a client who does not turn up to meetings, and no information about willingness to pay, which is the one thing that is still unknown.

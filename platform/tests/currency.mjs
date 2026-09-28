@@ -216,8 +216,11 @@ assert.equal(
   'a set figure for one market leaked into another',
 );
 
-assert.ok(isSetPrice(stages[0].price, 'NGN'));
-assert.ok(!isSetPrice(stages[0].price, 'USD'));
+// stages[0], the assessment, is free and so has no figure to set. The build
+// is the first stage with a naira price.
+assert.equal(stages[0].price.kind, 'custom');
+assert.ok(isSetPrice(stages[1].price, 'NGN'));
+assert.ok(!isSetPrice(stages[1].price, 'USD'));
 // A custom label has no figure to set, and must not claim one.
 assert.ok(!isSetPrice({ kind: 'custom', label: 'Custom retainer' }, 'NGN'));
 

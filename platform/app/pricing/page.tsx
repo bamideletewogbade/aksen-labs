@@ -124,7 +124,7 @@ export default async function PricingPage() {
                     className="agency-text-link"
                     href={pricingEnquiryHref('Assessment')}
                   >
-                    Discuss an assessment <ArrowUpRight size={16} />
+                    Ask for a free assessment <ArrowUpRight size={16} />
                   </Link>
                 )}
               </article>

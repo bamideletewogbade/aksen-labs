@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { getDb } from '@/db';
 import { auditEvents, opportunities } from '@/db/schema';
+import { parseGoals } from '@/lib/business-goals';
 
 function isAdmin(email: string) {
   return adminEmailAllowed(email);
@@ -32,10 +33,16 @@ async function POSTHandler(request: Request) {
   const name = text(body.name, 120);
   const company = text(body.company, 160);
   const email = text(body.email, 200).toLowerCase();
-  const need = text(body.need, 200);
+  const goals = parseGoals(body.goals);
+  // Either the boxes or their words is enough. Most owners can say what they
+  // want more of before they can describe the problem behind it.
+  const need = text(body.need, 200) || goals.join(', ');
   if (!name || !company || !need)
     return NextResponse.json(
-      { error: 'Name, company and what they need are required.' },
+      {
+        error:
+          'Add their name, business, and what they want: tick a box or describe it.',
+      },
       { status: 400 },
     );
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -53,9 +60,9 @@ async function POSTHandler(request: Request) {
     email,
     work: need,
     channel: text(body.channel, 160) || 'Added by hand',
-    // A lead you added yourself has not answered the mapper, so these stay honest
-    // placeholders rather than inventing answers on the person's behalf.
-    desiredOutcome: 'To be agreed in discovery',
+    // A lead you added yourself has not answered the mapper. What they want is
+    // recorded only if you ticked it, never invented on their behalf.
+    desiredOutcome: goals.length ? goals.join(', ') : 'To be agreed',
     recommendation: 'To be scoped',
     summary: `${need} (added by ${user.displayName})`,
     source: 'manual',

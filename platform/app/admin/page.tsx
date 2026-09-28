@@ -25,6 +25,7 @@ import {
   type FounderAction,
 } from '@/components/founder-action-queue';
 import { money } from '@/lib/workspace-rules';
+import { companyName } from '@/lib/company-name';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Home | Aksen Workspace' };
@@ -51,22 +52,6 @@ function rowValue(row: Record<string, unknown> | undefined, key: string) {
 
 function textValue(value: unknown, fallback: string) {
   return typeof value === 'string' && value.trim() ? value : fallback;
-}
-
-// The enquiry form stores placeholders like "Not given" when someone skips the
-// company field. Read them as missing so a queue item never names "Not given".
-const placeholderCompanies = new Set([
-  'not given',
-  'n/a',
-  'na',
-  'none',
-  'unknown',
-  '-',
-]);
-
-function companyName(value: unknown) {
-  const text = typeof value === 'string' ? value.trim() : '';
-  return text && !placeholderCompanies.has(text.toLowerCase()) ? text : '';
 }
 
 export default async function AdminPage() {

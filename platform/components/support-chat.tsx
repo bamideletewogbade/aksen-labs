@@ -44,7 +44,7 @@ export function SupportChat({
           ]
         : [
             'What can Aksen help my business with?',
-            'Is the GHS 1,500 assessment credited?',
+            'Is the assessment really free?',
             'How much does monthly care cost?',
             'Can I try a customer-support demo?',
           ];

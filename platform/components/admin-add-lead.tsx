@@ -3,6 +3,7 @@
 import { ArrowRight, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { PendingButton } from '@/components/ui/activity';
+import { businessGoals } from '@/lib/business-goals';
 
 export function AdminAddLead() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
@@ -17,9 +18,13 @@ export function AdminAddLead() {
     event.preventDefault();
     setStatus('saving');
     setMessage('');
-    const payload = Object.fromEntries(
-      new FormData(event.currentTarget).entries(),
-    );
+    const form = new FormData(event.currentTarget);
+    // fromEntries keeps one value per name, which would drop every ticked goal
+    // but the last. The goals are collected as a list on their own.
+    const payload = {
+      ...Object.fromEntries(form.entries()),
+      goals: form.getAll('goals'),
+    };
     try {
       const response = await fetch('/api/admin/opportunities', {
         method: 'POST',
@@ -68,11 +73,21 @@ export function AdminAddLead() {
             placeholder="Leave blank if you only have WhatsApp"
           />
         </label>
+        <fieldset className="lead-goals">
+          <legend>
+            What do they want more of? <small>tick all that apply</small>
+          </legend>
+          {businessGoals.map((goal) => (
+            <label key={goal}>
+              <input type="checkbox" name="goals" value={goal} />
+              {goal}
+            </label>
+          ))}
+        </fieldset>
         <label>
-          What do they need?
+          In their words <small>optional if you ticked a box</small>
           <textarea
             name="need"
-            required
             placeholder="Enquiries piling up on WhatsApp with no record of them"
           />
         </label>

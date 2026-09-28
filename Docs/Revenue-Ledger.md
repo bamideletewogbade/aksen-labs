@@ -8,12 +8,12 @@ Every way this business could actually make money, as a pipeline. Stages and rul
 | --- | --- |
 | Earning | 0 |
 | Testing | 1 |
-| Sized | 4 |
-| Noticed | 3 |
+| Sized | 3 |
+| Noticed | 2 |
 | Parked | 2 |
-| Killed | 1 |
+| Killed | 3 |
 
-*Last reviewed 15 September 2026.*
+*Last reviewed 15 September 2026. Updated 28 September 2026: the assessment became free, which killed R-001 and R-008.*
 
 **The pricing principle, since it now applies to more than one item.** Price the entry low enough that nobody needs a meeting to say yes, and put the margin in what costs us nothing to repeat. A first cut at GHS 450 and a recut at GHS 150 is not a discount ladder; it is charging for the thing that is genuinely expensive once, then charging again for a command. Any mechanism where the second unit costs us the same as the first should be priced the normal way instead.
 
@@ -24,7 +24,7 @@ Every way this business could actually make money, as a pipeline. Stages and rul
 ### R-006 · Warm network conversion
 **Thesis.** The first paying customer comes from someone who already knows the founder, not from the website.
 
-**Mechanism.** A named contact pays for an assessment or a bounded build. One-off, GHS 2,500 to GHS 15,000, with care quoted after.
+**Mechanism.** A named contact gets a free assessment, then pays for a bounded build. One-off, from GHS 3,000 to GHS 15,000, with care quoted after.
 
 **Live names.** The Frame Shop (implementation started, alignment message *drafted and unsent*). Ope's Lagos group: three decor brands, one WhatsApp number, no website, the closest match to the core offer anywhere in the pipeline. Efe Organics: no owned channel, sells entirely through a reseller.
 
@@ -42,29 +42,10 @@ Every way this business could actually make money, as a pipeline. Stages and rul
 
 ## Sized
 
-### R-001 · Standalone paid assessment
-**Thesis.** The fastest route to the first cedi is selling a diagnosis, because it requires nothing to be built first.
-
-**Mechanism.** An owner pays **GHS 2,500** for one agreed process: mapped, where it stalls identified, the smallest worthwhile fix recommended. One-off, repeatable, delivered in roughly four to six hours. Additional to any build and never automatically credited.
-
-**For.** Priced and published. The operating templates already contain discovery and qualification. It converts curiosity into paid work and stops us quoting blind. Contribution is high because delivery is analysis, not engineering.
-
-**Against.** GHS 2,500 is a real decision for a small Ghanaian retailer with no prior relationship. Competitor BVM advertises an audit at GHS 1,500, which sets an anchor below ours.
-
-**Cost to test.** Zero cedis. Roughly two hours to prepare the offer note and the delivery template.
-
-**Fastest test.** Offer it to every qualified conversation in Phase 1. Precede it with a free twenty-minute diagnostic call ("bring me one process that annoys you") and convert on the call.
-
-**Exit criterion.** Three assessments invoiced and collected by **10 November 2026**.
-
-**Next action.** Write the one-page assessment offer note: what they get, what it costs, what it does not include.
-
----
-
 ### R-002 · WhatsApp order agent, build and care
 **Thesis.** The core offer. The story the whole site and the launch film now tell.
 
-**Mechanism.** Build from **GHS 9,240** (the 50% floor on a 36-hour estimate), quoted only after an assessment. Then managed operations at **GHS 4,000–18,000/month**. The build pays this month's bills; the care is the asset.
+**Mechanism.** Build from **GHS 9,240** (the 50% floor on a 36-hour estimate), quoted only after a free assessment. Then managed operations at **GHS 4,000–18,000/month**. The build pays this month's bills; the care is the asset.
 
 **For.** Recognisable problem, concrete demonstration, working boundaries. Mobile-money merchant payments grew 42% to $155bn globally in 2025, which supports connecting payments to the work around orders.
 
@@ -74,7 +55,7 @@ Every way this business could actually make money, as a pipeline. Stages and rul
 
 **Exit criterion.** One build accepted against written criteria, invoice paid, hours logged, actual contribution at or above 45%.
 
-**Next action.** Nothing until R-001 produces a paying assessment. Quoting a build before an assessment is the failure this ladder exists to prevent.
+**Next action.** Quote a build wherever a free assessment finds a fix worth building. Quoting before an assessment is still the failure the ladder exists to prevent; the assessment is free now, so there is no reason to skip it.
 
 ---
 
@@ -164,19 +145,6 @@ An editor's second cut costs them another day, so they must charge for it. Ours 
 
 ---
 
-### R-008 · Assessment findings as a paid written report
-**Thesis.** The assessment already produces a document. A document is a product.
-
-**Mechanism.** The same GHS 2,500 diagnosis delivered as a written report with no meeting, for owners who will not book a call. Lower delivery cost, wider reach, asynchronous.
-
-**For.** Removes the calendar as an obstacle. Scales past the founder's hours, which is the binding constraint. The agent desk already drafts qualification and discovery from records.
-
-**Against.** A report nobody discusses is a report nobody acts on, and an unactioned assessment produces no build. The meeting is where the build gets sold.
-
-**To size it.** After three assessments have been delivered the normal way and there is something real to templatise.
-
----
-
 ## Parked
 
 ### R-009 · The workspace as a product
@@ -198,6 +166,20 @@ Built, working, used by us, no public address. Jobseeker buyer, not the business
 ---
 
 ## Killed
+
+### R-001 · Standalone paid assessment
+**Killed 28 September 2026, by the founder.** The aim is to help these businesses, not to drain their cash before anything has been built for them. The assessment is now free for every business, and money is discussed only after it, when there is a fix worth building. The first cedi now arrives with a build (R-002, R-006), not with a diagnosis.
+
+It was: an owner pays for one agreed process to be mapped, with the smallest worthwhile fix recommended. Priced at GHS 2,500 in this ledger and GHS 1,500 on the website, a mismatch found the same day.
+
+**Would only reopen if:** free assessments are measurably eating delivery hours without turning into builds. Measured, not assumed.
+
+---
+
+### R-008 · Assessment findings as a paid written report
+**Killed 28 September 2026** with R-001. It sold the same diagnosis as a document, and the diagnosis is now free. A written summary still comes out of every assessment; it is part of the free offer, not a product.
+
+---
 
 ### R-011 · Charging for the business agents
 **Killed 15 September 2026.** The three free agents are the only thing on the site a stranger can use without trusting us first, and "free, no account, nothing to hand over" is the entire reason anyone tries them. Charging would collect trivial revenue and destroy the top of the funnel that R-003 depends on.

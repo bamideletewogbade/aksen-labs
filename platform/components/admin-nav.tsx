@@ -24,6 +24,10 @@ import {
   ChevronDown,
   Share2,
   Kanban,
+  Sun,
+  TrendingUp,
+  Megaphone,
+  Settings2,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -45,9 +49,12 @@ import { useEffect, useRef, useState } from 'react';
  * where you would want them, which is not the same as deserving a permanent
  * line in the navigation.
  */
+// Each section has an icon for the collapsed rail, which shows sections rather
+// than pages. The open sidebar shows the section names instead.
 const groups = [
   {
     label: 'Today',
+    icon: Sun,
     items: [{ href: '/admin', label: 'Home', icon: Activity }],
   },
   {
@@ -57,6 +64,7 @@ const groups = [
     // rather than clients with problems, and filing them under delivery buried
     // inbound interest underneath work already won.
     label: 'Sales',
+    icon: TrendingUp,
     items: [
       {
         href: '/admin/pipeline',
@@ -65,10 +73,9 @@ const groups = [
       },
       { href: '/admin/prospects', label: 'Find leads', icon: Search },
       { href: '/admin/support', label: 'Messages', icon: MessageSquareText },
-      // Named as the public site names them. It was "AI tools" under Today,
-      // which described every page in here and said nothing about this one.
-      // Its job is sales: see what a visitor gets, and run one on a prospect's
-      // notes before a call.
+      // Becomes "Assessments" (/admin/assessment) when that page is built: the
+      // free assessment, run with the owner, often on a shared screen. Until
+      // then it stays on the page that exists, so nothing links to a 404.
       { href: '/admin/agent-desk', label: 'Free tools', icon: ClipboardList },
       // People waiting on a product rather than asking about a service. They
       // arrive through the products page, not the enquiry funnel, so they never
@@ -79,6 +86,7 @@ const groups = [
   },
   {
     label: 'Client work',
+    icon: BriefcaseBusiness,
     items: [
       {
         href: '/admin/projects',
@@ -100,6 +108,7 @@ const groups = [
   },
   {
     label: 'Marketing',
+    icon: Megaphone,
     items: [
       // Not "Products": the page covers everything public, and there is one
       // product against four free tools.
@@ -117,6 +126,7 @@ const groups = [
   },
   {
     label: 'Manage',
+    icon: Settings2,
     items: [
       { href: '/admin/agents', label: 'AI usage & model costs', icon: Gauge },
       { href: '/admin/audit', label: 'Activity history', icon: ScrollText },
@@ -173,21 +183,34 @@ export function AdminNav({ signOutPath }: { signOutPath: string }) {
       >
         {groups.map((group) => {
           const expanded = expandedGroup === group.label;
+          const GroupIcon = group.icon;
           return (
             <div
-              className={
-                expanded ? 'admin-nav-group is-expanded' : 'admin-nav-group'
-              }
+              className={[
+                'admin-nav-group',
+                expanded && 'is-expanded',
+                group.label === activeGroup && 'has-active',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               key={group.label}
             >
               <button
                 className="admin-nav-group-toggle"
                 type="button"
                 aria-expanded={expanded}
+                // In the collapsed rail the icon is all that shows, so the
+                // name has to reach a pointer and a screen reader some other way.
+                title={group.label}
                 onClick={() => setExpandedGroup(expanded ? '' : group.label)}
               >
+                <GroupIcon
+                  size={18}
+                  className="admin-nav-group-icon"
+                  aria-hidden="true"
+                />
                 <span>{group.label}</span>
-                <ChevronDown size={15} />
+                <ChevronDown size={15} className="admin-nav-group-chevron" />
               </button>
               <div className="admin-nav-group-items">
                 {group.items.map(({ href, label, icon: Icon }) => (

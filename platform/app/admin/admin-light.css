@@ -737,6 +737,13 @@
     scrollbar-color: #2f4a37 transparent;
   }
 
+  /* Section icons belong to the collapsed rail. The open sidebar names its
+     sections in small capitals, where an icon beside each would be noise. */
+  .admin-refresh .admin-nav-group-icon {
+    display: none;
+    flex: none;
+  }
+
   :root[data-rail='collapsed'] .admin-refresh {
     grid-template-columns: 64px minmax(0, 1fr);
     background: linear-gradient(to right, #102219 0 64px, #f4f7f1 64px 100%);
@@ -765,25 +772,26 @@
     box-shadow: 14px 0 44px #04120b3d;
   }
 
-  /* Collapsed and untouched: icons only, and every group open, because an
-     accordion whose labels are hidden is a set of unmarked doors. */
+  /* Collapsed and untouched: one icon per section, not one per page.
+
+     It used to open every group and show all 21 page icons, a column of
+     unlabelled symbols you had to memorise, which scrolled on any screen
+     shorter than a 1080p window. The five section icons say where you are
+     and what exists; pointing at the rail opens the full sidebar with its
+     labels, which is where choosing a page happens. The section holding the
+     current page is lit, so the collapsed rail still answers "where am I". */
   :root[data-rail='collapsed']
     .admin-refresh
     .admin-sidebar:not(:hover, :has(:focus-visible)) {
     .admin-nav-label,
     .admin-brand div,
     .admin-nav-group-toggle span,
-    .admin-nav-group-toggle svg,
+    .admin-nav-group-chevron,
+    .admin-nav-group-items,
     .admin-profile span,
     .admin-profile > a {
-      display: none;
+      display: none !important;
     }
-    /* Every group open means all 21 icons at once. At the expanded rail's
-       row height that was 1162px, taller than a 1080p browser window, so the
-       rail scrolled. These sizes fit it in about 810px: 32px rows, no padding
-       between groups, and no divider above the first one, where there is
-       nothing to divide it from. Shorter windows still scroll, with the bar
-       hidden, because in a 44px column the bar is most of the column. */
     .admin-navigation {
       scrollbar-width: none;
     }
@@ -791,45 +799,35 @@
       display: none;
     }
     .admin-links {
-      gap: 0;
+      gap: 4px;
       padding-bottom: 0;
     }
     .admin-nav-group {
       margin-bottom: 0;
     }
-    .admin-nav-group-items {
-      display: grid !important;
-      height: auto !important;
-      opacity: 1 !important;
-      overflow: visible !important;
-      gap: 2px;
-      padding: 0;
-    }
-    /* Auto, not the button's 100%: full width plus the side margins was 8px
-       wider than the rail, the other half of the sideways scrollbar. */
     .admin-nav-group-toggle {
-      width: auto;
-      height: 1px;
+      width: 44px;
+      height: 40px;
       min-height: 0;
       padding: 0;
-      margin: 6px 8px;
-      overflow: hidden;
-      background: #2a3c2e;
-      border-radius: 1px;
+      justify-content: center;
+      color: #8fa795;
     }
-    .admin-nav-group:first-child .admin-nav-group-toggle {
-      display: none;
+    .admin-nav-group-icon {
+      display: block;
+    }
+    .admin-nav-group.has-active .admin-nav-group-toggle {
+      background: #294832;
+      color: #eff8e5;
     }
     /* Flex, not the expanded link's two-column grid: with the label hidden,
-       the grid kept an empty second column and parked each icon 13px left
-       of the rail's centre. */
-    nav a:not(.admin-menu-signout),
+       the grid kept an empty second column and parked the icon 13px left of
+       the rail's centre. */
     .admin-site-link {
       display: flex;
       gap: 0;
       justify-content: center;
-      min-height: 32px;
-      padding-block: 0;
+      min-height: 36px;
       padding-inline: 0;
     }
     .admin-links a.admin-site-link {
@@ -865,6 +863,11 @@
       transition: none;
     }
   }
+}
+
+/* Section icons only ever show in the collapsed desktop rail, above. */
+.admin-refresh .admin-nav-group-icon {
+  display: none;
 }
 
 /* ----------------------------------------------------------------------

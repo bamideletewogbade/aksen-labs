@@ -192,10 +192,10 @@ assert.ok(knowledge.requestedHandoff('I want a refund'));
 assert.ok(
   knowledge
     .supportFallback(knowledge.retrieveSupportArticles('assessment fee'))
-    .includes('not automatically credited'),
+    .includes('free for every business'),
 );
 globalThis.supportResult = {
-  answer: 'Our assessment is GHS 2,500.',
+  answer: 'Our assessment is free for every business.',
   needsHuman: false,
 };
 globalThis.savedNotes = [];
@@ -244,15 +244,11 @@ assert.equal(
   (await ask({ question: 'Hi', history: 'x'.repeat(13000) })).status,
   413,
 );
-let reply = await (
-  await ask({ question: 'Is the assessment credited?' })
-).json();
+let reply = await (await ask({ question: 'Is the assessment free?' })).json();
 assert.equal(reply.source, 'openrouter');
 assert.ok(reply.sources.some((s) => s.id === 'pricing'));
 assert.ok(
-  globalThis.aiOptions.messages[0].content.includes(
-    'not automatically credited',
-  ),
+  globalThis.aiOptions.messages[0].content.includes('free for every business'),
 );
 reply = await (await ask({ question: 'I want a refund' })).json();
 assert.ok(reply.handoff.recorded);
@@ -269,7 +265,7 @@ assert.equal(globalThis.savedNotes.length, 1);
 globalThis.supportResult = { answer: 17 };
 reply = await (await ask({ question: 'What does assessment cost?' })).json();
 assert.equal(reply.source, 'knowledge-base');
-assert.ok(reply.answer.includes('not automatically credited'));
+assert.ok(reply.answer.includes('free for every business'));
 console.log(
   'PASS: text formatting, references and numbers, log redaction, concurrent request isolation, safe errors, degraded logs, knowledge retrieval, pricing, support boundaries, payload/origin validation, fictional demos and invalid-output fallback.',
 );
