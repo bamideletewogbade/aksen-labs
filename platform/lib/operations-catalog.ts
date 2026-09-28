@@ -5,17 +5,21 @@ export const operationTasks = [
     prompt:
       'Assess fit using only the record. Return known facts, unknowns, a suggested service, three discovery questions and the next human action. Do not treat a score as verified buying intent.',
   },
+  // The record holds what Lead Scout or the enquiry form captured, never the
+  // results of the enquiry test, so most checks come back Not checked until a
+  // person has run it. That is the intended output: the draft shows what is
+  // still to be done instead of guessing the gaps. Prices match lib/pricing.ts.
   {
     id: 'lead_audit',
-    name: 'Erhart 3-gap audit & score',
+    name: 'Enquiry gap audit',
     prompt:
-      'Analyze the enquiry and produce an Adam Erhart-style Asynchronous Gap Audit. Return: 1) Readiness / Capture Score (0-100% based on their current digital friction), 2) Exactly 3 specific operational gaps (lead leakage, manual delay, missing 24/7 capture), 3) A 3-part concrete fix (Clean knowledge, 24/7 capture, monthly care), 4) A frictionless low-commitment next step (flat monthly retainer, cancel anytime, no high-pressure sales calls required; simply reply to review or proceed). Never invent customer facts.',
+      'Draft an enquiry gap audit using the ten Aksen checks. Website checks: 1 a one-tap WhatsApp or call button on the first screen of the home page on a phone; 2 opening hours or reply time shown; 3 prices, ranges or starting prices shown; 4 what a customer must send for a quote; 5 lead times shown; 6 products or work browsable on a phone without a PDF. Enquiry-test checks: 7 business-hours reply within one hour; 8 after-hours reply by 10am the next working day; 9 form or email acknowledged within one working day; 10 first reply moves the enquiry forward. Mark each Pass, Not yet or Not checked, quoting the record as evidence for every Pass and Not yet. Anything the record does not show is Not checked, never a guess. Give the score as checks passed out of checks run, not a percentage. List only gaps with evidence, at most three, each with the smallest fix, including fixes the business can make itself; if nothing is missing, say so. Close with the published next steps: a free 20-minute call, then the GHS 1,500 fixed assessment of one process; any build is quoted in writing only after it. No statistics without a named source, no customer claims, no promised results.',
   },
   {
     id: 'jev_followup',
     name: 'Jev creative follow-up (3 angles)',
     prompt:
-      'Draft 3 distinct creative follow-up email options for this lead using Jev criteria (founder fit, practical concrete example, honest proof). Angle 1: Erhart 3-Gap Audit (objective score and 3 clear gaps). Angle 2: Value-in-Advance Working Prototype (we build a free custom simulation first, judge before committing). Angle 3: Operational Hours-Saved ROI (concrete estimate of repetitive inquiries saved). Include clear subject lines and a single frictionless call to action for each: reply directly, no 30-minute sales call needed.',
+      'Draft 3 distinct creative follow-up email options for this lead using Jev criteria (founder fit, practical concrete example, honest proof). Angle 1: Enquiry gap audit (the checks we ran and what they showed, nothing we did not see). Angle 2: Value-in-Advance Working Prototype (we build a custom simulation first, judge before committing). Angle 3: Hours saved, estimated only from figures the business has given us, otherwise ask for them. Include clear subject lines and a single call to action for each: reply directly, or book a free 20-minute call.',
   },
   {
     id: 'discovery',

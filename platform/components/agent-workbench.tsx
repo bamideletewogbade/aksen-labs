@@ -1,6 +1,13 @@
 ﻿'use client';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Check, Download, FilePenLine, Mail } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Check,
+  Download,
+  FilePenLine,
+  Mail,
+  RefreshCw,
+} from 'lucide-react';
 import { Spinner } from '@/components/ui/activity';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -198,65 +205,49 @@ export function AgentWorkbench({
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  // What the tool returns and what it will not do. Read before writing, so it
+  // sits above the brief on the public page and beside it in the workspace. It
+  // used to sit between the brief and the Run button, which pushed the one
+  // control that matters below the fold.
+  const promise = (
+    <div className="agent-output-promise">
+      <strong>What you’ll get</strong>
+      <p>{agent.output}</p>
+      <p className="agent-boundary">{agent.boundary}</p>
+    </div>
+  );
+  const shortBy = 30 - brief.trim().length;
   return (
-    <div className="agent-workbench">
+    <div className={`agent-workbench ${admin ? 'is-admin' : ''}`}>
       <div className="agent-workbench-layout">
-        {admin ? (
-          <div className="agent-admin-picker">
-            <label htmlFor="admin-agent-select">
-              What do you need help with?
-            </label>
-            <select
-              id="admin-agent-select"
-              value={selected}
+        <nav className="agent-picker" aria-label="Choose a tool">
+          {agents.map((item) => (
+            <Button
+              key={item.id}
+              type="button"
+              variant="ghost"
               disabled={busy}
-              onChange={(event) => choose(event.target.value)}
+              aria-pressed={selected === item.id}
+              className={`agent-choice ${selected === item.id ? 'is-selected' : ''}`}
+              onClick={() => choose(item.id)}
             >
-              {agents.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-            <span>
-              {agent.public
-                ? 'Also available on the public website'
-                : 'Private workspace tool'}
-            </span>
-          </div>
-        ) : (
-          <nav className="agent-picker" aria-label="Choose a business agent">
-            {agents.map((item) => (
-              <Button
-                key={item.id}
-                type="button"
-                variant="ghost"
-                disabled={busy}
-                aria-pressed={selected === item.id}
-                className={`agent-choice ${selected === item.id ? 'is-selected' : ''}`}
-                onClick={() => choose(item.id)}
-              >
-                <span className="agent-choice-name">{item.name}</span>
-                <span className="agent-choice-job">{item.job}</span>
-                <span className="agent-choice-access">
-                  {admin
-                    ? item.public
-                      ? 'Also available to visitors'
-                      : 'Admin only'
-                    : 'Free AI draft'}
-                </span>
-              </Button>
-            ))}
-          </nav>
-        )}
+              <span className="agent-choice-name">{item.name}</span>
+              <span className="agent-choice-job">{item.job}</span>
+              {!admin && (
+                <span className="agent-choice-access">Free AI draft</span>
+              )}
+            </Button>
+          ))}
+        </nav>
         <div className="agent-working-area">
-          <div className="agent-task-heading">
-            <span className="agent-kicker">
-              {admin ? 'SELECTED TOOL' : 'TRY A BUSINESS AGENT'}
-            </span>
-            <h2>{agent.name}</h2>
-            <p>{agent.job}</p>
-          </div>
+          {!admin && (
+            <div className="agent-task-heading">
+              <span className="agent-kicker">TRY A BUSINESS AGENT</span>
+              <h2>{agent.name}</h2>
+              <p>{agent.job}</p>
+            </div>
+          )}
+          {!admin && promise}
           <form onSubmit={run} className="agent-brief-form">
             <label htmlFor="agent-brief">Your brief</label>
             <p id="agent-input-help">{agent.input}</p>
@@ -289,7 +280,13 @@ export function AgentWorkbench({
               >
                 Use a fictional example
               </Button>
-              <span>{brief.length.toLocaleString()} / 8,000</span>
+              {/* The Run button stays disabled under 30 characters. Saying so
+                  here is the difference between a rule and a broken button. */}
+              <span aria-live="polite">
+                {shortBy > 0
+                  ? `${shortBy} more ${shortBy === 1 ? 'character' : 'characters'} to run`
+                  : `${brief.length.toLocaleString()} / 8,000`}
+              </span>
             </div>
             {admin && selected === 'founder-review' && (
               <label className="agent-snapshot">
@@ -312,16 +309,6 @@ export function AgentWorkbench({
                 </span>
               </label>
             )}
-            <div className="agent-output-promise">
-              <strong>What you’ll get</strong>
-              <p>{agent.output}</p>
-              <p className="agent-boundary">{agent.boundary}</p>
-            </div>
-            <p id="agent-privacy" className="agent-privacy">
-              {admin
-                ? 'Your brief goes to the AI provider. Completed drafts are saved in your admin history. Use authorised business information and remove credentials.'
-                : 'Use non-sensitive information. Your brief goes to the AI provider; Aksen’s public activity log stores run details, not your brief or result. Download anything you want to keep.'}
-            </p>
             <Button
               type="submit"
               className="agent-run pending-button"
@@ -356,6 +343,11 @@ export function AgentWorkbench({
                 )}
               </span>
             </Button>
+            <p id="agent-privacy" className="agent-privacy">
+              {admin
+                ? 'Your brief goes to the AI provider and the draft is saved to your history. Use only what the prospect agreed to share, and remove credentials.'
+                : 'Use non-sensitive information. Your brief goes to the AI provider; Aksen’s public activity log stores run details, not your brief or result. Download anything you want to keep.'}
+            </p>
             {error && (
               <p role="alert" className="agent-error">
                 {error}
@@ -459,50 +451,70 @@ export function AgentWorkbench({
             </section>
           )}
         </div>
+        {admin && (
+          <aside className="agent-aside">
+            {promise}
+            <section
+              className="agent-history"
+              aria-labelledby="agent-history-heading"
+            >
+              <div className="agent-history-head">
+                <h2 id="agent-history-heading">Saved drafts</h2>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={busy}
+                  aria-label="Refresh saved drafts"
+                  title="Refresh saved drafts"
+                  onClick={() => setHistoryRefresh((value) => value + 1)}
+                >
+                  <RefreshCw size={15} />
+                </Button>
+              </div>
+              {historyError && <output>{historyError}</output>}
+              {!history.length && !historyError && (
+                <p>
+                  Drafts you run here are kept, so you can reopen one before a
+                  call.
+                </p>
+              )}
+              <div className="agent-history-list">
+                {history.map((item) => {
+                  // Drafts from a shelved tool stay readable. Opening one
+                  // shows the draft without switching to a tool that is gone.
+                  const listed = agents.some((a) => a.id === item.agent_id);
+                  return (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      key={item.id}
+                      disabled={busy}
+                      aria-current={draft?.id === item.id ? 'true' : undefined}
+                      onClick={() => {
+                        if (listed) choose(item.agent_id);
+                        setDraft({
+                          id: item.id,
+                          agentId: item.agent_id,
+                          name: item.agent_name,
+                          content: item.content,
+                          createdAt: item.created_at,
+                          saved: true,
+                          snapshotAt: item.snapshot_at,
+                        });
+                      }}
+                    >
+                      <span>{item.agent_name}</span>
+                      <small>
+                        {new Date(item.created_at).toLocaleDateString()}
+                      </small>
+                    </Button>
+                  );
+                })}
+              </div>
+            </section>
+          </aside>
+        )}
       </div>
-      {admin && (
-        <section className="agent-history">
-          <h2>Recent saved drafts</h2>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={busy}
-            onClick={() => setHistoryRefresh((value) => value + 1)}
-          >
-            Refresh saved drafts
-          </Button>
-          {historyError && <output>{historyError}</output>}
-          {!history.length && !historyError && (
-            <p>Your completed drafts will appear here.</p>
-          )}
-          <div>
-            {history.map((item) => (
-              <Button
-                type="button"
-                variant="outline"
-                key={item.id}
-                disabled={busy}
-                onClick={() => {
-                  if (!agents.some((a) => a.id === item.agent_id)) return;
-                  choose(item.agent_id);
-                  setDraft({
-                    id: item.id,
-                    agentId: item.agent_id,
-                    name: item.agent_name,
-                    content: item.content,
-                    createdAt: item.created_at,
-                    saved: true,
-                    snapshotAt: item.snapshot_at,
-                  });
-                }}
-              >
-                <span>{item.agent_name}</span>
-                <small>{new Date(item.created_at).toLocaleDateString()}</small>
-              </Button>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

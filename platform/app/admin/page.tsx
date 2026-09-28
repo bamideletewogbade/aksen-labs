@@ -53,6 +53,22 @@ function textValue(value: unknown, fallback: string) {
   return typeof value === 'string' && value.trim() ? value : fallback;
 }
 
+// The enquiry form stores placeholders like "Not given" when someone skips the
+// company field. Read them as missing so a queue item never names "Not given".
+const placeholderCompanies = new Set([
+  'not given',
+  'n/a',
+  'na',
+  'none',
+  'unknown',
+  '-',
+]);
+
+function companyName(value: unknown) {
+  const text = typeof value === 'string' ? value.trim() : '';
+  return text && !placeholderCompanies.has(text.toLowerCase()) ? text : '';
+}
+
 export default async function AdminPage() {
   const user = await getChatGPTUser();
   const owner = user?.userId ?? '';
@@ -67,10 +83,16 @@ export default async function AdminPage() {
   let activity: FounderActivityPoint[] = [];
   let overdueByCurrency: { currency: string; amount: number; count: number }[] =
     [];
-  let collectedByCurrency: { currency: string; amount: number; count: number }[] =
-    [];
-  let outstandingByCurrency: { currency: string; amount: number; count: number }[] =
-    [];
+  let collectedByCurrency: {
+    currency: string;
+    amount: number;
+    count: number;
+  }[] = [];
+  let outstandingByCurrency: {
+    currency: string;
+    amount: number;
+    count: number;
+  }[] = [];
   let aiBurnMicros = 0;
   let aiRunsCount = 0;
   let avgDurationMs = 0;
@@ -265,14 +287,15 @@ export default async function AdminPage() {
 
     // 2. Inbound Fit Audit
     for (const lead of newLeadsResult.rows) {
-      const company = String(lead.company || 'Unknown');
+      const company = companyName(lead.company);
+      const enquirer = textValue(lead.name, 'Enquirer');
       rawActions.push({
         id: `ai-audit-${String(lead.id)}`,
         category: 'ai_strategic',
         badge: 'Inbound Fit',
         tone: 'ai',
-        label: `Audit fit & prepare brief for ${company}`,
-        detail: `${textValue(lead.name, 'Enquirer')} · ${textValue(lead.recommendation, 'Inbound lead')}`,
+        label: `Audit fit & prepare brief for ${company || enquirer}`,
+        detail: `${company ? enquirer : 'No company given'} · ${textValue(lead.recommendation, 'Inbound lead')}`,
         actionText: 'Run Fit Audit',
         href: `/admin/operations?lead=${encodeURIComponent(String(lead.id))}&task=lead_audit`,
       });
@@ -280,7 +303,7 @@ export default async function AdminPage() {
 
     // 3. Stalled Proposal Follow-up
     for (const proposal of stalledProposalsResult.rows) {
-      const company = String(proposal.company || 'Unknown');
+      const company = companyName(proposal.company) || 'Unnamed lead';
       rawActions.push({
         id: `ai-stalled-${String(proposal.id)}`,
         category: 'ai_strategic',
@@ -453,7 +476,7 @@ export default async function AdminPage() {
             <Radar /> Find leads
           </Link>
           <Link href="/admin/agent-desk">
-            <ClipboardList /> Use AI tools
+            <ClipboardList /> Free tools
           </Link>
         </div>
       </header>
@@ -532,7 +555,9 @@ export default async function AdminPage() {
               <div className="founder-card-head">
                 <div>
                   <small>FINANCIAL LEDGER &amp; OPERATING BURN</small>
-                  <h2 id="financials-heading">Business health &amp; unit economics</h2>
+                  <h2 id="financials-heading">
+                    Business health &amp; unit economics
+                  </h2>
                 </div>
                 <Link href="/admin/workspaces?tab=finance">Open finances</Link>
               </div>
@@ -542,9 +567,13 @@ export default async function AdminPage() {
                   <span className="fin-metric-label">
                     <Wallet size={14} /> Cash Collected (MTD)
                   </span>
-                  <strong className="fin-metric-val revenue">{cashCollectedSummary}</strong>
+                  <strong className="fin-metric-val revenue">
+                    {cashCollectedSummary}
+                  </strong>
                   <small>
-                    {totalReceiptsCount} paid client {totalReceiptsCount === 1 ? 'receipt' : 'receipts'} this month
+                    {totalReceiptsCount} paid client{' '}
+                    {totalReceiptsCount === 1 ? 'receipt' : 'receipts'} this
+                    month
                   </small>
                 </div>
 
@@ -552,9 +581,13 @@ export default async function AdminPage() {
                   <span className="fin-metric-label">
                     <CircleDollarSign size={14} /> Outstanding Receivables
                   </span>
-                  <strong className="fin-metric-val pending">{receivablesSummary}</strong>
+                  <strong className="fin-metric-val pending">
+                    {receivablesSummary}
+                  </strong>
                   <small>
-                    {totalOutstandingCount} issued {totalOutstandingCount === 1 ? 'invoice' : 'invoices'} pending
+                    {totalOutstandingCount} issued{' '}
+                    {totalOutstandingCount === 1 ? 'invoice' : 'invoices'}{' '}
+                    pending
                   </small>
                 </div>
 
@@ -562,9 +595,12 @@ export default async function AdminPage() {
                   <span className="fin-metric-label">
                     <Gauge size={14} /> AI Model Spend (MTD)
                   </span>
-                  <strong className="fin-metric-val burn">{aiBurnFormatted}</strong>
+                  <strong className="fin-metric-val burn">
+                    {aiBurnFormatted}
+                  </strong>
                   <small>
-                    {aiRunsCount} runs · {(avgDurationMs / 1000).toFixed(1)}s avg latency
+                    {aiRunsCount} runs · {(avgDurationMs / 1000).toFixed(1)}s
+                    avg latency
                   </small>
                 </div>
 
@@ -574,7 +610,7 @@ export default async function AdminPage() {
                   </span>
                   <strong className="fin-metric-val net">
                     {aiRunsCount > 0
-                      ? `$${((aiBurnMicros / aiRunsCount) / 1_000_000).toFixed(3)}/run`
+                      ? `$${(aiBurnMicros / aiRunsCount / 1_000_000).toFixed(3)}/run`
                       : '$0.00/run'}
                   </strong>
                   <small>Average inference cost per task</small>
@@ -585,9 +621,12 @@ export default async function AdminPage() {
                 <div className="fin-overdue-alert">
                   <AlertCircle size={16} />
                   <span>
-                    <strong>{overdueSummary}</strong> is past agreed payment terms.
+                    <strong>{overdueSummary}</strong> is past agreed payment
+                    terms.
                   </span>
-                  <Link href="/admin/workspaces?tab=finance">Review now &rarr;</Link>
+                  <Link href="/admin/workspaces?tab=finance">
+                    Review now &rarr;
+                  </Link>
                 </div>
               )}
             </section>
@@ -599,7 +638,9 @@ export default async function AdminPage() {
               <div className="founder-card-head">
                 <div>
                   <small>EXECUTIVE COCKPIT · STRATEGIC PRIORITIES</small>
-                  <h2 id="priority-heading">Next best actions &amp; AI recommendations</h2>
+                  <h2 id="priority-heading">
+                    Next best actions &amp; AI recommendations
+                  </h2>
                 </div>
                 <span>{actions.length} priorities</span>
               </div>

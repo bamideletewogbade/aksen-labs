@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ResponseText } from '@/components/response-text';
 import {
   orderScenarios,
@@ -55,10 +55,53 @@ export function OrderDemo() {
   const [draft, setDraft] = useState('');
   const [draftRole, setDraftRole] = useState('');
   const [busy, setBusy] = useState(false);
+  const [paystackLoading, setPaystackLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'simulation' | 'paystack'>('simulation');
   const [error, setError] = useState('');
   const [requestId, setRequestId] = useState('');
   const [logging, setLogging] = useState('');
   const check = checkSpecification(spec);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('reference');
+    const paystack = params.get('paystack');
+    if (ref && paystack === 'success') {
+      setPaystackLoading(true);
+      fetch(`/api/paystack/verify?reference=${encodeURIComponent(ref)}`)
+        .then(async (res) => {
+          const data = (await res.json()) as {
+            success?: boolean;
+            status?: string;
+            amountMinor?: number;
+            channel?: string;
+            message?: string;
+          };
+          if (res.ok && data.success && data.status === 'paid') {
+            setStage('paid');
+            setPaymentMethod('paystack');
+            setEvents((current) => [
+              ...current,
+              'Customer acceptance confirmed.',
+              `Payment verified via Paystack (${ref}) · GHS ${((data.amountMinor || 0) / 100).toFixed(2)} received via ${data.channel || 'MoMo/Card'} · Provider event confirmed.`,
+            ]);
+            window.history.replaceState({}, '', window.location.pathname);
+          } else {
+            setError(data.message || 'Paystack payment could not be verified.');
+          }
+        })
+        .catch((e) => {
+          setError(
+            e instanceof Error ? e.message : 'Failed to verify Paystack payment.',
+          );
+        })
+        .finally(() => {
+          setPaystackLoading(false);
+        });
+    }
+  }, []);
+
   function reset(next: Scenario) {
     setScenario(next);
     setSpec({ ...orderScenarios[next] });
@@ -68,6 +111,8 @@ export function OrderDemo() {
     setError('');
     setRequestId('');
     setLogging('');
+    setPaymentMethod('simulation');
+    setPaystackLoading(false);
   }
   function edit(key: keyof Specification, value: string) {
     setSpec((current) => ({
@@ -91,6 +136,32 @@ export function OrderDemo() {
       setError('');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not advance.');
+    }
+  }
+  async function handlePaystackCheckout() {
+    if (busy || paystackLoading || check.issues.length > 0) return;
+    setPaystackLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/order-demo/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spec, scenario }),
+      });
+      const data = (await res.json()) as {
+        success?: boolean;
+        authorizationUrl?: string;
+        error?: string;
+      };
+      if (!res.ok || !data.authorizationUrl) {
+        throw new Error(data.error || 'Could not start Paystack checkout.');
+      }
+      window.location.href = data.authorizationUrl;
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : 'Paystack checkout unavailable.',
+      );
+      setPaystackLoading(false);
     }
   }
   async function prepareDraft(task: 'enquiry' | 'handoff') {
@@ -283,7 +354,9 @@ export function OrderDemo() {
               <dt>Payment</dt>
               <dd>
                 {stages.indexOf(stage) >= 3
-                  ? 'Verified — simulation only'
+                  ? paymentMethod === 'paystack'
+                    ? 'Verified — Paystack provider event'
+                    : 'Verified — simulation only'
                   : 'Unverified'}
               </dd>
             </div>
@@ -292,21 +365,48 @@ export function OrderDemo() {
             All-in fictional amount. This is not an Aksen service price or a tax
             invoice. Editing an approved quote requires restarting this demo.
           </p>
-          {stage === 'accepted' && (
-            <p className="order-notice">
-              A screenshot or customer claim cannot release the order. In a live
-              system this step requires a verified provider event or authorised
-              reconciliation.
-            </p>
-          )}
-          {actions[stage] && (
-            <button
-              className="order-primary"
-              disabled={busy || check.issues.length > 0}
-              onClick={advance}
-            >
-              {actions[stage]?.label}
-            </button>
+          {stage === 'accepted' ? (
+            <div className="order-paystack-panel">
+              <p className="order-notice">
+                A customer claim or screenshot cannot release the order. In a live system, release requires a verified provider event.
+              </p>
+              <div className="order-payment-actions">
+                <button
+                  type="button"
+                  className="order-primary order-paystack-btn"
+                  disabled={busy || check.issues.length > 0 || paystackLoading}
+                  onClick={handlePaystackCheckout}
+                >
+                  {paystackLoading
+                    ? 'Opening Paystack checkout…'
+                    : `Pay ${money(check.totalPesewas || 0)} with Paystack (Test MoMo / Card) ↗`}
+                </button>
+                <div className="order-or-divider">
+                  <span>or bypass for simulation</span>
+                </div>
+                <button
+                  type="button"
+                  className="order-secondary-btn"
+                  disabled={busy || check.issues.length > 0 || paystackLoading}
+                  onClick={advance}
+                >
+                  Simulate verified payment locally
+                </button>
+              </div>
+              <p className="order-small">
+                Uses live Paystack test sandbox. Test MTN MoMo numbers (e.g. <code>055 123 4987</code>) or test cards simulate an instant provider webhook without moving real funds.
+              </p>
+            </div>
+          ) : (
+            actions[stage] && (
+              <button
+                className="order-primary"
+                disabled={busy || check.issues.length > 0}
+                onClick={advance}
+              >
+                {actions[stage]?.label}
+              </button>
+            )
           )}
           {stage === 'complete' && (
             <p className="order-ready">

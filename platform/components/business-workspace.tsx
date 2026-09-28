@@ -11,6 +11,8 @@ import {
   Wallet,
   ArrowRight,
   Download,
+  ExternalLink,
+  CreditCard,
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { currencies, money, type Line } from '@/lib/workspace-rules';
@@ -912,6 +914,186 @@ export function BusinessWorkspace({
                               </button>
                             )}
                         </div>
+                        {financial.kind === 'invoice' &&
+                          financial.status === 'issued' && (
+                            <div
+                              className="ws-paylink-card"
+                              style={{
+                                background: '#f8fbf7',
+                                border: '1px solid #cce2c8',
+                                borderRadius: '8px',
+                                padding: '16px 18px',
+                                margin: '16px 0',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  marginBottom: '8px',
+                                }}
+                              >
+                                <div>
+                                  <small
+                                    style={{
+                                      fontSize: '10px',
+                                      fontWeight: 700,
+                                      letterSpacing: '0.08em',
+                                      color: '#2c6b2f',
+                                    }}
+                                  >
+                                    PAYSTACK CHECKOUT
+                                  </small>
+                                  <h4
+                                    style={{
+                                      margin: '2px 0 0',
+                                      fontSize: '14px',
+                                      color: '#11241a',
+                                    }}
+                                  >
+                                    Client Payment Link
+                                  </h4>
+                                </div>
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    background: '#e9f5e6',
+                                    color: '#2c6b2f',
+                                    padding: '3px 8px',
+                                    borderRadius: '999px',
+                                  }}
+                                >
+                                  <CreditCard size={12} /> MoMo &amp; Cards
+                                </span>
+                              </div>
+                              <p
+                                className="ws-note"
+                                style={{
+                                  margin: '0 0 12px',
+                                  fontSize: '12px',
+                                  color: '#56685c',
+                                }}
+                              >
+                                Share this link with your client. They can pay
+                                via Mobile Money (MTN, Telecel) or card, and
+                                Paystack automatically creates the verified
+                                receipt.
+                              </p>
+                              <div
+                                className="ws-row"
+                                style={{ display: 'flex', gap: '8px' }}
+                              >
+                                <a
+                                  href={`/pay/${financial.id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="ws-primary"
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    textDecoration: 'none',
+                                    padding: '8px 14px',
+                                    fontSize: '13px',
+                                  }}
+                                >
+                                  Open Checkout Desk <ExternalLink size={14} />
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const origin = window.location.origin;
+                                    navigator.clipboard.writeText(
+                                      `${origin}/pay/${financial.id}`,
+                                    );
+                                    setMessage(
+                                      `Copied payment link: ${origin}/pay/${financial.id}`,
+                                    );
+                                  }}
+                                  style={{
+                                    padding: '8px 14px',
+                                    fontSize: '13px',
+                                  }}
+                                >
+                                  Copy Link
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        {/* For when a client says they paid online but no receipt
+                            appeared, usually because they closed the tab before
+                            Paystack sent them back. The lookup goes to Paystack
+                            itself, so a receipt is only created for money
+                            Paystack confirms, never for a screenshot. This used
+                            to live in the AI tools page, where a model sat
+                            between the lookup and the answer for no reason. */}
+                        {financial.kind === 'invoice' &&
+                          financial.status === 'issued' && (
+                            <form
+                              className="ws-form"
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                const field = new FormData(e.currentTarget).get(
+                                  'paystackReference',
+                                );
+                                const reference =
+                                  typeof field === 'string' ? field.trim() : '';
+                                void run(async () => {
+                                  const res = await fetch(
+                                    `/api/paystack/verify?reference=${encodeURIComponent(reference)}&invoiceId=${encodeURIComponent(financial.id)}`,
+                                  );
+                                  const result = (await res.json()) as {
+                                    success?: boolean;
+                                    alreadyRecorded?: boolean;
+                                    receiptNumber?: string;
+                                    message?: string;
+                                    error?: string;
+                                  };
+                                  if (!res.ok)
+                                    throw new Error(
+                                      result.error ||
+                                        'Paystack could not be checked.',
+                                    );
+                                  if (!result.success)
+                                    throw new Error(
+                                      `Paystack has no completed payment for ${reference}. ${result.message || ''}`.trim(),
+                                    );
+                                  await reload();
+                                  setMessage(
+                                    result.alreadyRecorded
+                                      ? `Already recorded as ${result.receiptNumber}.`
+                                      : result.receiptNumber
+                                        ? `Paystack confirmed it. Receipt ${result.receiptNumber} is in the register.`
+                                        : result.message ||
+                                          'Paystack confirmed it.',
+                                  );
+                                });
+                              }}
+                            >
+                              <h3>Check Paystack for this payment</h3>
+                              <p>
+                                Paste the reference from the client&apos;s
+                                Paystack email. It starts with AKSEN-.
+                              </p>
+                              <label>
+                                Paystack reference
+                                <input
+                                  name="paystackReference"
+                                  required
+                                  maxLength={160}
+                                  placeholder="AKSEN-INV-2026-004-..."
+                                />
+                              </label>
+                              <button disabled={busy}>
+                                Check with Paystack
+                              </button>
+                            </form>
+                          )}
                         {financial.kind === 'invoice' &&
                           financial.status === 'issued' && (
                             <form

@@ -22,11 +22,7 @@ export type FounderAction = {
   href: string;
 };
 
-export function FounderActionQueue({
-  actions,
-}: {
-  actions: FounderAction[];
-}) {
+export function FounderActionQueue({ actions }: { actions: FounderAction[] }) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = useMemo(
@@ -75,6 +71,7 @@ export function FounderActionQueue({
               type="button"
               role="tab"
               aria-selected={isActive}
+              disabled={cat.count === 0 && cat.id !== 'all'}
               className={`queue-tab ${isActive ? 'active' : ''}`}
               onClick={() => setSelectedCategory(cat.id)}
             >

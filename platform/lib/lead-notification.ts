@@ -64,19 +64,17 @@ export function acknowledgementMessage(lead: LeadNotice) {
   return [
     `Hello ${firstName},`,
     '',
-    'Thank you for contacting Aksen Labs. Your enquiry has reached our desk.',
+    // This goes out automatically, so it promises only what is already true:
+    // a person will read it. An audit or a reply time is the founder's to
+    // offer, in a message the founder writes.
+    'Thank you for contacting Aksen Labs. Your enquiry has reached us and a',
+    'person will read it and reply to this address.',
     '',
     'What you told us:',
     trim(lead.summary, 900),
     '',
-    'What happens next:',
-    'We are preparing a rapid, asynchronous gap audit and recommendation for',
-    'your business based on your specific requirements — no high-pressure sales calls',
-    'or calendar booking needed. You will receive an honest evaluation and clear',
-    'options directly to this email address.',
-    '',
-    'If anything above is wrong, or you want to add detail, reply directly to this',
-    'message and it will reach our desk immediately.',
+    'If anything above is wrong, or you want to add detail, reply to this',
+    'message and it will reach the same place.',
     '',
     'Aksen Labs',
     'Digital transformation for African businesses. Based in Ghana.',

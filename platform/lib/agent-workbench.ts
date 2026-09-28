@@ -9,7 +9,11 @@ export type AgentCard = {
   output: string;
   boundary: string;
 };
-type AgentDefinition = AgentCard & { instruction: string };
+// Shelved tools are kept, not deleted: they are generic prompts that do nothing
+// a chat assistant does not already do better, and none of them moves a sale
+// while Aksen has no paying clients. They come back when a client project needs
+// one. Until then they are neither listed nor runnable. Decided 27 Sep 2026.
+type AgentDefinition = AgentCard & { instruction: string; shelved?: true };
 export const agentWorkbenchVersion = '2026-09-13';
 export const businessAgents: AgentDefinition[] = [
   {
@@ -48,7 +52,7 @@ export const businessAgents: AgentDefinition[] = [
   },
   {
     id: 'lead-magnet',
-    name: 'Plan an interactive lead tool',
+    name: 'Plan a website quiz or game',
     public: true,
     sourceNumber: 9,
     job: 'Design a useful interactive experience that introduces your service.',
@@ -67,6 +71,7 @@ export const businessAgents: AgentDefinition[] = [
     id: 'cost-review',
     name: 'Review software costs',
     public: false,
+    shelved: true,
     sourceNumber: 1,
     job: 'Spot duplicated subscriptions and prepare renewal questions.',
     input:
@@ -80,26 +85,10 @@ export const businessAgents: AgentDefinition[] = [
       'Review supplied subscriptions for overlap, unused seats and renewal risks. Separate monthly and annual billing; show calculations and never mix currencies without a supplied dated exchange rate. Flag missing usage, taxes, cancellation terms, dependencies and data-export needs. Present potential savings only conditionally with assumptions. Draft a concise negotiation enquiry for human review. Never claim contact, cancellation or savings achieved.',
   },
   {
-    id: 'sourcing-review',
-    name: 'Compare a purchase',
-    public: false,
-    sourceNumber: 3,
-    job: 'Compare supplied listings for equipment or resale opportunities.',
-    input:
-      'Paste listing details and links, condition, location, asking price, dated comparisons and estimated delivery or repair costs.',
-    sample:
-      'Fictional example: A used monitor is listed at GHS 600, collection in Accra. Two supplied asking-price comparisons are GHS 750 and GHS 900. No completed-sale data, warranty or inspection is available. Delivery is estimated at GHS 80.',
-    output:
-      'Comparison, cost assumptions, missing checks and a shortlist to inspect.',
-    boundary:
-      'Compares pasted listings. Live marketplace monitoring and alerts are not connected.',
-    instruction:
-      'Compare only supplied listings and dated evidence. Preserve exact supplied URLs as reference text, never invent links. Distinguish asking prices from completed-sale prices and a possible bargain from a confirmed one. Include condition, repair, transport, platform fees, inspection and authenticity questions. Calculate margin only when all needed inputs are supplied, otherwise show a conditional calculation. Do not contact sellers, buy, monitor or claim live prices.',
-  },
-  {
     id: 'founder-review',
     name: 'Review the business week',
     public: false,
+    shelved: true,
     sourceNumber: 4,
     job: 'Turn business notes and project records into three priorities.',
     input:
@@ -117,6 +106,7 @@ export const businessAgents: AgentDefinition[] = [
     id: 'workflow-playbook',
     name: 'Write a process guide',
     public: false,
+    shelved: true,
     sourceNumber: 6,
     job: 'Turn a completed workflow or rough notes into a repeatable procedure.',
     input:
@@ -134,6 +124,7 @@ export const businessAgents: AgentDefinition[] = [
     id: 'qa-planner',
     name: 'Plan release checks',
     public: false,
+    shelved: true,
     sourceNumber: 7,
     job: 'Plan checks for the customer journeys that matter before release.',
     input:
@@ -151,6 +142,7 @@ export const businessAgents: AgentDefinition[] = [
     id: 'competitor-review',
     name: 'Compare competitors',
     public: false,
+    shelved: true,
     sourceNumber: 8,
     job: 'Compare competitors using dated material you provide.',
     input:
@@ -164,18 +156,22 @@ export const businessAgents: AgentDefinition[] = [
     instruction:
       'Compare supplied competitor evidence with the supplied Aksen offer. Cite source labels, exact supplied URLs and observation dates. Distinguish marketing claims from verified capabilities. Report a price or feature change only if earlier and current comparable evidence exists. List unknowns and useful differentiation opportunities. Never claim account signup, private access, email subscriptions, ongoing monitoring or first-hand product testing.',
   },
+  // There is no payment tool here. It once drafted payment requests, and a
+  // model asked to "include the payment link" writes a plausible URL that
+  // nothing created. Real links come from the invoice (/pay/[id]) and Paystack
+  // lookups sit on the invoice in Finances, with no model in between.
 ];
 export function findBusinessAgent(id: unknown) {
   return businessAgents.find((agent) => agent.id === id);
 }
 export function businessAgentCards(admin = false): AgentCard[] {
   return businessAgents
-    .filter((agent) => admin || agent.public)
-    .map(({ instruction: _instruction, ...card }) => card);
+    .filter((agent) => !agent.shelved && (admin || agent.public))
+    .map(({ instruction: _instruction, shelved: _shelved, ...card }) => card);
 }
 export function parseAgentBrief(body: Record<string, unknown>, admin: boolean) {
   const agent = findBusinessAgent(body.agent);
-  if (!agent || (!admin && !agent.public))
+  if (!agent || agent.shelved || (!admin && !agent.public))
     throw new Error('Choose an available agent.');
   if (
     typeof body.brief !== 'string' ||

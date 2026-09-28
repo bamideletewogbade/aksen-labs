@@ -4,6 +4,7 @@ import { AdminSettings } from '@/components/admin-settings';
 import { displayNameLimit, fullNameLimit } from '@/lib/workspace-settings';
 import { emailConfig } from '@/lib/resend';
 import { dailyResearchRuns, researchRunsUncapped } from '@/lib/scout-limits';
+import { isPaystackConfigured, isPaystackTestMode } from '@/lib/paystack';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,14 @@ export default async function AdminSettingsPage() {
       value: mail.configured ? `Sending as ${mail.from}` : 'Not configured',
       where: 'RESEND_API_KEY and RESEND_FROM_EMAIL',
       ok: mail.configured,
+    },
+    {
+      label: 'Payments (Paystack)',
+      value: isPaystackConfigured()
+        ? `Connected (${isPaystackTestMode() ? 'Test mode' : 'Live mode'} · MoMo / Cards)`
+        : 'Not configured',
+      where: 'PAYSTACK_SECRET_KEY, set in environment',
+      ok: isPaystackConfigured(),
     },
     {
       label: 'Admin sign-in',

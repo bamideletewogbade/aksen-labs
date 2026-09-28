@@ -48,10 +48,7 @@ import { useEffect, useRef, useState } from 'react';
 const groups = [
   {
     label: 'Today',
-    items: [
-      { href: '/admin', label: 'Home', icon: Activity },
-      { href: '/admin/agent-desk', label: 'AI tools', icon: ClipboardList },
-    ],
+    items: [{ href: '/admin', label: 'Home', icon: Activity }],
   },
   {
     // Demand, in the order it arrives: people we found, people who wrote to
@@ -68,6 +65,11 @@ const groups = [
       },
       { href: '/admin/prospects', label: 'Find leads', icon: Search },
       { href: '/admin/support', label: 'Messages', icon: MessageSquareText },
+      // Named as the public site names them. It was "AI tools" under Today,
+      // which described every page in here and said nothing about this one.
+      // Its job is sales: see what a visitor gets, and run one on a prospect's
+      // notes before a call.
+      { href: '/admin/agent-desk', label: 'Free tools', icon: ClipboardList },
       // People waiting on a product rather than asking about a service. They
       // arrive through the products page, not the enquiry funnel, so they never
       // appear in the pipeline and would otherwise have nowhere to be read.
@@ -84,8 +86,16 @@ const groups = [
         icon: BriefcaseBusiness,
       },
       { href: '/admin/operations', label: 'Client drafts', icon: FilePenLine },
-      { href: '/admin/templates', label: 'Document templates', icon: ScrollText },
-      { href: '/admin/workspaces', label: 'Finances & invoices', icon: Receipt },
+      {
+        href: '/admin/templates',
+        label: 'Document templates',
+        icon: ScrollText,
+      },
+      {
+        href: '/admin/workspaces',
+        label: 'Finances & invoices',
+        icon: Receipt,
+      },
     ],
   },
   {

@@ -19,17 +19,27 @@ const {
   parseAgentBrief,
   agentSystemPrompt,
 } = await import(catalogue);
-assert.equal(businessAgents.length, 9);
-assert.equal(new Set(businessAgents.map((a) => a.sourceNumber)).size, 9);
+assert.equal(businessAgents.length, 8);
+assert.equal(new Set(businessAgents.map((a) => a.sourceNumber)).size, 8);
 assert.equal(businessAgentCards().length, 3);
-assert.equal(businessAgentCards(true).length, 9);
+// Shelved tools are off the admin list too, so admin sees the public three.
+assert.equal(businessAgentCards(true).length, 3);
 assert.ok(businessAgentCards().every((a) => a.public && !('instruction' in a)));
+assert.ok(businessAgentCards(true).every((a) => !('shelved' in a)));
+// No payment tool: a model told to include a payment link invents one.
+assert.ok(!businessAgents.some((a) => /payment|paystack/i.test(a.id)));
 for (const a of businessAgents) {
+  assert.ok(agentSystemPrompt(a).includes('untrusted evidence'));
+  if (a.shelved) {
+    assert.throws(() =>
+      parseAgentBrief({ agent: a.id, brief: a.sample }, true),
+    );
+    continue;
+  }
   assert.equal(
     parseAgentBrief({ agent: a.id, brief: a.sample }, true).agent.id,
     a.id,
   );
-  assert.ok(agentSystemPrompt(a).includes('untrusted evidence'));
   if (!a.public)
     assert.throws(() =>
       parseAgentBrief({ agent: a.id, brief: a.sample }, false),
@@ -156,33 +166,35 @@ assert.ok(
   ),
 );
 wb.admin = true;
-const privateResult = await request(
-  { agent: 'founder-review', brief: input.brief, snapshot: true },
-  true,
+// A shelved tool is refused even for the administrator, before any spend.
+const callsBefore = wb.calls;
+assert.equal(
+  (
+    await request(
+      { agent: 'founder-review', brief: input.brief, snapshot: true },
+      true,
+    )
+  ).status,
+  400,
 );
+assert.equal(wb.calls, callsBefore);
+const privateResult = await request(input, true);
 assert.equal(privateResult.status, 200);
 assert.equal((await privateResult.json()).saved, true);
-const projectQuery = wb.queries.find((q) => q.text.includes('FROM projects'));
-assert.ok(projectQuery.text.includes('WHERE owner_id=?'));
-assert.ok(projectQuery.values.includes('owner-a'));
-assert.ok(projectQuery.text.includes('LIMIT 25'));
-assert.ok(wb.prompt.messages[1].content.includes('not a full weekly history'));
+assert.ok(!wb.queries.some((q) => q.text.includes('FROM projects')));
 const savedQuery = wb.queries.find((q) =>
   q.text.startsWith('INSERT INTO agent_runs'),
 );
 const trace = JSON.parse(savedQuery.values.at(-1));
 assert.equal(trace.ownerId, 'owner-a');
-assert.equal(trace.agentId, 'founder-review');
+assert.equal(trace.agentId, 'opportunity-finder');
 assert.ok(trace.content);
 assert.ok(!('brief' in trace));
 assert.equal((await savedBusinessDrafts()).status, 200);
 assert.ok(wb.queries.at(-1).text.includes("trace->>'ownerId'=?"));
 assert.deepEqual(wb.queries.at(-1).values, ['owner-a']);
 wb.failSave = true;
-assert.equal(
-  (await request({ ...input, agent: 'cost-review' }, true)).status,
-  503,
-);
+assert.equal((await request(input, true)).status, 503);
 wb.failSave = false;
 wb.failProvider = true;
 const failure = await request();
@@ -262,5 +274,5 @@ assert.match(
   /runBusinessAgent\(request, true\)/,
 );
 console.log(
-  'PASS: nine curated roles, three public tools, private access, source isolation, request limits, per-visitor and shared allowances with hashed addresses, per-administrator allowances, navigation entry, owner-scoped snapshot/history, public logging privacy, saved drafts, and provider/storage failure handling. Provider and database mocked; no external actions.',
+  'PASS: eight defined roles, three listed and runnable, shelved roles refused, no payment tool, source isolation, request limits, per-visitor and shared allowances with hashed addresses, per-administrator allowances, navigation entry, owner-scoped history, public logging privacy, saved drafts, and provider/storage failure handling. Provider and database mocked; no external actions.',
 );

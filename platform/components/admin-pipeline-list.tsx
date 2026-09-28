@@ -292,10 +292,10 @@ export function AdminPipelineList({
                 </Link>
                 <Link
                   className="lead-prepare lead-audit-btn"
-                  title="Prepare Erhart 3-Gap Audit"
+                  title="Draft an enquiry gap audit from this record"
                   href={`/admin/operations?lead=${encodeURIComponent(lead.id)}&task=lead_audit`}
                 >
-                  ⚡ 3-Gap audit
+                  Gap audit
                 </Link>
                 <Link
                   className="lead-prepare lead-jev-btn"
