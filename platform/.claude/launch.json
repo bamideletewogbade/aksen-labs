@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["node_modules/vinext/dist/cli.js", "dev"],
       "port": 3000
+    },
+    {
+      "name": "aksen-platform-alt",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/vinext/dist/cli.js", "dev", "--port", "3010"],
+      "port": 3010
     }
   ]
 }

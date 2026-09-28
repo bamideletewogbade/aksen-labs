@@ -74,7 +74,7 @@ const groups = [
       // arrive through the products page, not the enquiry funnel, so they never
       // appear in the pipeline and would otherwise have nowhere to be read.
       { href: '/admin/waitlist', label: 'Product waitlist', icon: MailPlus },
-      { href: '/admin/email', label: 'Email drafts', icon: Mail },
+      { href: '/admin/email', label: 'Email', icon: Mail },
     ],
   },
   {

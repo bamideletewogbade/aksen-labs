@@ -872,6 +872,82 @@
     min-height: 20px;
     flex-shrink: 0;
   }
+  /* Email desk: groups, templates, stop list. */
+  .admin-refresh .email-layout fieldset {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid #e0e8db;
+    border-radius: 8px;
+    min-width: 0;
+  }
+  .admin-refresh .email-layout legend {
+    padding-inline: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d4a33;
+  }
+  .admin-refresh .email-layout legend span {
+    font-weight: 400;
+    color: #56685c;
+  }
+  .admin-refresh .email-purpose {
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    column-gap: 18px;
+  }
+  .admin-refresh .email-purpose .email-hint {
+    grid-column: 1 / -1;
+  }
+  .admin-refresh .email-hint {
+    margin: 0;
+    color: #56685c;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .admin-refresh .email-picker {
+    display: grid;
+    gap: 2px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .admin-refresh .email-picker label {
+    gap: 10px;
+    padding: 6px 4px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+  .admin-refresh .email-picker small {
+    display: block;
+    color: #56685c;
+  }
+  .admin-refresh .email-preview {
+    background: #f7faf3;
+  }
+  .admin-refresh .email-preview small {
+    color: #56685c;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .admin-refresh .ops-email-review details pre {
+    margin-top: 8px;
+  }
+  .admin-refresh .email-stop ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    overflow-wrap: anywhere;
+  }
+  .admin-refresh .email-stop .ops-actions input {
+    flex: 1 1 200px;
+    width: auto;
+  }
+  @media (max-width: 560px) {
+    .admin-refresh .email-purpose {
+      grid-template-columns: 1fr;
+    }
+  }
   @media (max-width: 800px) {
     .admin-refresh .ops-layout {
       grid-template-columns: 1fr;

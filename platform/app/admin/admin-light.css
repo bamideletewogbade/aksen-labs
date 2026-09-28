@@ -1312,9 +1312,10 @@
     margin-bottom: 22px;
   }
 }
-@media screen and (min-width: 1101px) {
+@media screen and (min-width: 801px) {
   /* Writing the email is the work; the outbox is a short list beside it. The
-     shared desk layout gave the wide column to the list. */
+     shared desk layout gave the wide column to the list. Below 801px the desk
+     is one column anyway. */
   .admin-refresh .ops-layout.email-layout {
     grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.8fr);
   }
