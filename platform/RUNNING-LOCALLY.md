@@ -87,13 +87,40 @@ errors in it more than once, including two that would have printed
 
 ## Deploying
 
+**A deploy is a push to `main`.** OpenAI Sites (`.openai/hosting.json`) builds
+from the GitHub repo and publishes the Worker named `aksen-labs`, which is the
+one serving <https://aksen-labs.bishoptewogbade.workers.dev>. It lands about a
+minute after the push.
+
 ```
+pnpm test
 pnpm build
-node node_modules/wrangler/bin/wrangler.js deploy --config dist/server/wrangler.json
+git push origin main
 ```
 
-Worker secrets are separate from `.env` and are not sent by a deploy. To change
-the admin password in both places:
+`pnpm build` here is only a check that it builds. The host does its own build,
+with pnpm 10.11.1, from what is committed. Anything left uncommitted does not
+ship, so run `git status` first.
+
+To confirm it landed, look for a deployment dated after your push:
+
+```
+node node_modules/wrangler/bin/wrangler.js deployments list --name aksen-labs
+```
+
+**Do not run `wrangler deploy --config dist/server/wrangler.json`.** This file
+used to say to. That config is named `sites-project`, a Worker nothing routes
+to, so the command succeeds, prints a URL, and changes nothing anyone can see.
+`sites-project` was last deployed on 15 September; the live site has moved on
+through pushes since.
+
+### Secrets
+
+Worker secrets are separate from `.env` and are not sent by a push. Every
+secret command needs `--name aksen-labs`. Without it wrangler reads the name
+from the config and writes to `sites-project`, with the same silent success.
+
+To change the admin password in both places:
 
 ```
 node scripts/configure-admin.mjs
@@ -101,7 +128,20 @@ node scripts/push-admin-secrets.mjs
 ```
 
 In that order. Running `configure-admin` after a push leaves production holding
-the previous password.
+the previous password. `push-admin-secrets` already targets `aksen-labs`.
+
+Anything else, Paystack for example, is added one at a time. It asks for the
+value, so it never lands in your shell history:
+
+```
+node node_modules/wrangler/bin/wrangler.js secret put PAYSTACK_SECRET_KEY --name aksen-labs
+```
+
+To see what production actually has (names only, never values):
+
+```
+node node_modules/wrangler/bin/wrangler.js secret list --name aksen-labs
+```
 
 ## Things that will waste an hour if nobody told you
 
@@ -130,3 +170,7 @@ the process.
 Checked on 14 September 2026 with Node v24.15.0 and pnpm 11.11.0:
 `pnpm dev` starts and `/`, `/pricing`, `/products`, `/business-agents` and
 `/login` all answer 200, with `/admin` redirecting to `/login` as it should.
+
+The deploy section was checked on 28 September 2026: push `94b3e09` at 00:02
+UTC appeared as a new `aksen-labs` deployment at 00:03, and the live
+`/business-agents` page showed the change.
