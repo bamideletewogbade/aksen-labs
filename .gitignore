@@ -2,6 +2,12 @@
 # git history permanently; keep them locally, not in the repository.
 backups/
 
+# Records about real people stay on this machine. The GitHub repo is public
+# (checked 28 Sep 2026), and these hold named prospects and owners' own words.
+# Decided by the founder on 28 Sep 2026.
+clients/prospects/
+Docs/Owner-Conversations.md
+
 # Local environment and build noise. node_modules is here as well as in
 # platform/.gitignore because marketing/nigeria-kit has its own, and on
 # 28 Sep 2026 its 10,661 files were staged for commit.
