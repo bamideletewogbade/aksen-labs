@@ -30,7 +30,12 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 
-const WORKER = 'sites-project';
+// aksen-labs is the Worker serving the site. This was 'sites-project', the
+// package name, which nothing routes to: the heartbeat called a Worker frozen
+// at 15 September, whose code predates the outbox, so the live site's queued
+// email was never sent. Found 28 September 2026 when the tick's reply had no
+// outbox field. See RUNNING-LOCALLY.md, Deploying.
+const WORKER = 'aksen-labs';
 const KEY = 'AUTOMATION_SECRET';
 
 if (!fs.existsSync('.env'))
@@ -70,8 +75,7 @@ try {
   fs.rmSync(file, { force: true });
 }
 
-const TICK_URL =
-  'https://sites-project.bishoptewogbade.workers.dev/api/automation/tick';
+const TICK_URL = `https://${WORKER}.bishoptewogbade.workers.dev/api/automation/tick`;
 const handoff = '.env.automation-github-secrets';
 
 fs.writeFileSync(

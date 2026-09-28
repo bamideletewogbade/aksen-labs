@@ -53,7 +53,7 @@ Post the vertical images (`out/story/`) or reels (`video/out/nigeria/`). One lin
 >
 > At Aksen Labs we build the tools that help: WhatsApp order desks, booking and reminders, stock alerts, lead lists, dashboards. We are not just a website company. It starts with a free call where we look at how your business runs and suggest one first step.
 >
-> Prices from ₦29,900. Free discovery call on WhatsApp: +234 915 583 3108
+> Prices from ₦29,900. Free Business Check on WhatsApp: +234 915 583 3108
 > Link: aksen-labs.bishoptewogbade.workers.dev
 >
 > The businesses shown are fictional examples. AI does the busy work, you make the decisions.
@@ -79,7 +79,7 @@ Post the vertical images (`out/story/`) or reels (`video/out/nigeria/`). One lin
 
 > Start small. Grow from there.
 >
-> Free discovery call. Lead Pack ₦29,900. Business Check ₦49,900 (credited to your build). Starter Page ₦99,000. WhatsApp Order Desk ₦149,000. Bookings & Reminders ₦179,000. Custom systems from ₦450,000.
+> Free Business Check: a call and a one-page plan. Lead Pack ₦29,900. Starter Page ₦99,000. WhatsApp Order Desk ₦149,000. Bookings & Reminders ₦179,000. Custom systems from ₦450,000.
 >
 > 50% to start, 50% at handover. Third-party fees shown on your quote before you pay anything.
 >

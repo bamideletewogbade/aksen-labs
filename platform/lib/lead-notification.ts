@@ -34,7 +34,12 @@ export function leadNotificationAddress() {
 // sending domain in Resend turns this back on with no code change.
 const SANDBOX_SENDER = 'onboarding@resend.dev';
 export function canAcknowledgeSenders() {
-  return emailConfig().from.trim().toLowerCase() !== SANDBOX_SENDER;
+  // The sender is often written with a display name, "Aksen Labs <address>".
+  // Comparing the whole string missed that form and would have promised
+  // visitors a confirmation the sandbox never delivers.
+  const from = emailConfig().from.trim().toLowerCase();
+  const address = from.match(/<([^>]+)>/)?.[1] ?? from;
+  return address.trim() !== SANDBOX_SENDER;
 }
 
 const trim = (value: string, limit: number) =>

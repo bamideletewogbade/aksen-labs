@@ -20,7 +20,6 @@ Acceptance criteria: [testable criteria]
 ## Commercial schedule
 Currency: GHS
 Service fees: [agreed amount]
-Assessment: [separate fee / agreed credit]
 Applicable taxes: [confirmed treatment]
 External usage / licences: [itemised / approved allowance]
 Payment milestones: [agreed]

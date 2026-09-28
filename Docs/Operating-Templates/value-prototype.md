@@ -21,11 +21,11 @@ Test the prototype against 3 real customer scenarios:
 2. Complex / custom inquiry: [e.g. custom dimension or enterprise scope gathering]
 3. Handoff check: [unsupported query safely escalated without hallucinations]
 
-## Commercial activation (Only if satisfied)
-- Prototype evaluation fee: GHS 0 / Completely Free.
-- Monthly managed care: [e.g. $297/mo or GHS 3,500/mo] upon formal go-live.
-- Inclusions: Cloud hosting, monitoring, monthly knowledge updates, webhook maintenance.
-- Commitment: Cancel anytime. No long-term lock-in.
+## Commercial activation (only if satisfied)
+- Prototype evaluation fee: GHS 0. [Founder to confirm: a free pilot runs against the operating brief, section 7 item 7.]
+- Going live: a website or WhatsApp assistant is published at GHS 8,000 to 20,000, quoted in writing after the assessment.
+- Assistant care: from GHS 1,500 a month as published. Website care plus knowledge updates, response monitoring and a monthly review.
+- Third-party model and WhatsApp usage is separated or covered by an approved allowance.
 
 ## Next step
 Reply to this email with:

@@ -140,7 +140,7 @@ const Brand = () => (
   </div>
 );
 
-const Cta = ({ at = 0, title = 'Book a free discovery call' }: { at?: number; title?: string }) => {
+const Cta = ({ at = 0, title = 'Book your free Business Check' }: { at?: number; title?: string }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: f - at, fps, config: { damping: 14, stiffness: 120 } });

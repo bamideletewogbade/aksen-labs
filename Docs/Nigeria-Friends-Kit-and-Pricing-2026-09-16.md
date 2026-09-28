@@ -26,9 +26,8 @@ Low prices only keep a margin if the hours are small. So every entry offer below
 
 | Offer | Price | What they get | Hour cap | Est. cost | Margin |
 | --- | --- | --- | --- | --- | --- |
-| Discovery call | **Free** | 20 minutes on WhatsApp. We recommend one first step. | 0.5 | ₦7,150 | Sales cost |
+| Business Check | **Free** (since 28 Sep) | 20 minutes on WhatsApp, then a one-page plan with the best first step. Replaces the free discovery call and the ₦49,900 paid check | 1.5 | ₦21,450 | Sales cost |
 | Lead Pack | **₦29,900** | 30 checked businesses in your niche and city, sources shown, 3 message drafts you send yourself | 1.0 | ₦15,300 (incl. ~₦1,000 AI) | 49% |
-| Business Check | **₦49,900** | 60-minute session, a one-page plan, a priced recommendation. Fully credited to a build within 30 days | 1.5 | ₦21,450 | 57% |
 | Starter Page | **₦99,000** | One-page site with WhatsApp order or booking button, Google Business Profile set up | 3.0 | ₦44,900 (incl. domain) | 55% |
 | WhatsApp Order Desk | **₦149,000** + ₦19,900/mo | Catalogue, quick replies, an order form that writes every order to one dashboard your team can see | 4.5 | ₦64,350 | 57% |
 | Bookings and Reminders | **₦179,000** + ₦19,900/mo | Online booking, reminders before the appointment, a daily list for staff | 5.5 | ₦78,650 | 56% |
@@ -53,7 +52,7 @@ Our entry offers sit well under the website band and inside the chatbot band. Th
 1. **Free front door.** The discovery call costs nothing, so nobody has to decide on price before they talk to us.
 2. **A tiny paid step.** The ₦29,900 Lead Pack is easy to say yes to, runs on a tool we already have (Lead Scout), and turns a stranger into a paying client within a couple of days. Paying once makes paying again easier.
 3. **Anchor against the market.** Quote the ₦99,000 Starter Page next to the ₦200,000+ market band, stated as market rates, not as a competitor attack.
-4. **Credit, not discount.** The Business Check fee is credited to a build within 30 days. Money feels safe, and it pushes a decision.
+4. ~~**Credit, not discount.**~~ Dropped 28 September 2026: the Business Check is free, so there is no fee to credit. Money comes up after it, and only if a build would help.
 5. **Bundle up, never down.** Starter Page plus Order Desk is **₦219,000** (saves ₦29,000). A bundle raises the order value while the hours stay templated.
 6. **Founding-client price lock.** The first 10 Nigerian clients keep their care price for 12 months. A real deadline, honestly stated, with a count we update.
 7. **Split payment.** 50% to start, 50% at handover. Bank transfer or Paystack. Third-party fees (WhatsApp Business API messages, domain, paid tools) are outside the price and shown on the quote.

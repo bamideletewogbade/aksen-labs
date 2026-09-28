@@ -1,6 +1,6 @@
 # Nigeria friends kit
 
-Images, reels and captions friends can share in Nigeria. One job: show what Aksen can build across industries people recognise, and get people into a free discovery call.
+Images, reels and captions friends can share in Nigeria. One job: show what Aksen can build across industries people recognise, and get people into a free Business Check (a call and a one-page plan, free since 28 September 2026).
 
 Prices and reasoning: `Docs/Nigeria-Friends-Kit-and-Pricing-2026-09-16.md`.
 

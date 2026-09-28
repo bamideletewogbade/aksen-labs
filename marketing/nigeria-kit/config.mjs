@@ -15,9 +15,11 @@ export const contact = {
 };
 
 export const offers = [
-  { id: 'call', name: 'Discovery call', price: 'Free', note: '20 minutes on WhatsApp. We tell you the best first step.' },
+  // Free since 28 September 2026, like the assessment everywhere else. It was a
+  // free call plus a ₦49,900 one-page plan; the two are now one free offer, and
+  // money comes up only after it, if a build would help.
+  { id: 'check', name: 'Business Check', price: 'Free', note: '20 minutes on WhatsApp, then a one-page plan with the best first step.' },
   { id: 'leads', name: 'Lead Pack', price: '₦29,900', note: '30 checked businesses in your niche, sources shown.' },
-  { id: 'check', name: 'Business Check', price: '₦49,900', note: 'One-page plan. Credited to your build in 30 days.' },
   { id: 'page', name: 'Starter Page', price: '₦99,000', note: 'One-page site with a WhatsApp order button.' },
   { id: 'orders', name: 'WhatsApp Order Desk', price: '₦149,000', note: 'Every order in one dashboard. Care from ₦19,900/mo.' },
   { id: 'bookings', name: 'Bookings & Reminders', price: '₦179,000', note: 'Online booking and reminders. Care from ₦19,900/mo.' },

@@ -1,5 +1,1 @@
-{
-  "title": "Episode render preview",
-  "aspectRatio": "9:16",
-  "scenes": [{ "id": "preview", "seconds": 3, "narration": "Episode render preview", "visual": "Add a reviewed episode package to render.", "assetPath": "" }]
-}
+{"title":"Scene background render test","aspectRatio":"9:16","scenes":[{"id":"fixture","seconds":1,"narration":"Aksen Labs render test","visual":"Test image","assetPath":"episodes/00000000-0000-4000-8000-000000000001/fixture.png","background":{"kind":"preset","value":"deep"},"backgroundPath":"","fit":"cover","transition":"cut"},{"id":"second","seconds":1,"narration":"Second scene with a new backdrop","visual":"Background switch","assetPath":"episodes/00000000-0000-4000-8000-000000000001/second.png","background":{"kind":"image"},"backgroundPath":"episodes/00000000-0000-4000-8000-000000000001/second-background.png","fit":"contain","transition":"fade"}],"voicePath":"episodes/00000000-0000-4000-8000-000000000001/voice.wav"}
