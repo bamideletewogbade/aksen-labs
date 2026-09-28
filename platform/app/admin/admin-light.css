@@ -727,6 +727,16 @@
     outline-offset: 1px;
   }
 
+  /* The menu may scroll when the window is shorter than it, but never
+     sideways. In the 64px rail a native scrollbar took 15 of the 44 usable
+     pixels, which pushed the icons 9px past the edge and added a second,
+     horizontal bar under the first. */
+  .admin-refresh .admin-navigation {
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #2f4a37 transparent;
+  }
+
   :root[data-rail='collapsed'] .admin-refresh {
     grid-template-columns: 64px minmax(0, 1fr);
     background: linear-gradient(to right, #102219 0 64px, #f4f7f1 64px 100%);
@@ -734,6 +744,7 @@
   :root[data-rail='collapsed'] .admin-refresh .admin-sidebar {
     width: 64px;
     padding-inline: 10px;
+    padding-top: 16px;
     /* Overflowing its own 64px column is what makes the expansion an overlay
        rather than a layout change. */
     overflow: visible;
@@ -767,29 +778,69 @@
     .admin-profile > a {
       display: none;
     }
+    /* Every group open means all 21 icons at once. At the expanded rail's
+       row height that was 1162px, taller than a 1080p browser window, so the
+       rail scrolled. These sizes fit it in about 810px: 32px rows, no padding
+       between groups, and no divider above the first one, where there is
+       nothing to divide it from. Shorter windows still scroll, with the bar
+       hidden, because in a 44px column the bar is most of the column. */
+    .admin-navigation {
+      scrollbar-width: none;
+    }
+    .admin-navigation::-webkit-scrollbar {
+      display: none;
+    }
+    .admin-links {
+      gap: 0;
+      padding-bottom: 0;
+    }
+    .admin-nav-group {
+      margin-bottom: 0;
+    }
     .admin-nav-group-items {
       display: grid !important;
       height: auto !important;
       opacity: 1 !important;
       overflow: visible !important;
+      gap: 2px;
+      padding: 0;
     }
+    /* Auto, not the button's 100%: full width plus the side margins was 8px
+       wider than the rail, the other half of the sideways scrollbar. */
     .admin-nav-group-toggle {
+      width: auto;
       height: 1px;
       min-height: 0;
       padding: 0;
-      margin: 10px 6px;
+      margin: 6px 8px;
       overflow: hidden;
       background: #2a3c2e;
       border-radius: 1px;
     }
-    nav a,
+    .admin-nav-group:first-child .admin-nav-group-toggle {
+      display: none;
+    }
+    /* Flex, not the expanded link's two-column grid: with the label hidden,
+       the grid kept an empty second column and parked each icon 13px left
+       of the rail's centre. */
+    nav a:not(.admin-menu-signout),
     .admin-site-link {
+      display: flex;
+      gap: 0;
       justify-content: center;
+      min-height: 32px;
+      padding-block: 0;
       padding-inline: 0;
     }
+    .admin-links a.admin-site-link {
+      margin-top: 6px;
+      padding-top: 6px !important;
+    }
     .admin-profile {
+      display: flex;
       justify-content: center;
-      padding: 8px;
+      margin-top: 8px;
+      padding: 6px;
     }
     /* The pin stays on screen. Hiding it until hover meant the only way back
        from a collapsed rail was to discover that hovering it brings a button
@@ -797,8 +848,9 @@
     .admin-rail-head {
       flex-direction: column;
       justify-content: center;
-      gap: 10px;
+      gap: 6px;
       margin-inline: 0;
+      margin-bottom: 12px;
     }
     .admin-rail-head .admin-brand {
       flex: none;
