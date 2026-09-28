@@ -1,0 +1,700 @@
+/* The free assessment. Two surfaces: the working window (.as), which holds
+   everything including what is only for the interviewer, and the client
+   screen (.as-client), shared on a call and carrying nothing private. */
+
+.admin-refresh .as {
+  --as-ink: #11241a;
+  --as-muted: #56685c;
+  --as-line: #dfe8da;
+  --as-green: #175b3b;
+  max-width: 1080px;
+  color: var(--as-ink);
+}
+
+/* ---- header ---- */
+.admin-refresh .as-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.admin-refresh .as-kicker {
+  margin: 0;
+  color: #2c6b2f;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.admin-refresh .as-head h1 {
+  margin: 6px 0;
+  font-size: clamp(1.8rem, 2.6vw, 2.3rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.admin-refresh .as-head p:not(.as-kicker) {
+  max-width: 620px;
+  margin: 0;
+  color: var(--as-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.admin-refresh .as-head-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---- buttons ---- */
+.admin-refresh .as .as-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid #cfdcc9;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--as-green);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.admin-refresh .as .as-btn:hover:not(:disabled) {
+  border-color: var(--as-green);
+}
+.admin-refresh .as .as-btn.as-primary {
+  border-color: var(--as-green);
+  background: var(--as-green);
+  color: #fff;
+}
+.admin-refresh .as .as-btn.as-primary:hover:not(:disabled) {
+  background: #11452c;
+}
+.admin-refresh .as .as-btn.as-quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--as-muted);
+}
+.admin-refresh .as .as-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.admin-refresh .as :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--as-green);
+  outline-offset: 2px;
+}
+
+/* ---- notes above the steps ---- */
+.admin-refresh .as-share-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #d6e6cf;
+  border-radius: 9px;
+  background: #f3f9ef;
+  color: #2b4a34;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.admin-refresh .as-restored {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid #efd9a4;
+  border-radius: 9px;
+  background: #fffaf0;
+}
+.admin-refresh .as-restored p {
+  flex: 1 1 260px;
+  margin: 0;
+  font-size: 14px;
+}
+.admin-refresh .as-error {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #f0cdc7;
+  border-radius: 9px;
+  background: #fdf2f0;
+  color: #942b20;
+  font-size: 14px;
+}
+
+/* ---- steps ---- */
+.admin-refresh .as-steps {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+.admin-refresh .as-steps button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px 0 6px;
+  border: 1px solid var(--as-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--as-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.admin-refresh .as-steps button span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #eef4ea;
+  font-size: 12px;
+  font-weight: 700;
+}
+.admin-refresh .as-steps li[aria-current='step'] button {
+  border-color: var(--as-green);
+  color: var(--as-ink);
+  font-weight: 600;
+}
+.admin-refresh .as-steps li[aria-current='step'] button span {
+  background: var(--as-green);
+  color: #fff;
+}
+.admin-refresh .as-steps button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+/* ---- the card every step sits in ---- */
+.admin-refresh .as-card {
+  display: grid;
+  gap: 18px;
+  padding: clamp(18px, 2.6vw, 28px);
+  border: 1px solid var(--as-line);
+  border-radius: 14px;
+  background: #fff;
+}
+.admin-refresh .as-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 20px;
+}
+.admin-refresh .as-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.admin-refresh .as-grid label,
+.admin-refresh .as-words,
+.admin-refresh .as-private > label {
+  display: grid;
+  gap: 6px;
+  color: var(--as-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-refresh .as-wide {
+  grid-column: span 2;
+}
+.admin-refresh
+  .as
+  :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  /* Stated here because the workspace's input rule matches type="text"
+     only, and a field without a type came out borderless on a white card. */
+  border: 1px solid #d3ded0;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--as-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+}
+.admin-refresh .as textarea {
+  line-height: 1.55;
+  resize: vertical;
+}
+.admin-refresh .as small {
+  color: var(--as-muted);
+  font-weight: 400;
+}
+
+/* ---- checkboxes and single choices as chips ---- */
+.admin-refresh .as-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.admin-refresh .as-checks legend {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-refresh .as-checks legend small {
+  margin-left: 4px;
+}
+.admin-refresh .as-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d5e0cf;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+.admin-refresh .as-checks label:has(input:checked) {
+  border-color: var(--as-green);
+  background: #eef6ea;
+}
+.admin-refresh .as-checks input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--as-green);
+}
+
+/* ---- picking a lead (private) ---- */
+.admin-refresh .as-private > label {
+  margin-bottom: 8px;
+}
+.admin-refresh .as-lead-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.admin-refresh .as-lead-list button {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  padding: 7px 12px;
+  border: 1px solid #d5e0cf;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--as-ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.admin-refresh .as-lead-list button small {
+  font-size: 12px;
+}
+.admin-refresh .as-lead-list button[aria-pressed='true'] {
+  border-color: var(--as-green);
+  background: #eef6ea;
+}
+
+/* ---- questions ---- */
+.admin-refresh .as-progress {
+  margin: 0;
+  color: var(--as-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-refresh .as-ask h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.admin-refresh .as-for-you {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 3px solid #d99a1e;
+  background: #fffaf0;
+  color: #5a4210;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.admin-refresh .as-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.admin-refresh .as-hint {
+  color: var(--as-muted);
+  font-size: 13px;
+}
+.admin-refresh .as-busy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--as-muted);
+}
+
+/* ---- Jev, only for the interviewer ---- */
+.admin-refresh .as-jev {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: #f4f6f3;
+  font-size: 14px;
+}
+.admin-refresh .as-jev span {
+  margin-left: auto;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 13px;
+}
+.admin-refresh .as-jev[data-tone='yes'] {
+  background: #eaf5e5;
+}
+.admin-refresh .as-jev[data-tone='hedge'] {
+  background: #fcefd2;
+}
+.admin-refresh .as-jev[data-tone='no'] {
+  background: #fbe9e5;
+}
+
+/* ---- the roadmap, shared by both surfaces ---- */
+.as-roadmap {
+  display: grid;
+  gap: 18px;
+  padding: clamp(18px, 2.6vw, 30px);
+  border: 1px solid #dfe8da;
+  border-radius: 14px;
+  background: #fbfdf9;
+  color: #11241a;
+}
+.as-roadmap header small {
+  color: #2c6b2f;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.as-roadmap h2 {
+  margin: 4px 0 0;
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  letter-spacing: -0.02em;
+}
+.as-roadmap h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.as-roadmap ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+}
+.as-roadmap li {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.as-roadmap li strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 600;
+}
+.as-roadmap li strong em {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #e1f2da;
+  color: #145a32;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.as-roadmap li span {
+  display: block;
+  color: #4f6454;
+  font-size: 14px;
+}
+.as-roadmap-free {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #eef6ea;
+}
+.as-roadmap footer {
+  padding-top: 14px;
+  border-top: 1px solid #dfe8da;
+}
+.as-roadmap footer p {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.as-roadmap footer small {
+  color: #56685c;
+  font-size: 12px;
+}
+
+.admin-refresh .as-review {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: 16px;
+  align-items: start;
+}
+.admin-refresh .as-review aside {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--as-line);
+  border-radius: 12px;
+}
+.admin-refresh .as-review aside h3 {
+  margin: 4px 0;
+  font-size: 13px;
+}
+.admin-refresh .as-review aside button {
+  padding: 7px 10px;
+  border: 1px solid #ecd9d5;
+  border-radius: 8px;
+  background: #fff;
+  color: #6b2a21;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.admin-refresh .as-review aside button::before {
+  content: '× ';
+  font-weight: 700;
+}
+.admin-refresh .as-review aside button:hover {
+  border-color: #c0392b;
+}
+.admin-refresh .as-review aside ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--as-muted);
+  font-size: 13px;
+}
+
+/* ---- finish ---- */
+.admin-refresh .as-private-block {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px dashed #d99a1e;
+  border-radius: 12px;
+  background: #fffdf7;
+}
+.admin-refresh .as-private-label {
+  margin: 0;
+  color: #7b4f0b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.admin-refresh .as-entry {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--as-line);
+  border-radius: 12px;
+  background: #fafcf8;
+}
+.admin-refresh .as-entry h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.admin-refresh .as-entry p {
+  margin: 4px 0 0;
+  color: var(--as-muted);
+  font-size: 13px;
+}
+.admin-refresh .as-entry pre {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--as-line);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.admin-refresh .as-entry .as-btn {
+  justify-self: start;
+}
+
+@media (max-width: 720px) {
+  .admin-refresh .as-review {
+    grid-template-columns: 1fr;
+  }
+  .admin-refresh .as-wide {
+    grid-column: auto;
+  }
+}
+
+/* ---- the client screen ----
+
+   Opened in its own window and shared on the call. The workspace sidebar is
+   removed whenever this view is on the page, so the shared window shows the
+   owner their questions and roadmap and nothing of anyone else's. */
+.admin-shell:has(.as-client) {
+  display: block;
+  background: #f4f7f1;
+}
+.admin-shell:has(.as-client) .admin-sidebar,
+.admin-shell:has(.as-client) .admin-skip {
+  display: none;
+}
+.admin-shell:has(.as-client) .admin-content {
+  padding: 0;
+}
+.as-client {
+  min-height: 100dvh;
+  padding: clamp(20px, 4vw, 56px);
+  color: #11241a;
+  background: #f4f7f1;
+}
+.as-client > header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(24px, 5vh, 56px);
+}
+.as-client-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px 10px 10px 0;
+  background: #bde997;
+  color: #183722;
+  font:
+    40px/0.8 Georgia,
+    serif;
+  padding-bottom: 5px;
+}
+.as-client > header strong {
+  display: block;
+  font-size: 18px;
+}
+.as-client > header small {
+  color: #56685c;
+  font-size: 14px;
+}
+.as-client main {
+  max-width: 980px;
+  margin: 0 auto;
+}
+.as-client h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.as-client-intro p {
+  max-width: 720px;
+  color: #4f6454;
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  line-height: 1.55;
+}
+.as-client-intro ol {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 0;
+  padding-left: 24px;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+}
+.as-client-progress {
+  margin: 0 0 12px;
+  color: #2c6b2f;
+  font-size: 15px;
+  font-weight: 600;
+}
+.as-client-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+.as-client-chips li {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #e1f2da;
+  color: #145a32;
+  font-size: 15px;
+  font-weight: 600;
+}
+.as-client blockquote {
+  margin: 0;
+  padding: 18px 22px;
+  border-left: 4px solid #175b3b;
+  border-radius: 0 12px 12px 0;
+  background: #fff;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+.as-client blockquote small {
+  display: block;
+  margin-bottom: 6px;
+  color: #56685c;
+  font-size: 13px;
+  font-weight: 600;
+}
+.as-client-wait {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 50vh;
+  text-align: center;
+}
+.as-client-wait p {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 600;
+}
+.as-client-wait small {
+  color: #56685c;
+  font-size: 15px;
+}
+.as-client .as-roadmap li,
+.as-client .as-roadmap footer p {
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+}
+.as-client-next {
+  display: grid;
+  gap: 4px;
+  margin-top: 18px;
+  padding: 18px 22px;
+  border-radius: 12px;
+  background: #175b3b;
+  color: #fff;
+}
+.as-client-next small {
+  color: #cfe8c4;
+  font-size: 13px;
+  font-weight: 600;
+}
+.as-client-next strong {
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+}

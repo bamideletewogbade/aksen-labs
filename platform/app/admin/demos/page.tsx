@@ -1,26 +1,21 @@
 import Link from 'next/link';
-import { ArrowUpRight, MonitorPlay } from 'lucide-react';
-import { OperationsDesk } from '@/components/operations-desk';
+import { ArrowUpRight } from 'lucide-react';
+import { DemoStage } from '@/components/demo-stage';
 import { freeTools } from '@/lib/product-catalog';
+import './demo-stage.css';
 
 export const metadata = { title: 'Demos | Aksen Workspace' };
 
 /**
- * The demos a prospect can see, and the desk for drafting against them.
+ * The demo the founder shows a prospect, and the demos a prospect can open on
+ * the site by themselves.
  *
- * The page used to open straight into the generic operations desk under a
- * heading, with one link to the order demo buried in a paragraph. That left the
- * obvious question unanswered: which demos exist, and where do they live. They
- * come from the same catalogue the public page uses, so this cannot drift out
- * of step with what is actually on the site.
+ * The stage comes first because this page is mostly used on a shared screen:
+ * pick the business closest to the prospect's, and let them type as a
+ * customer. The public demos come from the same catalogue the public page
+ * uses, so this list cannot drift out of step with what is on the site.
  */
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const params = await searchParams;
-  const lead = typeof params.lead === 'string' ? params.lead.slice(0, 100) : '';
+export default function Page() {
   const demos = freeTools.filter((tool) => tool.status === 'Demonstration');
 
   return (
@@ -30,26 +25,28 @@ export default async function Page({
           <small>MARKETING</small>
           <h1>Service demos</h1>
           <p>
-            What a prospect can walk through on the site, and a desk for
-            drafting against a demo. WhatsApp is simulated here; no live channel
-            is connected.
+            Show a prospect what happens when their customers message them.
+            Choose the business closest to theirs and let them type as a
+            customer. Every business here is fictional, and no message leaves
+            this page.
           </p>
         </div>
         <Link href="/products#free-tools" prefetch={false}>
-          See them as a visitor <ArrowUpRight size={16} />
+          See the public demos <ArrowUpRight size={16} />
         </Link>
       </header>
+
+      <DemoStage />
 
       <section className="admin-panel site-inventory">
         <div className="panel-head">
           <div>
-            <small>LIVE ON THE SITE</small>
+            <small>ON THE SITE</small>
             <h2>
               {demos.length} {demos.length === 1 ? 'demo' : 'demos'} a prospect
-              can open
+              can open without you
             </h2>
           </div>
-          <MonitorPlay />
         </div>
         <ul className="site-inventory-list arrive-stagger">
           {demos.map((demo, index) => (
@@ -73,8 +70,6 @@ export default async function Page({
           ))}
         </ul>
       </section>
-
-      <OperationsDesk mode="demos" initialLead={lead} />
     </section>
   );
 }

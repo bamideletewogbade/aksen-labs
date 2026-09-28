@@ -2,7 +2,10 @@
 # git history permanently; keep them locally, not in the repository.
 backups/
 
-# Local environment and build noise
+# Local environment and build noise. node_modules is here as well as in
+# platform/.gitignore because marketing/nigeria-kit has its own, and on
+# 28 Sep 2026 its 10,661 files were staged for commit.
+node_modules/
 .env*
 __pycache__/
 *.pyc

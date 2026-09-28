@@ -818,6 +818,130 @@
   font-size: 0.9375rem;
   line-height: 1.5;
 }
+/* The seven-step mapper and its report. A step can hold several questions,
+   so the step prompt is a heading and each question gets its own legend. */
+.mapper-step-prompt {
+  margin: 0 0 6px;
+  color: #f3f6f4;
+  font-size: 1rem;
+  font-weight: 650;
+}
+.mapper-choice-fieldset + .mapper-choice-fieldset,
+.mapper-extra-label + .mapper-choice-fieldset {
+  margin-top: 18px;
+}
+.mapper-field-legend {
+  margin-bottom: 10px;
+  color: #cbd7cd;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.mapper-field-legend span {
+  color: #91a195;
+  font-weight: 400;
+}
+.mapper-choice.is-full {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.mapper-report-section {
+  margin-top: 18px;
+}
+.mapper-report-section h4,
+.mapper-checks small {
+  margin: 0 0 8px;
+  color: var(--signal);
+  font: 0.6875rem var(--font-geist-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mapper-leaks,
+.mapper-diy {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mapper-leaks li {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+}
+.mapper-leaks strong {
+  color: #e3eae5;
+  font-size: 0.9375rem;
+}
+.mapper-leaks span {
+  color: #9aa59d;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.mapper-diy li {
+  position: relative;
+  padding-left: 18px;
+  color: #b4bfb7;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+.mapper-diy li::before {
+  position: absolute;
+  left: 2px;
+  color: var(--signal);
+  content: '›';
+}
+.pilot-workflow > span {
+  color: #b4bfb7;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+.pilot-workflow .mapper-why,
+.pilot-workflow .mapper-package {
+  color: #96a69b;
+  font-size: 0.8125rem;
+}
+.pilot-workflow .mapper-package a {
+  color: var(--signal);
+}
+.recommendation-card .pilot-guardrails {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+.mapper-checks {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+.mapper-checks small {
+  display: block;
+}
+.mapper-checks ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mapper-checks li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #b4bfb7;
+  font-size: 0.8125rem;
+}
+.mapper-checks li svg {
+  flex: 0 0 auto;
+  color: var(--signal);
+}
+.mapper-checks li:not([data-verdict='pass']) svg {
+  color: #e0b04a;
+}
+.mapper-checks p {
+  margin: 8px 0 0;
+  font-size: 0.8125rem;
+}
 :is(button, a, input, textarea, select):focus-visible {
   outline: 2px solid #54b934;
   outline-offset: 4px;

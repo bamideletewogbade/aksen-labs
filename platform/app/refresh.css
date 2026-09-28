@@ -1904,157 +1904,6 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   font-weight: 500;
 }
 
-/* Our own software, ours to show. Phone-shaped captures because that is the
-   shape they were taken in and the shape most visitors are holding. */
-.refresh-proof-section .refresh-section-heading {
-  margin-bottom: 28px;
-}
-.proof-tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 26px;
-}
-.proof-tabs button {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 17px;
-  border-radius: 999px;
-  border: 1px solid #d3ddcd;
-  background: #fff;
-  color: #1d3f2c;
-  font: inherit;
-  font-size: 0.87rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    background 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
-}
-.proof-tabs button:hover {
-  border-color: #175b3b;
-}
-.proof-tabs button.is-current {
-  background: #10261d;
-  border-color: #10261d;
-  color: #f4f6ed;
-}
-.proof-tab-index {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.64rem;
-  letter-spacing: 0.08em;
-  opacity: 0.6;
-}
-.proof-tabs button:focus-visible {
-  outline: 2px solid #175b3b;
-  outline-offset: 2px;
-}
-.proof-lead {
-  max-width: 620px;
-  color: #53635a;
-  margin-bottom: 26px !important;
-  animation: proof-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.proof-shots {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-.proof-shots figure {
-  margin: 0;
-  display: grid;
-  gap: 14px;
-  animation: proof-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--i) * 80ms);
-}
-.proof-frame {
-  display: block;
-  padding: 9px;
-  border-radius: 22px;
-  background: #10261d;
-  box-shadow: 0 22px 60px #10261d1f;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.proof-shots figure:hover .proof-frame {
-  transform: translateY(-5px);
-}
-.proof-frame img {
-  width: 100%;
-  border-radius: 14px;
-  aspect-ratio: 430 / 620;
-  object-fit: cover;
-  object-position: top center;
-  background: #e8ece3;
-}
-/* The workspace is a thing you sit in front of, so it gets a screen shape and
-   one shot at a time rather than three phones in a row. */
-.proof-shots.is-screen {
-  grid-template-columns: 1fr 1fr;
-}
-.proof-shots.is-screen figure:first-child {
-  grid-column: 1 / -1;
-}
-/* Full width at 16/10 is most of a screen tall for one picture. The crop keeps
-   the part that says what the page is and drops the empty form below it. */
-.proof-shots.is-screen figure:first-child .proof-frame img {
-  aspect-ratio: 16 / 7;
-}
-.proof-shots.is-screen .proof-frame {
-  padding: 8px 8px 20px;
-  border-radius: 14px;
-}
-.proof-shots.is-screen .proof-frame img {
-  aspect-ratio: 16 / 10;
-  border-radius: 7px;
-}
-.proof-shots.is-screen .proof-frame::after {
-  content: '';
-  display: block;
-  width: 46px;
-  height: 3px;
-  margin: 9px auto 0;
-  border-radius: 999px;
-  background: #ffffff2e;
-}
-.proof-shots figcaption {
-  display: grid;
-  gap: 4px;
-}
-.proof-shots figcaption strong {
-  font-size: 1rem;
-  font-weight: 560;
-  letter-spacing: -0.02em;
-  color: #10261d;
-}
-.proof-shots figcaption span {
-  font-size: 0.87rem;
-  line-height: 1.5;
-  color: #53635a;
-}
-.proof-note {
-  margin-top: 28px !important;
-  padding-top: 20px;
-  border-top: 1px solid #d3ddcd;
-  max-width: 720px;
-  font-size: 0.9rem !important;
-  color: #7d8c83;
-}
-.proof-note .agency-text-link {
-  margin-left: 6px;
-  font-size: 0.87rem;
-}
-@keyframes proof-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 
 /* Free to open, right now. The cheapest next step on the page, so it is a
    grid of doors rather than a paragraph about doors. */
@@ -2225,10 +2074,19 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   max-width: 580px;
   color: #53635a;
 }
-.refresh-why-plain {
-  padding-left: 18px;
+/* The three promises the assessment comes with, same as the pricing page. */
+.refresh-why-promises {
+  display: grid;
+  gap: 10px;
+  margin: 22px 0 0;
+  padding: 0 0 0 18px;
   border-left: 2px solid #c2f576;
-  color: #2c3a32 !important;
+  list-style: none;
+}
+.refresh-why-promises li {
+  color: #2c3a32;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 .refresh-why .agency-actions {
   display: flex;
@@ -2263,49 +2121,6 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   color: #c2f576;
 }
 
-/* How a business gets from today to that. Four steps, the same four named on
-   the approach page, so the site tells one story. */
-.refresh-start-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 34px;
-}
-.refresh-start-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
-  counter-reset: none;
-}
-.refresh-start-steps li {
-  display: grid;
-  gap: 8px;
-  align-content: start;
-  padding-top: 18px;
-  border-top: 2px solid #d3ddcd;
-  transition: border-color 0.3s ease;
-}
-.refresh-start-steps li:hover {
-  border-top-color: #175b3b;
-}
-.refresh-start-number {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
-  color: #175b3b;
-  font-weight: 600;
-}
-.refresh-start-steps h3 {
-  font-size: 1.28rem;
-}
-.refresh-start-steps p {
-  font-size: 0.93rem !important;
-  color: #53635a;
-}
 @media (max-width: 1080px) {
   .flow-shell {
     grid-template-columns: 1fr;
@@ -2317,7 +2132,6 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   .flow-side {
     order: -1;
   }
-  .refresh-start-steps,
   .refresh-open-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 26px 22px;
@@ -2336,9 +2150,6 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   }
   .volume-grid {
     max-width: 520px;
-  }
-  .proof-shots {
-    gap: 18px;
   }
   .refresh-why-mark blockquote {
     padding: 28px;
@@ -2405,22 +2216,9 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
     display: grid;
     margin-top: 20px;
   }
-  .refresh-start-head {
-    display: grid;
-    gap: 18px;
-    justify-items: start;
-    margin-bottom: 26px;
-  }
-  .refresh-start-steps,
   .refresh-open-grid {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-  .refresh-start-steps li {
-    padding-top: 14px;
-  }
-  .refresh-start-steps h3 {
-    font-size: 1.18rem;
   }
   .refresh-problem-grid {
     padding-block: 48px;
@@ -2443,38 +2241,6 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
   .refresh-line-split {
     grid-template-columns: 1fr;
     gap: 24px;
-  }
-  /* Three tall phone captures stacked is a very long scroll, so on a phone
-     they become one swipeable row instead. */
-  .proof-shots {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: 74%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 14px;
-    margin-inline: calc(var(--agency-gutter) * -1);
-    padding-inline: var(--agency-gutter);
-    padding-bottom: 6px;
-    scrollbar-width: none;
-  }
-  .proof-shots::-webkit-scrollbar {
-    display: none;
-  }
-  .proof-shots figure {
-    scroll-snap-align: start;
-  }
-  .proof-shots.is-screen {
-    grid-auto-columns: 88%;
-  }
-  .proof-shots.is-screen figure:first-child {
-    grid-column: auto;
-  }
-  .proof-tabs button {
-    flex: 1;
-    justify-content: center;
-    padding: 10px 12px;
-    font-size: 0.82rem;
   }
   .refresh-open-card {
     padding: 18px;
@@ -2509,14 +2275,11 @@ body:has(.aksen-guide-panel[data-slot='sheet-content'])
 
 @media (prefers-reduced-motion: reduce) {
   .flow-bubble,
-  .flow-value,
-  .proof-lead,
-  .proof-shots figure {
+  .flow-value {
     animation: none;
   }
   .flow-steps::after,
-  .flow-step-detail,
-  .proof-frame {
+  .flow-step-detail {
     transition: none;
   }
   /* The squares still need to be visible, so the reveal resolves rather than

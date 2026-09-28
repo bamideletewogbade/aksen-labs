@@ -27,7 +27,8 @@ if (!token) {
  */
 const routes = [
   '/admin',
-  '/admin/agent-desk',
+  '/admin/assessment',
+  '/admin/assessment/client',
   '/admin/agents',
   '/admin/approvals',
   '/admin/audit',

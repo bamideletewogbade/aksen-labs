@@ -1,21 +1,60 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CircleHelp } from 'lucide-react';
 import { NodeMark } from '@/components/ui/node-mark';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { workflowSuggestion } from '@/lib/workflow-suggestion';
-import { mapperQuestions, type MapperAnswers } from '@/lib/mapper-questions';
+import {
+  emptyIntake,
+  mapperSteps,
+  stepProblem,
+  symptomsFor,
+  type DraftIntake,
+  type MapperField,
+  type MapperIntake,
+  type MapperStep,
+} from '@/lib/mapper-questions';
 import { mapperFallback } from '@/lib/mapper-fallback';
+import {
+  FREE_ASSESSMENT,
+  reportForLead,
+  type CheckResult,
+  type MapperReport,
+} from '@/lib/mapper-report';
 
-type Pilot = {
-  title: string;
-  summary: string;
-  firstWorkflow: string;
-  steps: string[];
-  firstMetric: string;
-  humanControl: string;
+type Result = {
+  report: MapperReport;
+  packageTiming?: string;
+  source: 'live' | 'rules';
+  checks: CheckResult[];
+  needsReview: boolean;
 };
+
+// The server may write, check, rewrite and check again. Its own deadline is
+// under this, so the page only gives up when the connection has.
+const WAIT_MS = 90_000;
+
+function answerText(step: MapperStep, draft: DraftIntake) {
+  return step.fields
+    .map((field) => {
+      const value = draft[field.id];
+      if (field.kind === 'text') return typeof value === 'string' ? value : '';
+      const picked = Array.isArray(value) ? value : value ? [value] : [];
+      const labels = picked.map(
+        (item) =>
+          field.options(draft).find((option) => option.value === item)?.label ??
+          item,
+      );
+      const otherValue =
+        field.other && picked.includes(field.other.when)
+          ? draft[field.other.id]
+          : '';
+      const other = typeof otherValue === 'string' ? otherValue : '';
+      return labels.join(', ') + (other ? ` (${other})` : '');
+    })
+    .filter(Boolean)
+    .join(' · ');
+}
 
 export function StandaloneMapper({
   pricingSelection,
@@ -24,11 +63,7 @@ export function StandaloneMapper({
 }) {
   const [includeSelection, setIncludeSelection] = useState(true);
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<MapperAnswers>([[], [], []]);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [otherMarket, setOtherMarket] = useState('');
-  const [otherTools, setOtherTools] = useState('');
-  const [example, setExample] = useState('');
+  const [draft, setDraft] = useState<DraftIntake>(emptyIntake);
   const [showContact, setShowContact] = useState(false);
   const [contact, setContact] = useState({ name: '', email: '', company: '' });
   const [saveError, setSaveError] = useState('');
@@ -36,88 +71,91 @@ export function StandaloneMapper({
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
     'idle',
   );
-  const [pilot, setPilot] = useState<Pilot | null>(null);
-  const [pilotState, setPilotState] = useState<
-    'idle' | 'loading' | 'ready' | 'fallback'
-  >('idle');
-  const complete = step === mapperQuestions.length;
-  const title =
-    pilot?.title ||
-    (answers[0].length === 1
-      ? workflowSuggestion(answers[0][0])
-      : 'Business improvement scoping plan');
+  const [result, setResult] = useState<Result | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [waited, setWaited] = useState(0);
+  const complete = step === mapperSteps.length;
+  const current = mapperSteps[step];
+  const blocked = current ? stepProblem(current, draft) : '';
 
   useEffect(() => {
     if (!complete) return;
     let cancelled = false;
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), WAIT_MS);
+    const started = Date.now();
+    const ticker = setInterval(() => setWaited(Date.now() - started), 1000);
     fetch('/api/recommendation', {
       signal: controller.signal,
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        answers,
-        otherMarket: answers[1].includes('Another African country')
-          ? otherMarket
-          : '',
-        otherTools: answers[2].includes('Something else') ? otherTools : '',
-        example,
-      }),
+      body: JSON.stringify({ intake: draft }),
     })
       .then((response) =>
-        response.ok
-          ? response.json()
-          : Promise.reject(new Error('no recommendation')),
+        response.ok ? response.json() : Promise.reject(new Error('no report')),
       )
       .then((data) => {
-        if (!cancelled) {
-          setPilot((data as { recommendation: Pilot }).recommendation);
-          setPilotState('ready');
-        }
+        if (!cancelled) setResult(data as Result);
       })
-      // The mapper still has to answer the visitor when the model is unreachable.
+      // The page still has to answer the visitor when the server cannot.
+      // Every step already passed stepProblem, so the draft is a full intake.
       .catch(() => {
-        if (!cancelled) {
-          setPilot(mapperFallback(answers));
-          setPilotState('fallback');
-        }
+        if (!cancelled)
+          setResult({
+            report: mapperFallback(draft as MapperIntake),
+            source: 'rules',
+            checks: [],
+            needsReview: true,
+          });
       })
-      .finally(() => clearTimeout(timeout));
+      .finally(() => {
+        clearTimeout(timeout);
+        clearInterval(ticker);
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
       clearTimeout(timeout);
+      clearInterval(ticker);
       controller.abort();
     };
-  }, [complete, answers, otherMarket, otherTools, example]);
+    // The draft cannot change while complete (editing leaves this state
+    // first), so listing it only satisfies the hook rules; it never refires.
+  }, [complete, draft]);
 
-  function toggle(option: string) {
-    const question = mapperQuestions[step];
-    const exclusive = 'exclusive' in question ? question.exclusive : null;
-    setSelected((current) => {
-      if (current.includes(option))
-        return current.filter((item) => item !== option);
-      if (option === exclusive) return [option];
-      return [...current.filter((item) => item !== exclusive), option];
+  function set<K extends keyof DraftIntake>(key: K, value: DraftIntake[K]) {
+    setDraft((currentDraft) => {
+      const next = { ...currentDraft, [key]: value };
+      // A new problem brings a new list of symptoms. Keep only those still on it.
+      if (key === 'problem') {
+        const allowed = symptomsFor(next.problem);
+        next.symptoms = next.symptoms.filter((item) => allowed.includes(item));
+      }
+      return next;
     });
   }
 
-  function continueFromQuestion() {
-    if (!selected.length) return;
-    const next = answers.map((answer, index) =>
-      index === step ? selected : answer,
-    ) as MapperAnswers;
-    setAnswers(next);
-    if (step === mapperQuestions.length - 1) setPilotState('loading');
-    setStep(step + 1);
-    setSelected(next[step + 1] || []);
+  function toggle(
+    field: Extract<MapperField, { kind: 'single' | 'multi' }>,
+    value: string,
+  ) {
+    if (field.kind === 'single') {
+      set(
+        field.id,
+        (draft[field.id] === value && field.optional ? '' : value) as never,
+      );
+      return;
+    }
+    const picked = draft[field.id] as string[];
+    if (picked.includes(value))
+      set(field.id, picked.filter((item) => item !== value) as never);
+    else if (!field.max || picked.length < field.max)
+      set(field.id, [...picked, value] as never);
   }
 
-  function editQuestion(index: number) {
+  function goTo(index: number) {
     setStep(index);
-    setSelected(answers[index]);
-    setPilot(null);
-    setPilotState('idle');
+    setResult(null);
     setShowContact(false);
     setStatus('idle');
     setSaveError('');
@@ -125,23 +163,14 @@ export function StandaloneMapper({
   }
 
   function restart() {
-    setAnswers([[], [], []]);
-    setSelected([]);
-    setOtherMarket('');
-    setOtherTools('');
-    setExample('');
-    setStep(0);
-    setShowContact(false);
-    setStatus('idle');
-    setPilot(null);
-    setPilotState('idle');
+    setDraft(emptyIntake());
     setContact({ name: '', email: '', company: '' });
-    setSaveError('');
-    setAcknowledged(false);
+    goTo(0);
   }
 
   async function save(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!result) return;
     setStatus('saving');
     setSaveError('');
     try {
@@ -150,14 +179,11 @@ export function StandaloneMapper({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           ...contact,
-          answers,
-          otherMarket: answers[1].includes('Another African country')
-            ? otherMarket
-            : '',
-          otherTools: answers[2].includes('Something else') ? otherTools : '',
-          example,
-          answerFormat: 'goal-market-setup',
-          recommendation: title,
+          intake: draft,
+          answerFormat: 'diagnostic-v2',
+          recommendation: result.report.headline,
+          reportSummary: reportForLead(result.report),
+          needsReview: result.needsReview,
           pricingPackage: includeSelection ? pricingSelection?.name : undefined,
         }),
       });
@@ -176,6 +202,14 @@ export function StandaloneMapper({
     }
   }
 
+  const report = result?.report;
+  const loadingText =
+    waited < 8000
+      ? 'Reading your answers…'
+      : waited < 22000
+        ? 'Writing your starting point…'
+        : 'Checking it against what you told us…';
+
   return (
     <div className="mapper-shell standalone">
       <div className="mapper-topline">
@@ -188,7 +222,9 @@ export function StandaloneMapper({
         </div>
         <div>
           <strong>Find your starting point</strong>
-          <span>Three short steps, then an optional enquiry</span>
+          <span>
+            {mapperSteps.length} short steps, then an optional enquiry
+          </span>
         </div>
         <span className="online">
           <i /> ready
@@ -209,108 +245,141 @@ export function StandaloneMapper({
         <div className="agent-message">
           <span>AK</span>
           <p>
-            Choose all the goals and tools that fit. We’ll suggest where to
-            begin; a person on our team will discuss the scope and price with
-            you if you send an enquiry.
+            Tell us how the business runs today. We’ll write a short starting
+            point, check it against your answers, and a person on our team will
+            discuss scope and price with you if you send an enquiry.
           </p>
         </div>
-        {answers.map(
-          (answer, index) =>
+        {mapperSteps.map(
+          (answered, index) =>
             index < step && (
-              <div className="thread-pair" key={index}>
+              <div className="thread-pair" key={answered.prompt}>
                 <div className="user-message">
-                  <span>
-                    {answer.join(', ')}
-                    {index === 1 &&
-                    answer.includes('Another African country') &&
-                    otherMarket
-                      ? ` (${otherMarket})`
-                      : ''}
-                    {index === 2 && answer.includes('Something else') && otherTools
-                      ? ` (${otherTools})`
-                      : ''}
-                  </span>
+                  <span>{answerText(answered, draft)}</span>
                   <button
                     type="button"
-                    onClick={() => editQuestion(index)}
-                    aria-label={`Edit ${mapperQuestions[index].prompt}`}
+                    onClick={() => goTo(index)}
+                    aria-label={`Edit ${answered.prompt}`}
                   >
                     Edit
                   </button>
                 </div>
-                {index + 1 < mapperQuestions.length && index + 1 < step && (
-                  <div className="agent-message compact">
-                    <span>AK</span>
-                    <p>{mapperQuestions[index + 1].prompt}</p>
-                  </div>
-                )}
               </div>
             ),
         )}
         {!complete ? (
           <div className="choice-panel">
-            <fieldset className="mapper-choice-fieldset">
-              <legend className="current-question">
-                {mapperQuestions[step].prompt}
-              </legend>
-              <p className="mapper-choice-hint">{mapperQuestions[step].hint}</p>
-              <div className="choice-grid">
-                {mapperQuestions[step].options.map((option) => (
-                  <label className="mapper-choice" key={option}>
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(option)}
-                      onChange={() => toggle(option)}
+            <p className="current-question mapper-step-prompt">
+              {current.prompt}
+            </p>
+            <p className="mapper-choice-hint">{current.hint}</p>
+            {current.fields.map((field) =>
+              field.kind === 'text' ? (
+                <label className="mapper-extra-label" key={field.id}>
+                  {field.label} <span>(optional)</span>
+                  {field.rows ? (
+                    <textarea
+                      value={draft[field.id] as string}
+                      onChange={(event) =>
+                        set(
+                          field.id,
+                          event.target.value.slice(0, field.limit) as never,
+                        )
+                      }
+                      placeholder={field.placeholder}
+                      rows={field.rows}
                     />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            {step === 1 && selected.includes('Another African country') && (
-              <label className="mapper-extra-label">
-                Which country or countries?
-                <input
-                  value={otherMarket}
-                  onChange={(event) =>
-                    setOtherMarket(event.target.value.slice(0, 120))
-                  }
-                  placeholder="For example, Côte d’Ivoire and Senegal"
-                />
-              </label>
-            )}
-            {step === 2 &&
-              selected.includes('Something else') && (
-                <label className="mapper-extra-label">
-                  What else do you use?
-                  <input
-                    value={otherTools}
-                    onChange={(event) =>
-                      setOtherTools(event.target.value.slice(0, 120))
-                    }
-                    placeholder="For example, a booking app or paper records"
-                  />
+                  ) : (
+                    <input
+                      value={draft[field.id] as string}
+                      onChange={(event) =>
+                        set(
+                          field.id,
+                          event.target.value.slice(0, field.limit) as never,
+                        )
+                      }
+                      placeholder={field.placeholder}
+                    />
+                  )}
                 </label>
-              )}
-            {step === 2 && (
-              <label className="mapper-extra-label">
-                One real example we should understand <span>(optional)</span>
-                <textarea
-                  value={example}
-                  onChange={(event) =>
-                    setExample(event.target.value.slice(0, 600))
-                  }
-                  placeholder="For example, customers ask for stock on WhatsApp, then someone checks a spreadsheet before replying."
-                  rows={3}
-                />
-              </label>
+              ) : (
+                <fieldset className="mapper-choice-fieldset" key={field.id}>
+                  {current.fields.length > 1 && (
+                    <legend className="mapper-field-legend">
+                      {field.label}
+                      {field.optional && <span> (optional)</span>}
+                    </legend>
+                  )}
+                  {current.fields.length === 1 && (
+                    <legend className="sr-only">{field.label}</legend>
+                  )}
+                  <div className="choice-grid">
+                    {field.options(draft).map((option) => {
+                      const value = draft[field.id];
+                      const checked = Array.isArray(value)
+                        ? value.includes(option.value)
+                        : value === option.value;
+                      const full =
+                        field.kind === 'multi' &&
+                        !!field.max &&
+                        (value as string[]).length >= field.max &&
+                        !checked;
+                      return (
+                        <label
+                          className={`mapper-choice${full ? ' is-full' : ''}`}
+                          key={option.value}
+                        >
+                          <input
+                            type={
+                              field.kind === 'single' ? 'radio' : 'checkbox'
+                            }
+                            name={field.id}
+                            checked={checked}
+                            disabled={full}
+                            onChange={() => toggle(field, option.value)}
+                            onClick={() => {
+                              // A radio cannot be unticked by the browser; an
+                              // optional one should be.
+                              if (
+                                field.kind === 'single' &&
+                                field.optional &&
+                                checked
+                              )
+                                toggle(field, option.value);
+                            }}
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {field.other &&
+                    (Array.isArray(draft[field.id])
+                      ? (draft[field.id] as string[]).includes(field.other.when)
+                      : draft[field.id] === field.other.when) && (
+                      <label className="mapper-extra-label">
+                        {field.other.label}
+                        <input
+                          value={draft[field.other.id] as string}
+                          onChange={(event) =>
+                            set(
+                              field.other!.id,
+                              event.target.value.slice(0, 120) as never,
+                            )
+                          }
+                          placeholder={field.other.placeholder}
+                        />
+                      </label>
+                    )}
+                </fieldset>
+              ),
             )}
             <div className="mapper-step-actions">
               {step > 0 && (
                 <button
                   type="button"
                   className="mapper-back"
-                  onClick={() => editQuestion(step - 1)}
+                  onClick={() => goTo(step - 1)}
                 >
                   <ArrowLeft size={15} /> Back
                 </button>
@@ -318,19 +387,20 @@ export function StandaloneMapper({
               <button
                 type="button"
                 className="continue-button"
-                disabled={
-                  !selected.length ||
-                  (step === 1 &&
-                    selected.includes('Another African country') &&
-                    !otherMarket.trim()) ||
-                  (step === 2 &&
-                    selected.includes('Something else') &&
-                    !otherTools.trim())
-                }
-                onClick={continueFromQuestion}
+                disabled={!!blocked}
+                title={blocked || undefined}
+                onClick={() => {
+                  // Set here rather than in the effect, so the first render
+                  // of the finished state already says it is working.
+                  if (step === mapperSteps.length - 1) {
+                    setLoading(true);
+                    setWaited(0);
+                  }
+                  setStep(step + 1);
+                }}
               >
-                {step === mapperQuestions.length - 1
-                  ? 'See a starting point'
+                {step === mapperSteps.length - 1
+                  ? 'See my starting point'
                   : 'Continue'}{' '}
                 <ArrowRight size={16} />
               </button>
@@ -338,72 +408,144 @@ export function StandaloneMapper({
             <div className="mapper-progress">
               <span
                 style={{
-                  width: `${((step + 1) / mapperQuestions.length) * 100}%`,
+                  width: `${((step + 1) / mapperSteps.length) * 100}%`,
                 }}
               />
             </div>
             <small>
-              Step {step + 1} of {mapperQuestions.length}
+              Step {step + 1} of {mapperSteps.length}
             </small>
           </div>
         ) : (
-          <div
-            className="recommendation-card"
-            aria-busy={pilotState === 'loading'}
-          >
+          <div className="recommendation-card" aria-busy={loading}>
             <div className="recommendation-head">
               <Check size={17} />
-              <span>YOUR SUGGESTED STARTING POINT</span>
+              <span>YOUR STARTING POINT</span>
             </div>
-            {pilotState === 'loading' ? (
-              <p className="pilot-loading">
-                Reading your answers and preparing a suggestion…
-              </p>
+            {loading || !result || !report ? (
+              <p className="pilot-loading">{loadingText}</p>
             ) : (
               <>
-                <h3>{title}</h3>
-                {pilotState === 'fallback' && (
+                <h3>{report.headline}</h3>
+                {result.source === 'rules' && (
                   <p className="mapper-fallback-note">
-                    The live advisor is unavailable, so this starting point is
-                    based on the choices you made. Our team will review the
-                    details before suggesting a scope.
+                    This version is built from your choices by fixed rules,
+                    because a written one could not be checked against your
+                    answers just now. A person on our team reads every enquiry
+                    before suggesting a scope.
                   </p>
                 )}
-                {pilot ? (
-                  <>
-                    <p>{pilot.summary}</p>
-                    <p className="pilot-workflow">
-                      <strong>First improvement.</strong> {pilot.firstWorkflow}
-                    </p>
-                    <ol className="pilot-steps">
-                      {pilot.steps.map((pilotStep) => (
-                        <li key={pilotStep}>{pilotStep}</li>
+                <p>{report.summary}</p>
+
+                <section className="mapper-report-section">
+                  <h4>Where it slips</h4>
+                  <ul className="mapper-leaks">
+                    {report.leaks.map((leak) => (
+                      <li key={leak.where}>
+                        <strong>{leak.where}</strong>
+                        <span>{leak.evidence}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                <section className="mapper-report-section">
+                  <h4>This week, on your own</h4>
+                  <ul className="mapper-diy">
+                    {report.doThisWeek.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </section>
+
+                <div className="pilot-workflow">
+                  <small>FIRST FIX WE COULD BUILD</small>
+                  <strong>{report.firstFix.title}</strong>
+                  <span>{report.firstFix.what}</span>
+                  {report.firstFix.whyFirst && (
+                    <span className="mapper-why">
+                      Why first: {report.firstFix.whyFirst}
+                    </span>
+                  )}
+                  <span className="mapper-package">
+                    {report.firstFix.package === FREE_ASSESSMENT ? (
+                      <>
+                        Next step: the free assessment. No build is suggested
+                        yet.
+                      </>
+                    ) : (
+                      <>
+                        Closest package: {report.firstFix.package}
+                        {result.packageTiming
+                          ? `, usually ${result.packageTiming}`
+                          : ''}
+                        . <Link href="/pricing">Indicative prices</Link>. A
+                        person quotes after the free assessment.
+                      </>
+                    )}
+                  </span>
+                </div>
+                <ol className="pilot-steps">
+                  {report.steps.map((pilotStep) => (
+                    <li key={pilotStep}>{pilotStep}</li>
+                  ))}
+                </ol>
+                <dl className="pilot-guardrails">
+                  <div>
+                    <dt>How to measure it</dt>
+                    <dd>{report.measure}</dd>
+                  </div>
+                  <div>
+                    <dt>Leave until later</dt>
+                    <dd>{report.notYet}</dd>
+                  </div>
+                  <div>
+                    <dt>Your team stays in control</dt>
+                    <dd>{report.humanControl}</dd>
+                  </div>
+                </dl>
+                {report.questions.length > 0 && (
+                  <section className="mapper-report-section">
+                    <h4>What we would ask you on a call</h4>
+                    <ul className="mapper-diy">
+                      {report.questions.map((question) => (
+                        <li key={question}>{question}</li>
                       ))}
-                    </ol>
-                    <dl className="pilot-guardrails">
-                      <div>
-                        <dt>How to measure progress</dt>
-                        <dd>{pilot.firstMetric}</dd>
-                      </div>
-                      <div>
-                        <dt>Your team stays in control</dt>
-                        <dd>{pilot.humanControl}</dd>
-                      </div>
-                    </dl>
-                  </>
-                ) : (
-                  <p>
-                    Start by mapping your current process and choosing one
-                    improvement to test. We’ll discuss your goal, operating
-                    market and current setup before recommending what to build.
-                  </p>
+                    </ul>
+                  </section>
+                )}
+                {result.source === 'live' && result.checks.length > 0 && (
+                  <div className="mapper-checks">
+                    <small>CHECKED AGAINST YOUR ANSWERS</small>
+                    <ul>
+                      {result.checks.map((item) => (
+                        <li key={item.id} data-verdict={item.verdict}>
+                          {item.verdict === 'pass' ? (
+                            <Check size={13} aria-label="Passed" />
+                          ) : (
+                            <CircleHelp
+                              size={13}
+                              aria-label="A person will check this"
+                            />
+                          )}
+                          {item.label}
+                        </li>
+                      ))}
+                    </ul>
+                    {result.needsReview && (
+                      <p>
+                        Where the check was unsure, a person on our team reads
+                        it before anything is suggested to you.
+                      </p>
+                    )}
+                  </div>
                 )}
               </>
             )}
             <div className="recommendation-actions">
               <button
                 className="continue-button"
-                disabled={pilotState === 'loading'}
+                disabled={loading || !report}
                 onClick={() => setShowContact(true)}
               >
                 Enquire about this <ArrowRight size={16} />
@@ -415,8 +557,8 @@ export function StandaloneMapper({
                 <p>
                   <strong>How can our team reach you?</strong>
                   <br />
-                  Send your answers with a reply address so we can discuss the
-                  work.
+                  Send your answers and this starting point with a reply address
+                  so we can discuss the work.
                 </p>
                 <label>
                   Your name

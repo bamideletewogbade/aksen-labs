@@ -9,10 +9,14 @@ import {
 import { Check, Pause, Play } from 'lucide-react';
 
 /**
- * One enquiry, followed from the customer's message to the moment money is
- * agreed. The homepage used to name places (on WhatsApp, in the shop) without
- * saying who does what, which left the reader guessing. Here every step names
- * an actor, and the last step is held by a person on purpose.
+ * One enquiry, followed from the customer's message to a paid order leaving
+ * the shop. Every step names an actor, so nobody has to guess who does what.
+ *
+ * Until 28 Sep 2026 the last step was the owner approving every order before
+ * the customer heard anything. The pitch is now automation first: the agent
+ * quotes listed prices, sends the payment link, Paystack confirms the money,
+ * and the owner's one step is the physical one. Anything off the list still
+ * goes to a person; that is said in the band below this on the homepage.
  */
 
 type Actor = 'agent' | 'you';
@@ -52,11 +56,18 @@ const steps: {
       'One list your whole team can open, already filled in. Nothing sits in one person’s phone.',
   },
   {
-    time: '7:31 AM',
-    actor: 'you',
-    title: 'You approve it, then it goes out',
+    time: '9:08 PM',
+    actor: 'agent',
+    title: 'Paid, and confirmed without you',
     detail:
-      'The discount, the promise date, the final price. Those stay with a person, and the customer only hears once you say yes.',
+      'The payment link goes out with the order. Paystack confirms the money, mobile money included, and the order is marked paid. Nobody checks a screenshot.',
+  },
+  {
+    time: '7:30 AM',
+    actor: 'you',
+    title: 'You wake up to a paid order',
+    detail:
+      'Your one job is to pack it and send it. You only hear about the orders that need you: a custom price, a discount, a complaint.',
   },
 ];
 
@@ -88,12 +99,22 @@ const messages: {
   {
     step: 3,
     from: 'agent',
-    text: 'Noted, Ama. One 5 litre tub to Spintex Road, GHS 510 with delivery. The shop confirms in the morning and I will message you.',
+    text: 'Noted, Ama. One 5 litre tub to Spintex Road, GHS 510 with delivery. Here is your payment link. MoMo or card both work.',
+  },
+  {
+    step: 4,
+    from: 'customer',
+    text: 'Paid.',
   },
   {
     step: 4,
     from: 'agent',
-    text: 'Confirmed by the shop. The rider leaves at 9:40 AM. Pay on delivery or by MoMo before he arrives.',
+    text: 'Received, thank you Ama. Your order is confirmed for delivery tomorrow morning.',
+  },
+  {
+    step: 5,
+    from: 'agent',
+    text: 'Good morning Ama. Your shea butter is on its way. The rider will call 024 555 0198 when he arrives.',
   },
 ];
 
@@ -104,6 +125,7 @@ const record: { step: number; label: string; value: string }[] = [
   { step: 2, label: 'Deliver to', value: '14 Spintex Road, Accra' },
   { step: 3, label: 'Delivery', value: 'Tomorrow, GHS 30' },
   { step: 3, label: 'Total', value: 'GHS 510' },
+  { step: 4, label: 'Payment', value: 'Paid, confirmed by Paystack' },
 ];
 
 function subscribeMotion(callback: () => void) {
@@ -163,7 +185,7 @@ export function HomeFlow() {
 
   const current = steps[active];
   const shown = messages.filter((message) => message.step <= active);
-  const approved = active === steps.length - 1;
+  const paid = active >= 4;
 
   return (
     <div
@@ -244,7 +266,7 @@ export function HomeFlow() {
             })}
           </dl>
           <div
-            className={`flow-approval ${approved ? 'is-approved' : ''} ${
+            className={`flow-approval ${paid ? 'is-approved' : ''} ${
               active >= 3 ? 'is-ready' : ''
             }`}
           >
@@ -253,14 +275,16 @@ export function HomeFlow() {
             </span>
             <span className="flow-approval-text">
               <strong>
-                {approved
-                  ? 'Approved by you, 7:31 AM'
-                  : active >= 3
-                    ? 'Waiting for you to approve'
-                    : 'Nothing to approve yet'}
+                {active >= 5
+                  ? 'Sent out by you, 7:32 AM'
+                  : paid
+                    ? 'Paid. Ready to pack.'
+                    : active >= 3
+                      ? 'Payment link sent'
+                      : 'Nothing for you to do'}
               </strong>
               <small>
-                Price, discount and promise date stay with a person.
+                You hear about orders that are paid, or that need you.
               </small>
             </span>
           </div>
@@ -318,7 +342,7 @@ export function HomeFlow() {
             <span className="flow-count-detail">
               {current.actor === 'agent'
                 ? 'Handled by the agent'
-                : 'Held by your team'}
+                : 'Done by you'}
             </span>
           </span>
           <button

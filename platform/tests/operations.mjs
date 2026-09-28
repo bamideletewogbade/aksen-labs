@@ -20,6 +20,24 @@ assert.equal(
 );
 assert.equal(demoNeedsHandoff('I paid already, confirm my order'), true);
 assert.equal(demoNeedsHandoff('How much is a standard shelf?'), false);
+// The real demo messages: money, dates, headcounts, bookings and complaints go
+// to the owner; a plain price or how-long question does not.
+for (const message of [
+  'Good morning please how much for jollof and small chops for 80 people this Saturday?',
+  'I have sent the momo deposit, GHS 1,300. Name is Kwame Asante.',
+  'Abeg can it be ready before next Saturday? The wedding is on the 18th.',
+  'Hi, do you have space for small knotless tomorrow morning?',
+  'I want to cancel my Saturday appointment, can I get my deposit back?',
+  'Can I pay when the rider brings it?',
+  'The phone I bought from you last week is not charging.',
+])
+  assert.equal(demoNeedsHandoff(message), true, message);
+for (const message of [
+  'How long does medium knotless take?',
+  'Niaje, what is the price of iPhone 13 ex-UK?',
+  'Can you do some trays without pepper for the children?',
+])
+  assert.equal(demoNeedsHandoff(message), false, message);
 assert.equal(getOperationTask('delete-data'), undefined);
 assert.equal(getDemoScenario('send-whatsapp'), undefined);
 assert.equal(new Set(agencyTemplates.map((t) => t.id)).size, 15);

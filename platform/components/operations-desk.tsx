@@ -5,7 +5,7 @@ import { cleanAiText } from '@/lib/ai-text';
 import { ResponseText } from '@/components/response-text';
 import { useEffect, useMemo, useState } from 'react';
 import { PendingButton } from '@/components/ui/activity';
-import { operationTasks, demoScenarios } from '@/lib/operations-catalog';
+import { operationTasks } from '@/lib/operations-catalog';
 import { agencyTemplates, templateText } from '@/lib/agency-templates';
 import {
   Check,
@@ -29,14 +29,22 @@ type SavedDraft = {
   trace: { content?: string; sourceLabel?: string };
 };
 
-const STAGES = ['All', 'Discover', 'Agree', 'Deliver', 'Launch', 'Retain'] as const;
+const STAGES = [
+  'All',
+  'Discover',
+  'Agree',
+  'Deliver',
+  'Launch',
+  'Retain',
+] as const;
 
 export function OperationsDesk({
   mode = 'operations',
   initialLead = '',
   initialTask = '',
 }: {
-  mode?: 'operations' | 'templates' | 'demos';
+  // Demos moved to components/demo-stage.tsx: a conversation, not a document.
+  mode?: 'operations' | 'templates';
   initialLead?: string;
   initialTask?: string;
 }) {
@@ -55,7 +63,6 @@ export function OperationsDesk({
       ? initialTask
       : operationTasks[0].id,
   );
-  const [demoId, setDemoId] = useState<string>(demoScenarios[0].id);
   const [templateId, setTemplateId] = useState(agencyTemplates[0].id);
   const [selectedStage, setSelectedStage] = useState<string>('All');
   const [templateSearch, setTemplateSearch] = useState('');
@@ -64,14 +71,17 @@ export function OperationsDesk({
   const [clientVar, setClientVar] = useState('');
   const [projectVar, setProjectVar] = useState('');
   const [ownerVar, setOwnerVar] = useState('');
-  const [dateVar, setDateVar] = useState(() => new Date().toISOString().slice(0, 10));
+  const [dateVar, setDateVar] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const [feeVar, setFeeVar] = useState('');
 
   // View mode: 'split' | 'edit' | 'preview'
-  const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>(
+    'split',
+  );
   const [copied, setCopied] = useState(false);
 
-  const [message, setMessage] = useState('');
   const [aiDraft, setAiDraft] = useState(mode !== 'templates');
   const [content, setContent] = useState(
     mode === 'templates' ? templateText(agencyTemplates[0].id) : '',
@@ -83,10 +93,9 @@ export function OperationsDesk({
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
-  const [handoff, setHandoff] = useState(false);
 
-  const demo = demoScenarios.find((item) => item.id === demoId)!;
-  const currentTemplate = agencyTemplates.find((t) => t.id === templateId) || agencyTemplates[0];
+  const currentTemplate =
+    agencyTemplates.find((t) => t.id === templateId) || agencyTemplates[0];
 
   const filteredTemplates = useMemo(() => {
     return agencyTemplates.filter((t) => {
@@ -150,16 +159,11 @@ export function OperationsDesk({
     setError('');
     setNotice('');
     setContent('');
-    setHandoff(false);
     try {
       const res = await fetch('/api/admin/operations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          mode === 'demos'
-            ? { demo: demoId, message }
-            : { task, sourceType, sourceId },
-        ),
+        body: JSON.stringify({ task, sourceType, sourceId }),
       });
       const body = (await res.json()) as {
         error?: string;
@@ -176,9 +180,8 @@ export function OperationsDesk({
       setContent(body.content);
       setAiDraft(true);
       setTitle(
-        `${mode === 'demos' ? demo.name : operationTasks.find((t) => t.id === task)!.name} — ${body.sourceLabel}`,
+        `${operationTasks.find((t) => t.id === task)!.name} — ${body.sourceLabel}`,
       );
-      setHandoff(body.handoff);
       setNotice('Draft saved to AI activity. Review before using.');
       await load();
     } catch (e) {
@@ -254,7 +257,10 @@ export function OperationsDesk({
     let updated = content;
     if (clientVar.trim()) {
       updated = updated.replace(/\[client(\s*\/[^\]]+)?\]/gi, clientVar.trim());
-      updated = updated.replace(/\[legal entity to confirm\]/gi, clientVar.trim());
+      updated = updated.replace(
+        /\[legal entity to confirm\]/gi,
+        clientVar.trim(),
+      );
     }
     if (projectVar.trim()) {
       updated = updated.replace(/\[project\]/gi, projectVar.trim());
@@ -347,7 +353,9 @@ export function OperationsDesk({
               );
             })}
             {filteredTemplates.length === 0 && (
-              <p className="ops-status">No templates match &ldquo;{templateSearch}&rdquo;.</p>
+              <p className="ops-status">
+                No templates match &ldquo;{templateSearch}&rdquo;.
+              </p>
             )}
           </div>
 
@@ -363,7 +371,11 @@ export function OperationsDesk({
 
         {/* Right Column: Template Studio Workspace */}
         <section className="admin-panel template-workspace">
-          {error && <p role="alert" className="ops-error">{error}</p>}
+          {error && (
+            <p role="alert" className="ops-error">
+              {error}
+            </p>
+          )}
           {notice && <output className="ops-status">{notice}</output>}
 
           {/* Active Template Meta & Quick Controls */}
@@ -371,15 +383,21 @@ export function OperationsDesk({
             <div className="template-active-meta">
               <h2>{currentTemplate.name}</h2>
               <div className="template-meta-tags">
-                <span className="template-pill stage-pill">{currentTemplate.stage}</span>
-                <span className="template-pill kind-pill">{currentTemplate.kind}</span>
+                <span className="template-pill stage-pill">
+                  {currentTemplate.stage}
+                </span>
+                <span className="template-pill kind-pill">
+                  {currentTemplate.kind}
+                </span>
                 {remainingPlaceholders.length === 0 ? (
                   <span className="template-pill pill-done">
                     <Check size={12} /> Placeholders complete
                   </span>
                 ) : (
                   <span className="template-pill pill-pending">
-                    {remainingPlaceholders.length} bracketed {remainingPlaceholders.length === 1 ? 'item' : 'items'} to fill
+                    {remainingPlaceholders.length} bracketed{' '}
+                    {remainingPlaceholders.length === 1 ? 'item' : 'items'} to
+                    fill
                   </span>
                 )}
               </div>
@@ -418,7 +436,9 @@ export function OperationsDesk({
           <details className="template-fill-panel" open>
             <summary className="template-fill-summary">
               <Zap size={14} /> Client Quick-Fill Variables
-              <small>Auto-populate [client], [project], [owner], [date] and [fee]</small>
+              <small>
+                Auto-populate [client], [project], [owner], [date] and [fee]
+              </small>
             </summary>
             <div className="template-var-grid">
               <label>
@@ -463,10 +483,18 @@ export function OperationsDesk({
               </label>
             </div>
             <div className="template-var-actions">
-              <button type="button" className="btn-apply-var" onClick={applyQuickFill}>
+              <button
+                type="button"
+                className="btn-apply-var"
+                onClick={applyQuickFill}
+              >
                 <Sparkles size={14} /> Fill Variables into Draft
               </button>
-              <button type="button" className="btn-reset-var" onClick={resetToMaster}>
+              <button
+                type="button"
+                className="btn-reset-var"
+                onClick={resetToMaster}
+              >
                 <RefreshCw size={14} /> Reset Template
               </button>
             </div>
@@ -543,7 +571,9 @@ export function OperationsDesk({
               <button
                 type="button"
                 className="btn-save-workspace"
-                disabled={busy || !content.trim() || !title.trim() || !businessId}
+                disabled={
+                  busy || !content.trim() || !title.trim() || !businessId
+                }
                 onClick={() => void save()}
               >
                 Save to Client Workspace
@@ -555,131 +585,71 @@ export function OperationsDesk({
     );
   }
 
-  // Render for Operations / Demos Mode
+  // Render for Operations Mode
   return (
     <div className="ops-layout">
       <section className="admin-panel ops-controls">
-        {mode === 'demos' ? (
-          <>
-            <label>
-              Service demo
-              <select
-                value={demoId}
-                disabled={busy}
-                onChange={(e) => {
-                  setDemoId(e.target.value);
-                  setMessage('');
-                  setContent('');
-                  setHandoff(false);
-                }}
-              >
-                {demoScenarios.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p className="ops-status">
-              {demo.channel} · Fictional data · No external messages
-            </p>
-            <details>
-              <summary>Approved demo knowledge</summary>
-              <p>{demo.context}</p>
-            </details>
-            <div className="ops-example-list">
-              {demo.examples.map((example) => (
-                <button
-                  disabled={busy}
-                  type="button"
-                  key={example}
-                  onClick={() => setMessage(example)}
-                >
-                  {example}
-                </button>
+        <>
+          <label>
+            AI task
+            <select
+              value={task}
+              disabled={busy}
+              onChange={(e) => setTask(e.target.value)}
+            >
+              {operationTasks.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
               ))}
-            </div>
-            <label>
-              Customer message
-              <textarea
-                value={message}
-                maxLength={1000}
-                rows={3}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-            </label>
-            <PendingButton
-              pending={busy}
-              pendingLabel="Preparing reply"
-              disabled={!message.trim() || !data?.aiConfigured}
-              onClick={() => void generate()}
+            </select>
+          </label>
+          <label>
+            Source type
+            <select
+              value={sourceType}
+              disabled={busy}
+              onChange={(e) => {
+                setSourceType(e.target.value);
+                setSourceId('');
+              }}
             >
-              Run service demo
-            </PendingButton>
-          </>
-        ) : (
-          <>
-            <label>
-              AI task
-              <select
-                value={task}
-                disabled={busy}
-                onChange={(e) => setTask(e.target.value)}
-              >
-                {operationTasks.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
+              <option value="lead">Enquiry</option>
+              <option value="project">My project</option>
+            </select>
+          </label>
+          <label>
+            Record
+            <select
+              value={sourceId}
+              disabled={busy}
+              onChange={(e) => setSourceId(e.target.value)}
+            >
+              <option value="">Choose a record</option>
+              {(sourceType === 'lead' ? data?.leads : data?.projects)?.map(
+                (item) => (
+                  <option value={item.id} key={item.id}>
+                    {item.company || item.name}
                   </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Source type
-              <select
-                value={sourceType}
-                disabled={busy}
-                onChange={(e) => {
-                  setSourceType(e.target.value);
-                  setSourceId('');
-                }}
-              >
-                <option value="lead">Enquiry</option>
-                <option value="project">My project</option>
-              </select>
-            </label>
-            <label>
-              Record
-              <select
-                value={sourceId}
-                disabled={busy}
-                onChange={(e) => setSourceId(e.target.value)}
-              >
-                <option value="">Choose a record</option>
-                {(sourceType === 'lead' ? data?.leads : data?.projects)?.map(
-                  (item) => (
-                    <option value={item.id} key={item.id}>
-                      {item.company || item.name}
-                    </option>
-                  ),
-                )}
-              </select>
-            </label>
-            <p>
-              The assistant uses this record only. For proposals grounded in
-              multiple documents, use the source-selection assistant in Clients
-              &amp; billing.
-            </p>
-            <PendingButton
-              pending={busy}
-              pendingLabel="Preparing draft"
-              disabled={!sourceId || !data?.aiConfigured}
-              onClick={() => void generate()}
-            >
-              Prepare AI draft
-            </PendingButton>
-            <Link href="/admin/email">Review and send service emails →</Link>
-          </>
-        )}
+                ),
+              )}
+            </select>
+          </label>
+          <p>
+            The assistant uses this record only. For proposals grounded in
+            multiple documents, use the source-selection assistant in Clients
+            &amp; billing.
+          </p>
+          <PendingButton
+            pending={busy}
+            pendingLabel="Preparing draft"
+            disabled={!sourceId || !data?.aiConfigured}
+            onClick={() => void generate()}
+          >
+            Prepare AI draft
+          </PendingButton>
+          <Link href="/admin/email">Review and send service emails →</Link>
+        </>
         {data && !data.aiConfigured && (
           <p role="alert">
             AI needs OPENROUTER_API_KEY in the server environment.
@@ -717,11 +687,6 @@ export function OperationsDesk({
           </p>
         )}
         {notice && <output className="ops-status">{notice}</output>}
-        {handoff && (
-          <p className="ops-status">
-            Human handoff required. In this demo, no staff notification is sent.
-          </p>
-        )}
 
         <div className="ops-view-header">
           <label style={{ flex: 1 }}>
@@ -775,7 +740,11 @@ export function OperationsDesk({
           {(viewMode === 'split' || viewMode === 'preview') && (
             <div className="template-preview-pane">
               <div className="preview-scroll">
-                <ResponseText text={content || '_No draft content yet. Click Prepare AI draft._'} />
+                <ResponseText
+                  text={
+                    content || '_No draft content yet. Click Prepare AI draft._'
+                  }
+                />
               </div>
             </div>
           )}

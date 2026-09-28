@@ -1,162 +1,313 @@
-import { cleanAiText } from '@/lib/ai-text';
 import { withRequestLog } from '@/lib/request-log';
 import { NextResponse } from 'next/server';
-import { chatComplete } from '@/lib/openrouter';
+import { chatComplete, type ChatMessage } from '@/lib/openrouter';
+import { askJev } from '@/lib/jev';
 import { logAgentRun } from '@/lib/agent-runs';
-import { parseMapperAnswers } from '@/lib/mapper-questions';
+import { getDb } from '@/db';
+import { boundedJson } from '@/lib/bounded-json';
+import { currentHour, reserve, visitorKey } from '@/lib/rate-limit';
+import { pricingGroups } from '@/lib/pricing';
+import {
+  intakeTranscript,
+  parseIntake,
+  type MapperIntake,
+} from '@/lib/mapper-questions';
+import { mapperFallback } from '@/lib/mapper-fallback';
+import {
+  FREE_ASSESSMENT,
+  checkResults,
+  failedCheckFixes,
+  judgeIds,
+  judgeQuestions,
+  judgeState,
+  lintReport,
+  llmJudgePrompt,
+  parseReport,
+  readLlmJudge,
+  repairMessage,
+  writerSystemPrompt,
+  writerUserMessage,
+  type CheckResult,
+  type JudgeId,
+  type MapperReport,
+} from '@/lib/mapper-report';
 
-type PilotRecommendation = {
-  title: string;
-  summary: string;
-  firstWorkflow: string;
-  steps: string[];
-  firstMetric: string;
-  humanControl: string;
+// Each report is up to four model calls now, on a public page. One visitor
+// editing and re-running needs a handful; the ceiling stops a loop or a flood
+// spending the budget. Over either limit the visitor still gets a report, the
+// rule-based one, so a limit never shows up as an error.
+const VISITOR_LIMIT = 8;
+const HOURLY_CEILING = 150;
+
+// The rewrite only starts while there is time for it and its check to finish
+// inside what the page waits for (90s), and it must be done by REWRITE_BY_MS.
+// A late rewrite the page has given up on is money spent on nothing.
+const REWRITE_IF_UNDER_MS = 35_000;
+const REWRITE_BY_MS = 58_000;
+
+// Pinned rather than routed. Probed 28 Sep 2026 with scripts/probe-mapper.mjs:
+// the app default (deepseek-v4-pro) took 90 to 200 seconds on this prompt and
+// never returned a usable report; claude-sonnet-5 wrote specific, grounded
+// ones in about 14 seconds that passed every check first time.
+const writerModels = () =>
+  (
+    process.env.MAPPER_WRITER_MODELS ||
+    'anthropic/claude-sonnet-5,google/gemini-2.5-flash'
+  )
+    .split(',')
+    .map((model) => model.trim())
+    .filter(Boolean);
+
+// A different family from the writer, so the checker is not grading its own
+// style. Only used when Jev cannot answer.
+const judgeModels = () =>
+  (
+    process.env.MAPPER_JUDGE_MODELS ||
+    'google/gemini-2.5-flash,openai/gpt-4o-mini'
+  )
+    .split(',')
+    .map((model) => model.trim())
+    .filter(Boolean);
+
+type Checked = {
+  report: MapperReport;
+  lint: string[];
+  checks: CheckResult[];
+  checkedBy: 'jev' | 'llm' | 'none';
 };
 
-function cleanText(value: unknown, limit = 320) {
-  if (typeof value !== 'string') return '';
-  return cleanAiText(value)
-    .replace(/\*\*/g, '')
-    .replace(/[—–]/g, '-')
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[\u201C\u201D]/g, '"')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, limit);
+async function judge(transcript: string, report: MapperReport) {
+  const state = judgeState(transcript, report);
+  try {
+    const answers = await askJev({
+      state,
+      timeoutMs: 9000,
+      questions: Object.fromEntries(
+        judgeIds.map((id) => [
+          id,
+          { type: 'noul', instructions: judgeQuestions[id].instructions },
+        ]),
+      ),
+    });
+    const probabilities: Partial<Record<JudgeId, number>> = {};
+    for (const id of judgeIds)
+      if (typeof answers[id]?.noul === 'number')
+        probabilities[id] = answers[id].noul;
+    if (Object.keys(probabilities).length === judgeIds.length)
+      return { checks: checkResults(probabilities), checkedBy: 'jev' as const };
+  } catch {
+    // Jev needs prepaid credit and is an alpha endpoint. The LLM checker below
+    // asks the same questions.
+  }
+  try {
+    const { content } = await chatComplete({
+      models: judgeModels(),
+      profile: 'structured',
+      json: true,
+      temperature: 0,
+      timeoutMs: 15000,
+      messages: [
+        { role: 'system', content: llmJudgePrompt() },
+        { role: 'user', content: state },
+      ],
+    });
+    const probabilities = readLlmJudge(content);
+    if (Object.keys(probabilities).length)
+      return { checks: checkResults(probabilities), checkedBy: 'llm' as const };
+  } catch {
+    // Falls through to unchecked; the caller treats that as not good enough.
+  }
+  return { checks: checkResults({}), checkedBy: 'none' as const };
 }
 
-function validateRecommendation(value: unknown): PilotRecommendation | null {
-  if (!value || typeof value !== 'object') return null;
-  const input = value as Record<string, unknown>;
-  const steps = Array.isArray(input.steps)
-    ? input.steps
-        .map((step) => cleanText(step, 150))
-        .filter(Boolean)
-        .slice(0, 3)
-    : [];
-  const recommendation = {
-    title: cleanText(input.title, 90),
-    summary: cleanText(input.summary),
-    firstWorkflow: cleanText(input.firstWorkflow, 180),
-    steps,
-    firstMetric: cleanText(input.firstMetric, 130),
-    humanControl: cleanText(input.humanControl, 180),
-  };
-  if (
-    !recommendation.title ||
-    !recommendation.summary ||
-    !recommendation.firstWorkflow ||
-    !recommendation.firstMetric ||
-    !recommendation.humanControl ||
-    steps.length !== 3
-  )
-    return null;
-  return recommendation;
+async function check(
+  raw: string,
+  intake: MapperIntake,
+  transcript: string,
+): Promise<Checked | null> {
+  const report = parseReport(raw);
+  if (!report) return null;
+  const lint = lintReport(report, intake);
+  // A draft that already breaks a rule is going to be rewritten anyway, so the
+  // fit checks wait for the rewrite rather than grading something discarded.
+  if (lint.length)
+    return { report, lint, checks: checkResults({}), checkedBy: 'none' };
+  return { report, lint, ...(await judge(transcript, report)) };
+}
+
+/** Good enough to show: no rule broken, checked, nothing failed. */
+// A plain boolean, not a type guard: a guard's false branch would narrow a
+// checked-but-failing draft to null, and the rewrite needs its failures.
+const usable = (checked: Checked | null): boolean =>
+  !!checked &&
+  !checked.lint.length &&
+  checked.checkedBy !== 'none' &&
+  checked.checks.every((result) => result.verdict !== 'fail');
+
+const packageTiming = (name: string) =>
+  name === FREE_ASSESSMENT
+    ? 'Free, about an hour'
+    : pricingGroups
+        .flatMap((group) => group.packages)
+        .find((item) => item.name === name)?.timing;
+
+function respond(
+  report: MapperReport,
+  meta: {
+    source: 'live' | 'rules';
+    checks: CheckResult[];
+    checkedBy: Checked['checkedBy'];
+    revised: boolean;
+    /** Why the rule-based report was used, for the probe and the logs. */
+    reason?: 'no-key' | 'limit' | 'count-failed' | 'checks-failed';
+  },
+) {
+  return NextResponse.json({
+    report,
+    packageTiming: packageTiming(report.firstFix.package),
+    ...meta,
+    // Anything the checker was unsure about goes to a person, the same rule
+    // as every other place Jev is used. The enquiry carries this flag.
+    needsReview:
+      meta.source === 'rules' ||
+      meta.checks.some((result) => result.verdict !== 'pass'),
+  });
 }
 
 async function POSTHandler(request: Request) {
-  let body: unknown;
+  let body: Record<string, unknown>;
   try {
-    body = await request.json();
+    body = await boundedJson(request, 6000);
   } catch {
     return NextResponse.json(
-      { error: 'A valid JSON body is required.' },
+      { error: 'The answers could not be read.' },
       { status: 400 },
     );
   }
+  const parsed = parseIntake(body.intake);
+  if (parsed.error !== undefined)
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { intake } = parsed;
+  const rules = (
+    reason: 'no-key' | 'limit' | 'count-failed' | 'checks-failed',
+  ) =>
+    respond(mapperFallback(intake), {
+      source: 'rules',
+      checks: checkResults({}),
+      checkedBy: 'none',
+      revised: false,
+      reason,
+    });
 
-  const input =
-    body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
-  const answers = parseMapperAnswers(input.answers);
-  if (!answers) {
-    return NextResponse.json(
-      { error: 'Three workflow answers are required.' },
-      { status: 400 },
-    );
-  }
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey)
-    return NextResponse.json(
-      { error: 'The live recommendation service is not configured.' },
-      { status: 503 },
-    );
-
-  const [goal, market, setup] = answers.map((answer) => answer.join('; '));
-  const otherMarket =
-    answers[1].includes('Another African country') &&
-    typeof input.otherMarket === 'string'
-      ? input.otherMarket.trim().slice(0, 120)
-      : '';
-  const otherTools =
-    answers[2].includes('Something else') &&
-    typeof input.otherTools === 'string'
-      ? input.otherTools.trim().slice(0, 120)
-      : '';
-  const example =
-    typeof input.example === 'string' ? input.example.trim().slice(0, 600) : '';
-  const startedAt = Date.now();
-
+  if (!process.env.OPENROUTER_API_KEY) return rules('no-key');
   try {
-    const {
-      content: raw,
-      costMicros,
-      telemetry,
-    } = await chatComplete({
-      profile: 'structured',
-      temperature: 0.35,
-      maxTokens: 900,
+    const db = getDb();
+    const hour = currentHour();
+    const allowed =
+      (await reserve(
+        db,
+        `mapper-${await visitorKey(request)}-${hour}`,
+        VISITOR_LIMIT,
+      )) && (await reserve(db, `mapper-${hour}`, HOURLY_CEILING));
+    if (!allowed) return rules('limit');
+  } catch {
+    // No way to count means no way to cap the spend, so no model calls.
+    return rules('count-failed');
+  }
+
+  const started = Date.now();
+  const transcript = intakeTranscript(intake);
+  const messages: ChatMessage[] = [
+    { role: 'system', content: writerSystemPrompt(intake.problem) },
+    { role: 'user', content: writerUserMessage(transcript) },
+  ];
+  let costMicros = 0;
+  let model: string | undefined;
+  const write = async (conversation: ChatMessage[], timeoutMs = 35000) => {
+    const result = await chatComplete({
+      // On the cheap structured tier the router picked a different flash model
+      // each run and every report came back generic. See writerModels.
+      models: writerModels(),
+      profile: 'drafting',
       json: true,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'You are the Aksen Labs digital transformation advisor for ambitious African businesses.',
-            'Aksen Labs helps African businesses grow, serve customers better and operate more effectively across 4 capability areas: (1) Customer experience & commerce, (2) Business systems & operations, (3) Data & insight, and (4) Digital products. AI is used as a capability multiplier where it genuinely adds value, but not forced if clean web development, integrated payments, or reliable operational workflows are what is needed.',
-            'The visitor may have chosen several goals, markets and existing tools. Respect all of them while proposing one sensible first step, and explain why that step should come first. If their goals conflict or the information is thin, suggest a short scoping conversation rather than pretending to know the answer.',
-            'Use plain business language. Never mention APIs, models, embeddings, vector databases, architecture, or technical buzzwords.',
-            'Be specific, modest and useful. Do not invent facts about the company. Treat non-Ghanaian locations as possible markets subject to project fit and delivery arrangements.',
-            'Describe a proposed project or initial sprint, not a generic pre-packaged software. Never promise instant replies, guaranteed revenues or unsupported timelines.',
-            'Include human-in-the-loop governance: teams must review sensitive decisions, approve financial transactions, and inspect AI-assisted drafts.',
-            'Return only valid JSON with exactly these keys: title, summary, firstWorkflow, steps, firstMetric, humanControl.',
-            'steps must contain exactly three short strings representing concrete phases (e.g. Discovery & Mapping, Core Implementation, Adoption & Handover). Do not use markdown, asterisks, em dashes or decorative characters.',
-          ].join(' '),
-        },
-        {
-          role: 'user',
-          content: `Goals to improve: ${goal}\nOperating markets: ${market}${otherMarket ? `; specifically ${otherMarket}` : ''}\nCurrent tools and channels: ${setup}${otherTools ? `; specifically ${otherTools}` : ''}\nReal example from visitor: ${example || 'Not provided'}`,
-        },
-      ],
+      temperature: 0.3,
+      maxTokens: 1800,
+      timeoutMs,
+      messages: conversation,
     });
+    costMicros += result.costMicros ?? 0;
+    model = result.model;
+    return result.content;
+  };
 
-    const content = raw.replace(/^```json\s*|\s*```$/g, '');
-    const recommendation = validateRecommendation(JSON.parse(content));
-    if (!recommendation)
-      throw new Error('OpenRouter returned an invalid recommendation');
-    await logAgentRun({
-      agentName: 'Opportunity Mapper',
-      channel: 'web',
-      status: 'success',
-      outcome: recommendation.title,
-      durationMs: Date.now() - startedAt,
-      costMicros,
-      trace: telemetry,
-    });
-    return NextResponse.json({ recommendation, source: 'openrouter' });
-  } catch {
-    await logAgentRun({
-      agentName: 'Opportunity Mapper',
-      channel: 'web',
-      status: 'error',
-      outcome: 'Could not prepare a recommendation',
-      durationMs: Date.now() - startedAt,
-    });
-    return NextResponse.json(
-      { error: 'A live recommendation could not be prepared right now.' },
-      { status: 502 },
-    );
+  let first: Checked | null = null;
+  let second: Checked | null = null;
+  let firstRaw = '';
+  let failure = '';
+  try {
+    firstRaw = await write(messages);
+    first = await check(firstRaw, intake, transcript);
+    if (!usable(first) && Date.now() - started < REWRITE_IF_UNDER_MS) {
+      const problems = !first
+        ? [
+            'The reply was not valid JSON in the required shape, or a required section was empty.',
+          ]
+        : first.checkedBy === 'none' && !first.lint.length
+          ? []
+          : [...first.lint, ...failedCheckFixes(first.checks)];
+      if (problems.length) {
+        const secondRaw = await write(
+          [
+            ...messages,
+            ...(firstRaw
+              ? [{ role: 'assistant' as const, content: firstRaw }]
+              : []),
+            { role: 'user', content: repairMessage(problems) },
+          ],
+          Math.max(8000, REWRITE_BY_MS - (Date.now() - started)),
+        );
+        second = await check(secondRaw, intake, transcript);
+      }
+    }
+  } catch (error) {
+    failure = error instanceof Error ? error.message.slice(0, 160) : 'unknown';
   }
+
+  const chosen: Checked | null = usable(second)
+    ? second
+    : usable(first)
+      ? first
+      : null;
+  const last = second ?? first;
+  await logAgentRun({
+    agentName: 'Opportunity Mapper',
+    agentVersion: 'v2',
+    channel: 'web',
+    status: chosen ? 'success' : 'error',
+    outcome: chosen
+      ? chosen.report.headline
+      : `Rule-based report shown${failure ? `: ${failure}` : ''}`,
+    durationMs: Date.now() - started,
+    costMicros: costMicros || undefined,
+    // The problem and the verdicts, not the visitor's words: those are stored
+    // with the lead if they choose to send it, and only then.
+    trace: {
+      model,
+      problem: intake.problem,
+      revised: !!second,
+      checkedBy: last?.checkedBy,
+      lint: last?.lint,
+      checks: last?.checks.map((result) => [result.id, result.probability]),
+    },
+  });
+
+  if (!chosen) return rules('checks-failed');
+  return respond(chosen.report, {
+    source: 'live',
+    checks: chosen.checks,
+    checkedBy: chosen.checkedBy,
+    revised: chosen === second,
+  });
 }
 
 export const POST = withRequestLog('/api/recommendation', POSTHandler);

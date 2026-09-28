@@ -419,6 +419,15 @@ export function AdminPipelineList({
               </button>
               {menuId === lead.id && (
                 <ul id={`pl-draft-${lead.id}`} className="pl-menu-list">
+                  {/* The conversation itself, before any document about it. */}
+                  <li className="pl-menu-lead">
+                    <Link
+                      href={`/admin/assessment?lead=${encodeURIComponent(lead.id)}`}
+                      onClick={() => setMenuId(null)}
+                    >
+                      Run the free assessment
+                    </Link>
+                  </li>
                   {tasks.map((task) => (
                     <li key={task.id}>
                       <Link

@@ -73,10 +73,15 @@ const groups = [
       },
       { href: '/admin/prospects', label: 'Find leads', icon: Search },
       { href: '/admin/support', label: 'Messages', icon: MessageSquareText },
-      // Becomes "Assessments" (/admin/assessment) when that page is built: the
-      // free assessment, run with the owner, often on a shared screen. Until
-      // then it stays on the page that exists, so nothing links to a 404.
-      { href: '/admin/agent-desk', label: 'Free tools', icon: ClipboardList },
+      // The free assessment, run with the owner, often on a shared screen. It
+      // replaced "Free tools", which was the visitors' page seen from inside
+      // and had no job of its own. Named as the pricing page names the offer,
+      // so there is one word for it everywhere.
+      {
+        href: '/admin/assessment',
+        label: 'Assessment',
+        icon: ClipboardList,
+      },
       // People waiting on a product rather than asking about a service. They
       // arrive through the products page, not the enquiry funnel, so they never
       // appear in the pipeline and would otherwise have nowhere to be read.

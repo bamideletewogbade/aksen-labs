@@ -113,4 +113,53 @@ assert.equal(
   ).status,
   201,
 );
+// The seven-step mapper sends its answers as an object and what was shown.
+const diagnostic = {
+  name: 'Efua',
+  email: 'efua@example.test',
+  company: '',
+  answerFormat: 'diagnostic-v2',
+  intake: {
+    business: 'Food, drinks or catering',
+    problem: 'profit',
+    symptoms: [
+      'Orders get lost, mixed up or forgotten',
+      'We chase customers for payment',
+    ],
+    channels: ['WhatsApp', 'Phone calls'],
+    tools: ['Memory, paper or a notebook'],
+    markets: ['Ghana'],
+    volume: '50 to 200',
+    team: '2 to 5 people',
+    example: 'Two party trays went to the wrong address last Saturday.',
+  },
+  recommendation: 'Stop the time and money slipping out of each sale',
+  reportSummary:
+    'First fix: One order list the whole team can see (One workflow).',
+  needsReview: true,
+};
+assert.equal((await send(diagnostic)).status, 201);
+assert.equal(
+  globalThis.captured.work,
+  'We sell, but time or money keeps slipping away',
+);
+assert.match(globalThis.captured.desiredOutcome, /Orders get lost/);
+assert.match(globalThis.captured.summary, /wrong address last Saturday/);
+assert.match(globalThis.captured.summary, /One order list/);
+assert.match(globalThis.captured.summary, /a person should read/);
+assert.equal(globalThis.captured.detail.problem, 'profit');
+// Refused with the intake's own reason, before anything is captured.
+globalThis.captured = null;
+const refused = await send({
+  ...diagnostic,
+  intake: {
+    ...diagnostic.intake,
+    symptoms: ['Posts get likes but few messages'],
+  },
+});
+assert.equal(refused.status, 400);
+assert.match((await refused.json()).error, /not on the list/);
+assert.equal(globalThis.captured, null);
+assert.equal((await send({ ...diagnostic, email: 'nope' })).status, 400);
+
 console.log('mapper-enquiry: all checks passed');

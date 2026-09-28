@@ -76,7 +76,9 @@ async function request(body: Record<string, unknown>) {
   });
   const data = (await response.json()) as Record<string, unknown>;
   if (!response.ok)
-    throw new Error(String(data.error || 'The action did not save.'));
+    throw new Error(
+      typeof data.error === 'string' ? data.error : 'The action did not save.',
+    );
   return data;
 }
 
@@ -102,6 +104,8 @@ export function BusinessWorkspace({
   const [question, setQuestion] = useState(''),
     [draftTitle, setDraftTitle] = useState(''),
     [financial, setFinancial] = useState<Financial | null>(null);
+  const [showFinancialForm, setShowFinancialForm] = useState(false);
+  const financialFormRef = useRef<HTMLFormElement>(null);
   const [printDocument, setPrintDocument] = useState<Document | null>(null);
   const fileReadId = useRef(0);
   const [file, setFile] = useState<File | null>(null),
@@ -156,6 +160,7 @@ export function BusinessWorkspace({
     setFile(null);
     setContent('');
     setEditingFinancial(null);
+    setShowFinancialForm(false);
     setLines([{ description: '', quantity: '1', unitPrice: '' }]);
     if (!businessId) return;
     const controller = new AbortController();
@@ -177,6 +182,17 @@ export function BusinessWorkspace({
       });
     return () => controller.abort();
   }, [businessId]);
+  useEffect(() => {
+    if (showFinancialForm && tab === 'finance') {
+      financialFormRef.current?.scrollIntoView({
+        block: 'start',
+        behavior: 'instant',
+      });
+      financialFormRef.current
+        ?.querySelector<HTMLElement>('select:not(:disabled), input, textarea')
+        ?.focus({ preventScroll: true });
+    }
+  }, [showFinancialForm, editingFinancial, tab]);
   async function run(work: () => Promise<void>) {
     setBusy(true);
     setError('');
@@ -219,17 +235,17 @@ export function BusinessWorkspace({
   return (
     <>
       <div className="ws-no-print">
-        <header className="admin-header">
+        <header className="admin-header ws-header">
           <div>
             <small>CLIENT RECORDS</small>
             <h1>Clients &amp; invoices</h1>
             <p>
-              Keep each client's source documents, reviewed proposals, invoices
-              and payments together.
+              Keep each client&apos;s source documents, reviewed proposals,
+              invoices and payments together.
             </p>
           </div>
           <a className="ws-demo-link" href="/workspace-demo">
-            Try the example workspace <ArrowRight size={16} />
+            View example <ArrowRight size={16} />
           </a>
         </header>
         <div className="ws-toolbar">
@@ -248,8 +264,13 @@ export function BusinessWorkspace({
               ))}
             </select>
           </label>
-          <button onClick={() => setCreate(!create)} disabled={busy}>
-            <Plus size={17} /> New business
+          <button
+            onClick={() => setCreate(!create)}
+            disabled={busy}
+            aria-expanded={create}
+            aria-controls="ws-create-business"
+          >
+            <Plus size={17} /> {create ? 'Close new business' : 'New business'}
           </button>
           <button
             onClick={() =>
@@ -268,13 +289,10 @@ export function BusinessWorkspace({
             {error}
           </p>
         )}
-        {message && (
-          <p className="ws-success" role="status">
-            {message}
-          </p>
-        )}
+        {message && <output className="ws-success">{message}</output>}
         {create && (
           <form
+            id="ws-create-business"
             className="ws-card ws-form"
             onSubmit={(e) => {
               e.preventDefault();
@@ -366,15 +384,18 @@ export function BusinessWorkspace({
               </div>
             </div>
             <Tabs value={tab} onValueChange={(value) => setTab(String(value))}>
-              <TabsList className="ws-tabs">
+              <TabsList
+                className="ws-tabs"
+                aria-label="Client workspace sections"
+              >
                 <TabsTrigger value="finance">
-                  <Wallet size={17} /> Financials &amp; Invoices
+                  <Wallet size={17} /> Invoices &amp; payments
                 </TabsTrigger>
                 <TabsTrigger value="documents">
-                  <FolderOpen size={17} /> Documents &amp; Files
+                  <FolderOpen size={17} /> Documents
                 </TabsTrigger>
                 <TabsTrigger value="assistant">
-                  <FilePenLine size={17} /> Document Assistant
+                  <FilePenLine size={17} /> Document assistant
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="documents">
@@ -803,24 +824,52 @@ export function BusinessWorkspace({
                     );
                   })}
                 </div>
-                <div className="ws-grid">
+                <div className="ws-finance-layout">
                   <section className="ws-card">
-                    <h2>Financial register</h2>
+                    <div className="ws-section-head">
+                      <div>
+                        <h2>Invoices &amp; payments</h2>
+                        <p className="ws-note">
+                          Review drafts, issued documents and recorded payments.
+                        </p>
+                      </div>
+                      <button
+                        className="ws-primary"
+                        disabled={busy}
+                        aria-expanded={showFinancialForm}
+                        aria-controls="ws-financial-form"
+                        onClick={() => {
+                          setEditingFinancial(null);
+                          setLines([
+                            { description: '', quantity: '1', unitPrice: '' },
+                          ]);
+                          setShowFinancialForm(true);
+                        }}
+                      >
+                        <Plus size={17} /> New financial document
+                      </button>
+                    </div>
                     <p className="ws-note">
                       Draft → issue → record payment → receipt. Proformas are
                       estimates and do not count as receivables. Currency totals
                       stay separate.
                     </p>
                     {!data.financials.length && (
-                      <p>
-                        No financial documents yet. Confirm scope and commercial
-                        terms before issuing one.
-                      </p>
+                      <div className="ws-empty ws-finance-empty">
+                        <Wallet size={28} aria-hidden="true" />
+                        <h3>No financial documents yet</h3>
+                        <p>
+                          Start with a proforma to outline costs, or draft an
+                          invoice once terms are agreed. Review the draft before
+                          issuing it.
+                        </p>
+                      </div>
                     )}
                     <div className="ws-fin-list">
                       {data.financials.map((f) => (
                         <button
                           key={f.id}
+                          aria-pressed={financial?.id === f.id}
                           onClick={() => {
                             setPrintDocument(null);
                             setFinancial(f);
@@ -858,6 +907,7 @@ export function BusinessWorkspace({
                               disabled={busy}
                               onClick={() => {
                                 setEditingFinancial(financial);
+                                setShowFinancialForm(true);
                                 setLines(
                                   financial.details.lines.map((l) => ({
                                     description: l.description,
@@ -984,10 +1034,7 @@ export function BusinessWorkspace({
                                 Paystack automatically creates the verified
                                 receipt.
                               </p>
-                              <div
-                                className="ws-row"
-                                style={{ display: 'flex', gap: '8px' }}
-                              >
+                              <div className="ws-row">
                                 <a
                                   href={`/pay/${financial.id}`}
                                   target="_blank"
@@ -1006,15 +1053,17 @@ export function BusinessWorkspace({
                                 </a>
                                 <button
                                   type="button"
-                                  onClick={() => {
-                                    const origin = window.location.origin;
-                                    navigator.clipboard.writeText(
-                                      `${origin}/pay/${financial.id}`,
-                                    );
-                                    setMessage(
-                                      `Copied payment link: ${origin}/pay/${financial.id}`,
-                                    );
-                                  }}
+                                  onClick={() =>
+                                    void run(async () => {
+                                      const origin = window.location.origin;
+                                      await navigator.clipboard.writeText(
+                                        `${origin}/pay/${financial.id}`,
+                                      );
+                                      setMessage(
+                                        `Copied payment link: ${origin}/pay/${financial.id}`,
+                                      );
+                                    })
+                                  }
                                   style={{
                                     padding: '8px 14px',
                                     fontSize: '13px',
@@ -1161,225 +1210,251 @@ export function BusinessWorkspace({
                       </div>
                     )}
                   </section>
-                  <form
-                    key={editingFinancial?.id || 'new-financial'}
-                    className="ws-card ws-form"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const fields = new FormData(e.currentTarget);
-                      void run(async () => {
-                        await request({
-                          action: editingFinancial
-                            ? 'updateFinancial'
-                            : 'createFinancial',
-                          financialId: editingFinancial?.id,
-                          businessId,
-                          projectId,
-                          kind: editingFinancial?.kind || fields.get('kind'),
-                          currency: fields.get('currency'),
-                          seller: fields.get('seller'),
-                          buyer: fields.get('buyer'),
-                          terms: fields.get('terms'),
-                          dueDate: fields.get('dueDate'),
-                          notes: fields.get('notes'),
-                          lines,
+                  {showFinancialForm && (
+                    <form
+                      ref={financialFormRef}
+                      id="ws-financial-form"
+                      key={editingFinancial?.id || 'new-financial'}
+                      className="ws-card ws-form"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const fields = new FormData(e.currentTarget);
+                        void run(async () => {
+                          await request({
+                            action: editingFinancial
+                              ? 'updateFinancial'
+                              : 'createFinancial',
+                            financialId: editingFinancial?.id,
+                            businessId,
+                            projectId,
+                            kind: editingFinancial?.kind || fields.get('kind'),
+                            currency: fields.get('currency'),
+                            seller: fields.get('seller'),
+                            buyer: fields.get('buyer'),
+                            terms: fields.get('terms'),
+                            dueDate: fields.get('dueDate'),
+                            notes: fields.get('notes'),
+                            lines,
+                          });
+                          await reload();
+                          setMessage(
+                            'Financial draft saved. Select it in the register to review and issue.',
+                          );
                         });
-                        await reload();
-                        setMessage(
-                          'Financial draft saved. Select it in the register to review and issue.',
-                        );
-                      });
-                    }}
-                  >
-                    <h2>
-                      {editingFinancial
-                        ? `Edit ${editingFinancial.number}`
-                        : 'Prepare a financial document'}
-                    </h2>
-                    {editingFinancial && (
+                      }}
+                    >
+                      <div className="ws-section-head">
+                        <h2>
+                          {editingFinancial
+                            ? `Edit ${editingFinancial.number}`
+                            : 'New financial document'}
+                        </h2>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => {
+                            setShowFinancialForm(false);
+                            document
+                              .querySelector<HTMLButtonElement>(
+                                '[aria-controls="ws-financial-form"]',
+                              )
+                              ?.focus();
+                          }}
+                        >
+                          Close editor
+                        </button>
+                      </div>
+                      <p className="ws-note">
+                        Complete the billing details, add line items, then save
+                        a draft for review.
+                      </p>
+                      {editingFinancial && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingFinancial(null);
+                            setLines([
+                              { description: '', quantity: '1', unitPrice: '' },
+                            ]);
+                          }}
+                        >
+                          Create a new document instead
+                        </button>
+                      )}
+                      <div className="ws-two">
+                        <label>
+                          Type
+                          <select
+                            name="kind"
+                            defaultValue={editingFinancial?.kind || 'proforma'}
+                            disabled={!!editingFinancial}
+                          >
+                            <option value="proforma">Proforma</option>
+                            <option value="invoice">Invoice</option>
+                          </select>
+                        </label>
+                        <label>
+                          Currency
+                          <select
+                            name="currency"
+                            defaultValue={
+                              editingFinancial?.currency ||
+                              data.business.currency
+                            }
+                          >
+                            {currencies.map((c) => (
+                              <option key={c}>{c}</option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
+                      {projectSelect}
+                      <label>
+                        Issuer / billing identity
+                        <textarea
+                          name="seller"
+                          defaultValue={editingFinancial?.details.seller}
+                          required
+                          rows={3}
+                          placeholder="Your confirmed legal/trading name, address, contact and any required registration details"
+                        />
+                      </label>
+                      <label>
+                        Bill to
+                        <textarea
+                          name="buyer"
+                          required
+                          rows={3}
+                          defaultValue={
+                            editingFinancial?.details.buyer ||
+                            data.business.name
+                          }
+                        />
+                      </label>
+                      <div className="ws-line-items">
+                        {lines.map((line, index) => (
+                          <fieldset key={index}>
+                            <legend>Item {index + 1}</legend>
+                            <label>
+                              Description
+                              <input
+                                required
+                                value={line.description}
+                                onChange={(e) =>
+                                  setLines(
+                                    lines.map((l, i) =>
+                                      i === index
+                                        ? { ...l, description: e.target.value }
+                                        : l,
+                                    ),
+                                  )
+                                }
+                              />
+                            </label>
+                            <div className="ws-two">
+                              <label>
+                                Quantity
+                                <input
+                                  required
+                                  type="number"
+                                  min="1"
+                                  max="10000"
+                                  step="1"
+                                  value={line.quantity}
+                                  onChange={(e) =>
+                                    setLines(
+                                      lines.map((l, i) =>
+                                        i === index
+                                          ? { ...l, quantity: e.target.value }
+                                          : l,
+                                      ),
+                                    )
+                                  }
+                                />
+                              </label>
+                              <label>
+                                Unit price
+                                <input
+                                  required
+                                  inputMode="decimal"
+                                  value={line.unitPrice}
+                                  onChange={(e) =>
+                                    setLines(
+                                      lines.map((l, i) =>
+                                        i === index
+                                          ? { ...l, unitPrice: e.target.value }
+                                          : l,
+                                      ),
+                                    )
+                                  }
+                                />
+                              </label>
+                            </div>
+                            {lines.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setLines(lines.filter((_, i) => i !== index))
+                                }
+                              >
+                                Remove item
+                              </button>
+                            )}
+                          </fieldset>
+                        ))}
+                      </div>
                       <button
                         type="button"
-                        onClick={() => {
-                          setEditingFinancial(null);
+                        disabled={lines.length >= 30}
+                        onClick={() =>
                           setLines([
+                            ...lines,
                             { description: '', quantity: '1', unitPrice: '' },
-                          ]);
-                        }}
-                      >
-                        Create a new document instead
-                      </button>
-                    )}
-                    <div className="ws-two">
-                      <label>
-                        Type
-                        <select
-                          name="kind"
-                          defaultValue={editingFinancial?.kind || 'proforma'}
-                          disabled={!!editingFinancial}
-                        >
-                          <option value="proforma">Proforma</option>
-                          <option value="invoice">Invoice</option>
-                        </select>
-                      </label>
-                      <label>
-                        Currency
-                        <select
-                          name="currency"
-                          defaultValue={
-                            editingFinancial?.currency || data.business.currency
-                          }
-                        >
-                          {currencies.map((c) => (
-                            <option key={c}>{c}</option>
-                          ))}
-                        </select>
-                      </label>
-                    </div>
-                    {projectSelect}
-                    <label>
-                      Issuer / billing identity
-                      <textarea
-                        name="seller"
-                        defaultValue={editingFinancial?.details.seller}
-                        required
-                        rows={3}
-                        placeholder="Your confirmed legal/trading name, address, contact and any required registration details"
-                      />
-                    </label>
-                    <label>
-                      Bill to
-                      <textarea
-                        name="buyer"
-                        required
-                        rows={3}
-                        defaultValue={
-                          editingFinancial?.details.buyer || data.business.name
+                          ])
                         }
-                      />
-                    </label>
-                    <div className="ws-line-items">
-                      {lines.map((line, index) => (
-                        <fieldset key={index}>
-                          <legend>Item {index + 1}</legend>
-                          <label>
-                            Description
-                            <input
-                              required
-                              value={line.description}
-                              onChange={(e) =>
-                                setLines(
-                                  lines.map((l, i) =>
-                                    i === index
-                                      ? { ...l, description: e.target.value }
-                                      : l,
-                                  ),
-                                )
-                              }
-                            />
-                          </label>
-                          <div className="ws-two">
-                            <label>
-                              Quantity
-                              <input
-                                required
-                                type="number"
-                                min="1"
-                                max="10000"
-                                step="1"
-                                value={line.quantity}
-                                onChange={(e) =>
-                                  setLines(
-                                    lines.map((l, i) =>
-                                      i === index
-                                        ? { ...l, quantity: e.target.value }
-                                        : l,
-                                    ),
-                                  )
-                                }
-                              />
-                            </label>
-                            <label>
-                              Unit price
-                              <input
-                                required
-                                inputMode="decimal"
-                                value={line.unitPrice}
-                                onChange={(e) =>
-                                  setLines(
-                                    lines.map((l, i) =>
-                                      i === index
-                                        ? { ...l, unitPrice: e.target.value }
-                                        : l,
-                                    ),
-                                  )
-                                }
-                              />
-                            </label>
-                          </div>
-                          {lines.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setLines(lines.filter((_, i) => i !== index))
-                              }
-                            >
-                              Remove item
-                            </button>
-                          )}
-                        </fieldset>
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      disabled={lines.length >= 30}
-                      onClick={() =>
-                        setLines([
-                          ...lines,
-                          { description: '', quantity: '1', unitPrice: '' },
-                        ])
-                      }
-                    >
-                      <Plus size={16} /> Add line item
-                    </button>
-                    <label>
-                      Due date (optional)
-                      <input
-                        type="date"
-                        name="dueDate"
-                        defaultValue={editingFinancial?.details.dueDate}
-                      />
-                    </label>
-                    <label>
-                      Payment terms and instructions
-                      <textarea
-                        name="terms"
-                        defaultValue={editingFinancial?.details.terms}
-                        required
-                        rows={3}
-                        placeholder="Agreed payment schedule and verified payment instructions"
-                      />
-                    </label>
-                    <label>
-                      Notes / tax treatment
-                      <textarea
-                        name="notes"
-                        defaultValue={editingFinancial?.details.notes}
-                        rows={3}
-                        placeholder="Confirm applicable tax treatment before issue. No tax rate is applied automatically."
-                      />
-                    </label>
-                    <button className="ws-primary" disabled={busy}>
-                      {editingFinancial
-                        ? 'Save draft changes'
-                        : 'Save financial draft'}
-                    </button>
-                    <p className="ws-note">
-                      Amounts are calculated on the server. Issued records
-                      cannot be edited. This register tracks billing and
-                      manually recorded payments; it does not reconcile your
-                      bank or file taxes.
-                    </p>
-                  </form>
+                      >
+                        <Plus size={16} /> Add line item
+                      </button>
+                      <label>
+                        Due date (optional)
+                        <input
+                          type="date"
+                          name="dueDate"
+                          defaultValue={editingFinancial?.details.dueDate}
+                        />
+                      </label>
+                      <label>
+                        Payment terms and instructions
+                        <textarea
+                          name="terms"
+                          defaultValue={editingFinancial?.details.terms}
+                          required
+                          rows={3}
+                          placeholder="Agreed payment schedule and verified payment instructions"
+                        />
+                      </label>
+                      <label>
+                        Notes / tax treatment
+                        <textarea
+                          name="notes"
+                          defaultValue={editingFinancial?.details.notes}
+                          rows={3}
+                          placeholder="Confirm applicable tax treatment before issue. No tax rate is applied automatically."
+                        />
+                      </label>
+                      <button className="ws-primary" disabled={busy}>
+                        {editingFinancial
+                          ? 'Save draft changes'
+                          : 'Save financial draft'}
+                      </button>
+                      <p className="ws-note">
+                        Amounts are calculated on the server. Issued records
+                        cannot be edited. This register tracks billing and
+                        manually recorded payments; it does not reconcile your
+                        bank or file taxes.
+                      </p>
+                    </form>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

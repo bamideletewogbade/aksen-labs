@@ -460,8 +460,8 @@ export default async function AdminPage() {
           <Link href="/admin/prospects">
             <Radar /> Find leads
           </Link>
-          <Link href="/admin/agent-desk">
-            <ClipboardList /> Free tools
+          <Link href="/admin/assessment">
+            <ClipboardList /> Start an assessment
           </Link>
         </div>
       </header>

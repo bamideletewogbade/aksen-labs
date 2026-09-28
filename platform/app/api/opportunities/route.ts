@@ -7,12 +7,124 @@ import { workflowSuggestion } from '@/lib/workflow-suggestion';
 import { boundedJson } from '@/lib/bounded-json';
 import { currentHour, reserve, visitorKey } from '@/lib/rate-limit';
 import { captureLead, intakeKey } from '@/lib/lead-intake';
-import { parseMapperAnswers } from '@/lib/mapper-questions';
+import {
+  intakeSummary,
+  parseIntake,
+  parseMapperAnswers,
+  problemById,
+} from '@/lib/mapper-questions';
 
 // One person sending a genuine enquiry needs one or two attempts. The shared
 // ceiling keeps a distributed flood from filling the pipeline the founder reads.
 export const enquiryVisitorLimit = 5;
 export const enquiryHourlyCeiling = 200;
+
+function validEmail(value: unknown) {
+  const email = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : '';
+}
+
+/** Reserved before anything is stored, so a flood cannot fill the pipeline. */
+async function overLimit(request: Request) {
+  const db = getDb();
+  const hour = currentHour();
+  if (
+    !(await reserve(
+      db,
+      `enquiry-visitor-${await visitorKey(request)}-${hour}`,
+      enquiryVisitorLimit,
+    ))
+  )
+    return NextResponse.json(
+      {
+        error:
+          'We already have your recent enquiries. We will reply to those rather than lose them among repeats.',
+      },
+      { status: 429 },
+    );
+  if (!(await reserve(db, `enquiry-${hour}`, enquiryHourlyCeiling)))
+    return NextResponse.json(
+      {
+        error:
+          'We cannot accept enquiries this moment. Please try shortly, or email us directly.',
+      },
+      { status: 429 },
+    );
+  return null;
+}
+
+/**
+ * The seven-step mapper. The answers are parsed again here rather than
+ * trusted from the page, and what the visitor was shown travels as text: the
+ * founder needs to read what the visitor read, not a regenerated version.
+ */
+async function diagnosticEnquiry(
+  request: Request,
+  input: Record<string, unknown>,
+  pricingPrefix: string,
+  pricingSelection: ReturnType<typeof resolvePricingSelection>,
+) {
+  const parsed = parseIntake(input.intake);
+  if (parsed.error !== undefined)
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { intake } = parsed;
+  const name = typeof input.name === 'string' ? input.name.trim() : '';
+  if (!name)
+    return NextResponse.json(
+      { error: 'Your name is required.' },
+      { status: 400 },
+    );
+  const email = validEmail(input.email);
+  if (!email)
+    return NextResponse.json(
+      { error: 'Enter a valid email address.' },
+      { status: 400 },
+    );
+  const limited = await overLimit(request);
+  if (limited) return limited;
+
+  const shown =
+    typeof input.recommendation === 'string'
+      ? input.recommendation.trim().slice(0, 160)
+      : '';
+  const shownDetail =
+    typeof input.reportSummary === 'string'
+      ? input.reportSummary.replace(/\s+/g, ' ').trim().slice(0, 600)
+      : '';
+  const review =
+    input.needsReview === true
+      ? ' Checker flagged: a person should read the report before replying.'
+      : '';
+  const problem = problemById(intake.problem).label;
+  const summary = `${pricingPrefix}${intakeSummary(intake)}. ${shownDetail}${review}`;
+  const captured = await captureLead({
+    source: pricingSelection ? 'website_pricing' : 'website_mapper',
+    name,
+    email,
+    company: typeof input.company === 'string' ? input.company : '',
+    work: problem,
+    channel: intake.channels.join('; '),
+    desiredOutcome: intake.symptoms.join('; '),
+    recommendation: shown || problem,
+    summary,
+    intakeKey: await intakeKey('enquiry', email, summary),
+    detail: {
+      answerFormat: 'diagnostic-v2',
+      problem: intake.problem,
+      needsReview: input.needsReview === true,
+      ...(pricingSelection ? { pricingPackage: pricingSelection.name } : {}),
+    },
+  });
+  return NextResponse.json(
+    {
+      id: captured.id,
+      status: 'new',
+      recommendation: shown || problem,
+      acknowledged: captured.acknowledged,
+    },
+    { status: 201 },
+  );
+}
 
 async function POSTHandler(request: Request) {
   let input: Record<string, unknown>;
@@ -38,6 +150,8 @@ async function POSTHandler(request: Request) {
       // when it is read back in six months.
       `Pricing enquiry: ${pricingSelection.name} (${formatPrice(pricingSelection.price, 'GHS')}, indicative). `
     : '';
+  if (input.answerFormat === 'diagnostic-v2')
+    return diagnosticEnquiry(request, input, pricingPrefix, pricingSelection);
   const answers = parseMapperAnswers(input.answers);
   if (!answers) {
     return NextResponse.json(
@@ -66,39 +180,16 @@ async function POSTHandler(request: Request) {
     );
   }
 
-  const email = String(input.email).trim().toLowerCase();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const email = validEmail(input.email);
+  if (!email) {
     return NextResponse.json(
       { error: 'Enter a valid email address.' },
       { status: 400 },
     );
   }
 
-  const db = getDb();
-  const hour = currentHour();
-  // Reserved before anything is stored, so a flood cannot fill the pipeline.
-  if (
-    !(await reserve(
-      db,
-      `enquiry-visitor-${await visitorKey(request)}-${hour}`,
-      enquiryVisitorLimit,
-    ))
-  )
-    return NextResponse.json(
-      {
-        error:
-          'We already have your recent enquiries. We will reply to those rather than lose them among repeats.',
-      },
-      { status: 429 },
-    );
-  if (!(await reserve(db, `enquiry-${hour}`, enquiryHourlyCeiling)))
-    return NextResponse.json(
-      {
-        error:
-          'We cannot accept enquiries this moment. Please try shortly, or email us directly.',
-      },
-      { status: 429 },
-    );
+  const limited = await overLimit(request);
+  if (limited) return limited;
 
   // Store the suggestion the visitor actually saw; fall back when the model was unreachable.
   const shown =

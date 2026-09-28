@@ -362,6 +362,15 @@
 .admin-refresh .pl-menu-list a:hover {
   background: #eef6ea;
 }
+.admin-refresh .pl-menu-list .pl-menu-lead {
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e3ebde;
+}
+.admin-refresh .pl-menu-list .pl-menu-lead a {
+  color: #175b3b;
+  font-weight: 600;
+}
 .admin-refresh .pl-menu-list small {
   padding: 1px 6px;
   border-radius: 4px;

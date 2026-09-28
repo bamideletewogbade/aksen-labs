@@ -5,6 +5,8 @@ import { agentRuns } from '@/db/schema';
 
 export async function logAgentRun(input: {
   agentName: string;
+  /** Set when an agent is rebuilt, so its runs can be compared with the old one's. */
+  agentVersion?: string;
   channel: string;
   status: 'success' | 'error';
   outcome?: string;
@@ -17,6 +19,7 @@ export async function logAgentRun(input: {
     await db.insert(agentRuns).values({
       id: crypto.randomUUID(),
       agentName: input.agentName,
+      ...(input.agentVersion ? { agentVersion: input.agentVersion } : {}),
       channel: input.channel,
       status: input.status,
       outcome: input.outcome,
