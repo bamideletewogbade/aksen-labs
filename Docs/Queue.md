@@ -12,15 +12,15 @@ Everything here fits in 25 minutes. Anything that does not is a project and gets
 
 Always first. Never optional.
 
-- [ ] **S-01** Send the TFS alignment message (≈15m). Drafted since 11 September in `Docs/TFS-Client-Alignment-Draft-2026-09-11.md`, never sent. Read it, fix the mojibake, put the client's name in, send it. This is the cheapest blocked revenue in the business.
-- [ ] **S-02** Message Ope about the three Lagos decor brands (≈10m). One WhatsApp number, no website, exactly the core offer. Ask for a twenty-minute call, do not pitch in the message.
+- [x] **S-01** Send the TFS alignment message. (Done — touchpoint established, call held 2026-10-01)
+- [x] **S-02** Message Ope about the three Lagos decor brands. (Done — initial call completed, deep dive set for 8:30 PM+ WAT)
 - [ ] **S-03** Message the Efe Organics founder (≈10m). No owned channel, all sales through a reseller. Ask what happens when a customer messages her directly.
 - [ ] **S-04** Write the twenty-minute diagnostic script (≈20m). The five Friend's Guide questions, asked before explaining anything. Save to `Docs/Owner-Conversations.md`.
 - [ ] **S-05** Write the one-page free assessment note (≈25m). Free for every business: what they get, what happens after, and that money is discussed only if a fix is worth building. (Was a GHS 2,500 offer note; the assessment became free on 28 September.)
 - [ ] **S-06** List ten Accra businesses that sell over WhatsApp with no order system (≈20m). Owner-led retail or made-to-order. Lead Scout exists for this.
 - [ ] **S-07** List ten more (≈20m)
 - [ ] **S-08** Book one conversation from the list (≈15m)
-- [ ] **S-09** Hold one conversation (≈25m). Ask before explaining, record it the same day
+- [x] **S-09** Hold one conversation (≈25m). (Done 2026-10-01 — intro call held with Ope; follow-up booked for 8:30 PM+ WAT tonight)
 - [ ] **S-10** Add the pricing question to the script (≈10m). *"GHS 10,000 once plus GHS 4,000 a month, or GHS 1,200 a month with nothing today: which, and why?"* This answers R-005, which changes R-002.
 
 ## BUILD: Phase 0 only
@@ -39,11 +39,11 @@ Exit test: submit an enquiry from a phone, on mobile data, as a stranger. A noti
 
 ## COMPOUND
 
-- [ ] **C-01** Create `Docs/Owner-Conversations.md` with a per-conversation template (≈15m). Date, business, what they sell, their words for the problem, what they use now, who decides, what they said about price
+- [x] **C-01** Create `Docs/Owner-Conversations.md` with a per-conversation template. (Done — template created, first entry logged 2026-10-01)
 - [ ] **C-02** Start the delivery hours log (≈10m). One file, date / task / minutes. The GHS 120/hour floor is a guess until this has real rows in it, and every quote is a guess with it
 - [ ] **C-03** Give CV Forge a URL (≈25m). `2ndGenCVInsight`, already carries a `vercel.json`. Park it live, then leave it alone per R-010
 - [ ] **C-04** Write one public build note (≈25m). Why a customer's claim to have paid is kept separate from a verified payment. Shows judgement without claiming a customer
-- [ ] **C-05** Record this week's two numbers (≈5m). Conversations with owners, cedis invoiced
+- [x] **C-05** Record this week's two numbers (≈5m). (Done 2026-10-01 — 1 conversation logged, GHS 0 invoiced)
 - [ ] **C-06** Write down the hours actually available per week (≈10m). The pricing guide's arithmetic says the working case does not fit at fifteen. Plan against the real number
 - [ ] **C-07** Add the three homepage screenshots to the capture routine after any redesign (≈10m). `cd video && node scripts/capture-site.mjs`
 

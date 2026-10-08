@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Aksen Labs | Ibadan Living Guide</title>
+<style>
+:root{--ink:#17201c;--muted:#65726b;--paper:#f6f1e5;--panel:#fffdf8;--line:#d8d1c2;--brand:#0d6b50;--dark:#084938;--gold:#d9912b;--shadow:0 18px 55px rgba(29,40,34,.11);--content:880px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:radial-gradient(circle at 10% -5%,rgba(217,145,43,.2),transparent 30rem),linear-gradient(180deg,#eee8da,var(--paper) 32rem);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}button,input{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;min-height:64px;padding:.65rem clamp(.8rem,3vw,1.5rem);background:rgba(246,241,229,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(16px)}
+.brand{display:flex;align-items:center;gap:.65rem;margin-right:auto;min-width:0}.logo{display:grid;place-items:center;width:37px;height:37px;flex:0 0 auto;color:white;background:var(--brand);border-radius:11px;font-weight:900}.brand strong,.brand small{display:block}.brand small{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.actions,.edit-tools{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}.btn{min-height:38px;padding:.48rem .72rem;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:.8rem;font-weight:750}.btn:hover{border-color:var(--brand)}.btn.primary{color:#fff;background:var(--brand);border-color:var(--brand)}.btn.active{color:#fff;background:var(--dark);border-color:var(--dark)}
+.edit-tools{position:sticky;top:64px;z-index:25;display:none;justify-content:center;padding:.5rem;background:rgba(255,253,248,.96);border-bottom:1px solid var(--line)}body.editing .edit-tools{display:flex}.edit-tools .btn{min-width:38px;padding:.35rem .55rem}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:calc(100vh - 64px)}aside{position:sticky;top:64px;align-self:start;height:calc(100vh - 64px);overflow:auto;padding:1rem 1rem 3rem;background:rgba(255,253,248,.7);border-right:1px solid var(--line)}body.editing aside{top:111px;height:calc(100vh - 111px)}
+.search{width:100%;padding:.7rem .8rem;background:white;border:1px solid var(--line);border-radius:11px;outline:none}.search:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,107,80,.12)}.status{min-height:1.5rem;margin:.5rem 0;color:var(--muted);font-size:.75rem}.label{margin:1rem 0 .45rem;color:var(--muted);font-size:.69rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}#toc{display:grid;gap:.12rem}#toc a{display:block;padding:.4rem .5rem;color:#425149;border-left:2px solid transparent;border-radius:0 8px 8px 0;font-size:.78rem;line-height:1.35;text-decoration:none}#toc a:hover{color:var(--dark);background:rgba(13,107,80,.07);border-left-color:var(--brand)}.note{margin-top:1rem;padding:.8rem;color:var(--muted);background:rgba(217,145,43,.1);border:1px solid rgba(217,145,43,.28);border-radius:12px;font-size:.75rem}
+main{min-width:0;padding:clamp(1rem,3vw,2.6rem)}.hero{max-width:var(--content);margin:0 auto 1.2rem;padding:clamp(1.3rem,4vw,2.6rem);color:white;background:linear-gradient(125deg,rgba(13,107,80,.96),rgba(8,73,56,.99));border-radius:25px;box-shadow:var(--shadow)}.eyebrow{margin:0 0 .4rem;color:#c9f2e4;font-size:.73rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.hero h1{max-width:720px;margin:0;font-size:clamp(2rem,5vw,3.7rem);line-height:1.03;letter-spacing:-.05em}.hero p{max-width:700px;margin:1rem 0 0;color:#e6f4ee}.pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.2rem}.pill{padding:.34rem .62rem;color:#ecf8f3;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;font-size:.73rem;font-weight:750}
+.card{max-width:var(--content);margin:0 auto;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}.cardbar{display:flex;justify-content:space-between;gap:1rem;padding:.65rem 1rem;color:var(--muted);background:#efeade;border-bottom:1px solid var(--line);font-size:.76rem;font-weight:800}
+#document{padding:clamp(1rem,4vw,3rem);outline:none;overflow-wrap:anywhere}body.editing #document{background:#fffefa;box-shadow:inset 0 0 0 3px rgba(13,107,80,.13)}body.editing #document:focus{box-shadow:inset 0 0 0 3px rgba(13,107,80,.28)}
+#document>h1:first-child{display:none}#document h2{scroll-margin-top:130px;margin:3.3rem 0 1rem;padding-top:.9rem;border-top:1px solid var(--line);font-size:clamp(1.45rem,4vw,2.15rem);line-height:1.18;letter-spacing:-.025em}#document h2:first-of-type{margin-top:.3rem;padding-top:0;border-top:0}#document h3{scroll-margin-top:130px;margin:2rem 0 .65rem;color:var(--dark);font-size:1.14rem;line-height:1.3}#document p{margin:.65rem 0 1rem}#document ul,#document ol{padding-left:1.4rem}#document li{margin:.32rem 0}#document blockquote{margin:1.2rem 0;padding:1rem 1.15rem;color:var(--dark);background:#e9f4ef;border-left:4px solid var(--brand);border-radius:0 12px 12px 0;font-size:1.02rem;font-weight:700}#document code{padding:.12rem .3rem;color:#783f0f;background:#f6ead8;border-radius:5px;font:.9em "Cascadia Code",Consolas,monospace}#document pre{overflow:auto;padding:1rem;color:#f6f5ef;background:#16231e;border-radius:12px}#document pre code{padding:0;color:inherit;background:none}#document table{display:block;width:100%;overflow-x:auto;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:.88rem}#document th,#document td{min-width:130px;padding:.7rem .75rem;text-align:left;vertical-align:top;border:1px solid var(--line)}#document th{background:#eaf2ee}#document hr{margin:2.7rem 0;border:0;border-top:1px solid var(--line)}#document a{color:var(--brand)}mark{background:#ffe187}
+.toast{position:fixed;right:1rem;bottom:1rem;z-index:50;max-width:330px;padding:.8rem 1rem;color:white;background:#17201c;border-radius:12px;box-shadow:var(--shadow);font-size:.82rem;opacity:0;transform:translateY(14px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}.mobile{display:none}
+@media(max-width:900px){header{align-items:flex-start}.brand small{display:none}.layout{display:block}aside{position:fixed;inset:64px auto 0 0;z-index:35;width:min(310px,86vw);height:calc(100vh - 64px);transform:translateX(-105%);transition:.2s;box-shadow:var(--shadow)}aside.open{transform:none}body.editing aside{top:111px;height:calc(100vh - 111px)}.mobile{display:inline-flex}main{padding:1rem}.btn .wide{display:none}}
+@media(max-width:590px){.actions{gap:.25rem}.btn{min-height:34px;padding:.4rem .52rem;font-size:.74rem}.brand>div{display:none}.hero{border-radius:18px}#document{padding:1rem}.edit-tools{overflow-x:auto;justify-content:flex-start}}
+@media print{body{background:white}header,.edit-tools,aside,.cardbar,.toast{display:none!important}.layout{display:block}main{padding:0}.hero{color:#000;background:#fff;border:1px solid #aaa;box-shadow:none}.hero p,.eyebrow,.pill{color:#000}.card{border:0;box-shadow:none}#document{padding:0}#document table{display:table}#document h2{break-after:avoid}}
+</style>
+</head>
+<body>
+<header>
+<button class="btn mobile" id="menu" type="button" aria-label="Open contents">☰</button>
+<div class="brand"><span class="logo">A</span><div><strong>Aksen Labs</strong><small>Ibadan return and cash-generation guide</small></div></div>
+<div class="actions">
+<button class="btn active" id="readBtn" type="button">Read</button>
+<button class="btn" id="editBtn" type="button">Edit</button>
+<button class="btn" id="printBtn" type="button"><span class="wide">Print / </span>PDF</button>
+<button class="btn primary" id="downloadBtn" type="button">Download HTML</button>
+<button class="btn" id="resetBtn" type="button">Reset</button>
+</div>
+</header>
+<div class="edit-tools" aria-label="Editing tools">
+<button class="btn" type="button" data-cmd="undo" title="Undo">↶</button>
+<button class="btn" type="button" data-cmd="redo" title="Redo">↷</button>
+<button class="btn" type="button" data-cmd="bold"><strong>B</strong></button>
+<button class="btn" type="button" data-cmd="italic"><em>I</em></button>
+<button class="btn" type="button" data-block="h2">H2</button>
+<button class="btn" type="button" data-block="h3">H3</button>
+<button class="btn" type="button" data-block="p">Text</button>
+<button class="btn" type="button" data-cmd="insertUnorderedList">Bullets</button>
+<button class="btn" type="button" data-cmd="insertOrderedList">Numbers</button>
+<button class="btn" id="addCheck" type="button">☐ Checklist</button>
+</div>
+<div class="layout">
+<aside id="sidebar">
+<input class="search" id="search" type="search" placeholder="Search this guide" aria-label="Search this guide">
+<div class="status" id="status">Saved in this browser</div>
+<div class="label">Contents</div><nav id="toc"></nav>
+<div class="note">In Edit mode, click directly into the guide. Changes save automatically in this browser. Use <strong>Download HTML</strong> to make a portable file containing the latest version.</div>
+</aside>
+<main>
+<section class="hero">
+<p class="eyebrow">Living operating guide</p>
+<h1>Return to customers, cash and validated learning.</h1>
+<p>A practical restart document for turning Aksen's existing capability into revenue from Ibadan, with Lean Startup experiments built into the operating rhythm.</p>
+<div class="pills"><span class="pill">Created 7 October 2026</span><span class="pill">Editable</span><span class="pill">Autosaves locally</span><span class="pill">Works offline</span></div>
+</section>
+<section class="card">
+<div class="cardbar"><span id="modeLabel">Reading mode</span><span id="wordCount"></span></div>
+<article id="document" contenteditable="false" spellcheck="true"><h1>Aksen Labs: Ibadan return and cash-generation guide</h1>
+<p><strong>Created:</strong> 7 October 2026 <strong>Purpose:</strong> A restart guide for Bishop when returning to Aksen Labs, especially around the move to Ibadan, Oyo State, Nigeria. <strong>Primary outcome:</strong> Turn Aksen's existing capability into collected revenue without starting another product or disappearing into more internal building.</p>
+<hr>
+<h2>1. Read this first</h2>
+<p>Aksen Labs already contains enough capability for the first stage of the business. The immediate problem is not a shortage of products, code, ideas or strategy. It is converting existing capability into owner conversations, written quotations, deposits, accepted delivery and recurring care.</p>
+<p>The working commercial thesis is:</p>
+<blockquote>Aksen helps owner-led businesses capture enquiries properly, follow up and turn more conversations into completed orders.</blockquote>
+<p>Ibadan is a new sales territory for Aksen, not a reason to create a different company. Aksen remains an Africa-serving digital transformation agency. The local starting point is one recognisable business problem and one repeatable path from assessment to implementation.</p>
+<p>When returning after a break, do not start by redesigning the website, adding an agent, improving the admin workspace, rewriting all the copy or opening a new product line. Start by verifying the current state and then complete the next revenue action.</p>
+<h3>The five commercial states</h3>
+<p>Keep these separate in every conversation and document:</p>
+<ol>
+<li><strong>Capability:</strong> Aksen can build or perform the work.</li>
+<li><strong>Commercial proof:</strong> A buyer has agreed to pay and a payment has cleared.</li>
+<li><strong>Delivery proof:</strong> The agreed system was handed over and accepted against written criteria.</li>
+<li><strong>Outcome proof:</strong> A before-and-after business result was measured using the client's own records.</li>
+<li><strong>Repeatability:</strong> More than one client has bought and accepted substantially the same offer at a sustainable margin.</li>
+</ol>
+<p>Most of Aksen is currently capability. Do not describe capability as customer proof.</p>
+<hr>
+<h2>2. Source of truth and restart order</h2>
+<p>This guide is an entry point. It does not replace the operating documents.</p>
+<p>Read in this order:</p>
+<ol>
+<li><code>CLAUDE.md</code></li>
+<li><code>Docs/Aksen-Operating-Brief.md</code></li>
+<li><code>Docs/Daily-Log.md</code></li>
+<li><code>Docs/Owner-Conversations.md</code></li>
+<li><code>Docs/Revenue-Ledger.md</code></li>
+<li><code>Docs/Queue.md</code></li>
+<li><code>Docs/Outreach-Playbook.md</code></li>
+<li><code>Docs/Nigeria-Friends-Kit-and-Pricing-2026-09-16.md</code></li>
+<li>The latest file for every active client under <code>clients/</code></li>
+</ol>
+<p>Then inspect current source, deployment, environment and provider state. A document can become stale even when it was correct when written.</p>
+<h3>Ten-minute restart check</h3>
+<p>Answer these before doing any work:</p>
+<ul>
+<li>What was the last completed SELL action?</li>
+<li>Who is waiting for a reply from me?</li>
+<li>Which quotation or invoice is closest to being sent or paid?</li>
+<li>How many owner conversations were logged this week?</li>
+<li>How much was invoiced and collected this month?</li>
+<li>Is there a signed scope for every project marked as active?</li>
+<li>Is the current hosted site the same version as the local project?</li>
+<li>Can a stranger submit an enquiry and receive the promised response?</li>
+<li>Which integrations are actually configured in the current environment?</li>
+<li>What single action can move money or customer evidence forward today?</li>
+</ul>
+<p>If a customer or prospect is waiting, that reply comes before code.</p>
+<hr>
+<h2>3. What Aksen has already built</h2>
+<p>The repository already demonstrates the following capabilities.</p>
+<h3>Customer experience and commerce</h3>
+<ul>
+<li>Mobile-first business websites</li>
+<li>Digital storefronts and catalogues</li>
+<li>Product and service presentation</li>
+<li>Enquiry and quotation journeys</li>
+<li>Booking and order forms</li>
+<li>Payment workflow design</li>
+<li>Paystack-related implementation patterns</li>
+<li>WhatsApp handoff and enquiry capture</li>
+<li>Google Business Profile improvement as part of a wider customer journey</li>
+</ul>
+<h3>Business systems and operations</h3>
+<ul>
+<li>Lead and opportunity tracking</li>
+<li>Project and delivery tracking</li>
+<li>Human approvals</li>
+<li>Audit trails</li>
+<li>Order and specification capture</li>
+<li>Internal dashboards</li>
+<li>Client records and status management</li>
+<li>Structured handover and care processes</li>
+</ul>
+<h3>Responsible AI workflows</h3>
+<ul>
+<li>Assistants that prepare drafts and recommendations</li>
+<li>Support answers grounded in approved information</li>
+<li>Human review before pricing, promises, publishing, payments or contact</li>
+<li>Research and qualification workflows</li>
+<li>Content preparation and media workflows</li>
+</ul>
+<h3>Strategy and delivery</h3>
+<ul>
+<li>Business discovery</li>
+<li>Customer-journey analysis</li>
+<li>Product and service positioning</li>
+<li>UX and mobile-first design</li>
+<li>Proposal, scope, UAT and handover documentation</li>
+<li>Pricing and profitability modelling</li>
+<li>Programmatic video production</li>
+</ul>
+<p>These capabilities should support sales. They should not become separate products simply because they exist.</p>
+<hr>
+<h2>4. Current maturity snapshot</h2>
+<p>This section records the observed state on 7 October 2026. Re-verify it whenever returning to this guide.</p>
+<h3>Strong enough to demonstrate</h3>
+<ul>
+<li>Aksen's public site and service explanation</li>
+<li>Free business-agent experiences</li>
+<li>Order walkthrough</li>
+<li>Support-assistant demonstration</li>
+<li>Workspace demonstration</li>
+<li>Admin workspace</li>
+<li>Nigerian promotional examples</li>
+<li>Discovery, proposal, scope, UAT, handover and care templates</li>
+<li>Mobile-first storefront and commerce capability shown in client work</li>
+</ul>
+<h3>Reasonable to sell with bounded scope</h3>
+<ul>
+<li>One-page business sites</li>
+<li>Digital catalogues</li>
+<li>Google Business Profile setup and improvement</li>
+<li>WhatsApp Business catalogue and quick-reply setup</li>
+<li>Structured enquiry forms</li>
+<li>Shared enquiry or order tracking</li>
+<li>Simple internal dashboards</li>
+<li>Booking and reminder workflows</li>
+<li>Website care with clear exclusions</li>
+</ul>
+<h3>Must be live-verified before being promised</h3>
+<ul>
+<li>Production email sending and automated acknowledgements</li>
+<li>Production Paystack transactions and webhook fulfilment</li>
+<li>Official WhatsApp Business Platform automation</li>
+<li>Scheduled automation and queue draining</li>
+<li>AI-provider-dependent features</li>
+<li>Lead Scout research runs and persistence</li>
+<li>Any hosted release that may be behind local source</li>
+</ul>
+<h3>Keep parked until the agency earns proof</h3>
+<ul>
+<li>Selling the entire admin workspace as SaaS</li>
+<li>New AI agents</li>
+<li>New admin modules</li>
+<li>CV Forge as a separate marketing campaign</li>
+<li>Media Studio as a separate company</li>
+<li>New sector-specific platforms without a paying client</li>
+<li>Major public-site redesigns that are not blocking a live sale</li>
+</ul>
+<hr>
+<h2>5. The first Ibadan customer profile</h2>
+<p>Do not target every small business. The best early customer already has demand but handles it poorly.</p>
+<p>Look for an owner-led business that:</p>
+<ul>
+<li>Receives meaningful enquiries through WhatsApp, Instagram or phone calls</li>
+<li>Sells products or services that require questions before purchase</li>
+<li>Gives custom prices, quotations, measurements or booking times</li>
+<li>Repeats the same answers many times</li>
+<li>Loses track of people who ask for a price and disappear</li>
+<li>Has at least one staff member or owner manually coordinating the work</li>
+<li>Has an average order value high enough to recover Aksen's fee</li>
+<li>Can identify the person who makes the buying decision</li>
+<li>Is willing to share baseline numbers privately</li>
+</ul>
+<h3>Best starting categories</h3>
+<p>Choose one category for the first focused test. Good matches to existing Aksen work include:</p>
+<ul>
+<li>Furniture and interior businesses</li>
+<li>Frame, print and wall-decoration businesses</li>
+<li>Event decorators and rental companies</li>
+<li>Custom fashion and tailoring businesses</li>
+<li>Beauty businesses with bookings or product orders</li>
+<li>Property, serviced apartment and short-let businesses</li>
+<li>Caterers and made-to-order food businesses</li>
+</ul>
+<p>Made-to-order home, decor and event businesses are the closest match to the Frame Shop work. That makes them the lowest-friction starting point, subject to real Ibadan owner conversations.</p>
+<h3>Disqualifiers</h3>
+<p>Do not force a proposal where:</p>
+<ul>
+<li>The business has almost no enquiries to organise</li>
+<li>The owner will not participate in discovery</li>
+<li>The expected benefit cannot plausibly repay the build</li>
+<li>The owner wants guaranteed sales</li>
+<li>Required content, prices or policies are unavailable</li>
+<li>The work depends on an integration that cannot be verified</li>
+<li>The owner expects unlimited changes or support</li>
+<li>There is no clear decision maker</li>
+</ul>
+<p>Saying no protects capacity and margin.</p>
+<hr>
+<h2>6. The offer ladder</h2>
+<p>The front door is free. Revenue comes from an implementation that is worth doing.</p>
+<h3>Step 1: Free Business Check</h3>
+<p><strong>Purpose:</strong> Understand one business process and determine whether there is a fix worth building.</p>
+<p><strong>Time box:</strong> 20 to 30 minutes for the conversation, plus no more than 60 minutes to prepare the summary.</p>
+<p><strong>Questions:</strong></p>
+<ol>
+<li>What do customers normally contact you to buy or ask about?</li>
+<li>Where do those enquiries arrive?</li>
+<li>What information do you need before you can quote or confirm?</li>
+<li>Who replies, and what happens outside working hours?</li>
+<li>How do you record an enquiry after the first message?</li>
+<li>What happens when someone asks for a price and goes quiet?</li>
+<li>How do you confirm payment?</li>
+<li>How do staff know what has been promised?</li>
+<li>Where do mistakes, delays or repeated work usually happen?</li>
+<li>What would a noticeably better month look like?</li>
+</ol>
+<p>Record the owner's own words. Do not convert every answer into an AI opportunity.</p>
+<p><strong>Output:</strong> A concise one-page summary containing:</p>
+<ul>
+<li>The current journey</li>
+<li>The principal bottleneck</li>
+<li>Evidence or assumptions</li>
+<li>The smallest worthwhile improvement</li>
+<li>What Aksen would build</li>
+<li>What the owner must provide</li>
+<li>Expected implementation time</li>
+<li>What should be measured before and after</li>
+</ul>
+<p>If there is no worthwhile build, say so.</p>
+<h3>Step 2: Get Found</h3>
+<p><strong>Proposed test price:</strong> ₦100,000 to ₦150,000 <strong>Typical delivery:</strong> 1 to 2 weeks</p>
+<p>Possible scope:</p>
+<ul>
+<li>Google Business Profile setup or improvement</li>
+<li>One-page mobile-first site</li>
+<li>Clear offer and contact details</li>
+<li>Product or service highlights</li>
+<li>WhatsApp enquiry action</li>
+<li>Basic source tracking</li>
+<li>One handover session</li>
+</ul>
+<p>This is not a full custom website. Scope the number of sections, revision rounds and supplied assets.</p>
+<h3>Step 3: Enquiry Desk</h3>
+<p><strong>Proposed test price:</strong> ₦150,000 to ₦250,000 <strong>Typical delivery:</strong> 1 to 3 weeks</p>
+<p>Possible scope:</p>
+<ul>
+<li>WhatsApp Business catalogue structure</li>
+<li>Quick replies and approved information</li>
+<li>Structured enquiry or order form</li>
+<li>Shared tracking sheet or lightweight dashboard</li>
+<li>Lead status definitions</li>
+<li>Follow-up routine</li>
+<li>Staff handover</li>
+</ul>
+<p>Do not call it an AI agent unless an AI component is truly implemented, configured, tested and included in the written scope.</p>
+<h3>Step 4: Connected Business System</h3>
+<p><strong>Starting point:</strong> From ₦450,000, quoted only after discovery <strong>Typical delivery:</strong> Determined from scope</p>
+<p>Possible scope:</p>
+<ul>
+<li>Website or storefront</li>
+<li>Catalogue and stock or availability handling</li>
+<li>Enquiry, order or booking workflow</li>
+<li>Paystack checkout where appropriate</li>
+<li>Internal dashboard</li>
+<li>Customer and staff notifications</li>
+<li>Controlled AI assistance</li>
+<li>Reporting and operational handover</li>
+</ul>
+<p>Every custom build must have acceptance criteria, provider-cost treatment, revision limits and a change process before work starts.</p>
+<h3>Care</h3>
+<p><strong>Proposed test range:</strong> ₦20,000 to ₦50,000 per month for a small implementation. Larger operational systems are quoted separately.</p>
+<p>Define:</p>
+<ul>
+<li>Hosting and domain responsibility</li>
+<li>Monitoring</li>
+<li>Backup expectations</li>
+<li>Included update time</li>
+<li>Response time</li>
+<li>Provider usage allowance</li>
+<li>Exclusions</li>
+<li>Price for additional work</li>
+</ul>
+<p>Care is not unlimited support.</p>
+<hr>
+<h2>7. Pricing rules</h2>
+<p>The repository contains multiple Nigerian draft prices. Do not let friends, prospects and proposals quote different numbers for the same work.</p>
+<p>Before public sharing:</p>
+<ol>
+<li>Choose one canonical Nigerian price table.</li>
+<li>Mark it with an effective date.</li>
+<li>Update the Nigeria kit from that table.</li>
+<li>Update proposal templates.</li>
+<li>Archive or label superseded price files.</li>
+<li>Never invent a discount during a call.</li>
+</ol>
+<h3>Floor calculation</h3>
+<p>Use:</p>
+<p><code>price floor = estimated loaded delivery cost / (1 - target contribution margin)</code></p>
+<p>Estimate:</p>
+<ul>
+<li>Discovery and preparation time</li>
+<li>Design and build time</li>
+<li>Testing</li>
+<li>Meetings</li>
+<li>Revisions</li>
+<li>Deployment</li>
+<li>Handover</li>
+<li>Provider and asset costs</li>
+<li>Expected early support</li>
+</ul>
+<p>Until Nigerian delivery times are measured, treat every estimate as provisional.</p>
+<h3>Payment structure</h3>
+<p>Default for bounded work:</p>
+<ul>
+<li>50 percent before work starts</li>
+<li>50 percent at the written handover milestone</li>
+<li>Third-party costs outside the fee or inside a clearly stated allowance</li>
+<li>No production launch before required approvals and payment conditions are met</li>
+</ul>
+<p>A friendly relationship does not replace written scope or payment.</p>
+<h3>Discount rule</h3>
+<p>If the price is too high, reduce scope before reducing margin. A founding-client arrangement must state what is exchanged for the reduction, such as permission to measure outcomes, case-study permission after acceptance, or introductions after successful delivery. None of those is guaranteed until written and completed.</p>
+<hr>
+<h2>8. Ibadan acquisition plan</h2>
+<h3>Before arrival</h3>
+<ul>
+<li>Choose one initial category</li>
+<li>Prepare one plain-language offer page</li>
+<li>Make the Business Check template ready</li>
+<li>Consolidate Nigerian prices</li>
+<li>Verify the enquiry channel</li>
+<li>Prepare a short demonstration using fictional data</li>
+<li>Identify the first 20 businesses from public sources and personal introductions</li>
+<li>Ask friends for introductions, not promotional reposts alone</li>
+</ul>
+<h3>First week in Ibadan</h3>
+<p>Target:</p>
+<ul>
+<li>20 named businesses</li>
+<li>10 direct approaches</li>
+<li>5 owner conversations</li>
+<li>3 Business Checks</li>
+<li>1 written quotation</li>
+</ul>
+<p>Daily sequence:</p>
+<ol>
+<li>Review one business before contact.</li>
+<li>Identify one observable gap.</li>
+<li>Contact or visit the owner.</li>
+<li>Ask questions before presenting Aksen.</li>
+<li>Log the conversation the same day.</li>
+<li>Set a dated next step.</li>
+</ol>
+<h3>Weeks 2 to 4</h3>
+<p>Target by day 30:</p>
+<ul>
+<li>20 owner conversations</li>
+<li>10 completed Business Checks</li>
+<li>5 written quotations</li>
+<li>2 deposits collected</li>
+<li>No more than one active unpaid prototype</li>
+</ul>
+<p>If conversations happen but checks do not, the problem is trust or the offer. If checks happen but quotations do not, the diagnosis is not finding valuable problems. If quotations happen but deposits do not, examine price, proof, urgency and scope. Do not assume the answer is another feature.</p>
+<h3>Warm network message</h3>
+<blockquote>I am bringing Aksen Labs to Ibadan. We help owner-led businesses improve how they receive enquiries, follow up and organise orders. I am speaking with a small number of business owners to understand how this works locally. I am not asking you to buy anything from this message. Could you introduce me to one owner who receives a lot of customer questions through WhatsApp or Instagram?</blockquote>
+<h3>First approach to an owner</h3>
+<blockquote>I looked at how customers currently reach your business and noticed that most enquiries appear to move into WhatsApp. I help businesses organise that journey so customer details, quotations and follow-up do not depend on memory. Before suggesting anything, I would like to understand how you currently handle it. The first Business Check is free, and if there is nothing worth building I will say so.</blockquote>
+<h3>Follow-up discipline</h3>
+<ul>
+<li>Confirm the next step and date before ending a conversation.</li>
+<li>Send the promised summary when promised.</li>
+<li>Follow up no more than the sequence in <code>Docs/Outreach-Playbook.md</code>.</li>
+<li>Do not continue chasing someone who repeatedly gives no response.</li>
+<li>Keep the pipeline broad enough that one silent prospect does not stop the business.</li>
+</ul>
+<hr>
+<h2>9. Delivery workflow</h2>
+<p>Every paid engagement follows this sequence.</p>
+<h3>1. Qualify</h3>
+<p>Confirm decision maker, problem, likely value, ability to participate, budget context and timing.</p>
+<h3>2. Discover</h3>
+<p>Map the current process using the owner's words and actual artefacts. Ask to see real examples such as enquiry messages, quotation formats, product lists or booking records, with appropriate permission and privacy.</p>
+<h3>3. Baseline</h3>
+<p>Choose measurements before implementation. Examples:</p>
+<ul>
+<li>Number of enquiries per week</li>
+<li>Median response time</li>
+<li>Percentage receiving a follow-up</li>
+<li>Number of complete versus incomplete orders</li>
+<li>Quotation turnaround time</li>
+<li>Number of missed appointments</li>
+<li>Time spent preparing repeat answers</li>
+</ul>
+<p>Do not invent a baseline after delivery.</p>
+<h3>4. Propose</h3>
+<p>Write:</p>
+<ul>
+<li>Problem and evidence</li>
+<li>Scope</li>
+<li>Explicit exclusions</li>
+<li>Client responsibilities</li>
+<li>Timeline and dependencies</li>
+<li>Acceptance criteria</li>
+<li>Payment milestones</li>
+<li>Provider costs</li>
+<li>Revision rounds</li>
+<li>Change process</li>
+<li>Care option</li>
+</ul>
+<h3>5. Build</h3>
+<p>Use existing templates and components where they fit. Log time from the first delivery hour. Do not add features because they are interesting.</p>
+<h3>6. Verify</h3>
+<p>Separate evidence into:</p>
+<ul>
+<li>Source and static checks</li>
+<li>Build and route checks</li>
+<li>Browser and mobile checks</li>
+<li>Authentication checks</li>
+<li>Database and tenancy checks</li>
+<li>Payment/provider checks</li>
+<li>Real end-to-end customer-flow checks</li>
+</ul>
+<p>A local build is not production sign-off.</p>
+<h3>7. UAT and acceptance</h3>
+<p>The client tests written acceptance criteria. Record defects, changes and acceptance separately.</p>
+<h3>8. Handover</h3>
+<p>Provide access, instructions, ownership information, support boundaries and a record of third-party accounts. The client should not depend on hidden founder knowledge to operate the result.</p>
+<h3>9. Measure and request permission</h3>
+<p>Compare the selected baseline with post-delivery results. Request written case-study permission. Without permission, the result remains private.</p>
+<hr>
+<h2>10. Proof and public claims</h2>
+<p>Never publish:</p>
+<ul>
+<li>A customer logo without permission</li>
+<li>A testimonial that was not given for publication</li>
+<li>A percentage improvement that was not measured</li>
+<li>A project as completed before acceptance</li>
+<li>A demonstration as a live customer system</li>
+<li>A payment or integration claim based only on UI</li>
+<li>A client record in a public screenshot</li>
+</ul>
+<p>Use maturity labels:</p>
+<ul>
+<li>Concept</li>
+<li>Demonstration</li>
+<li>Prototype</li>
+<li>In discovery</li>
+<li>In delivery</li>
+<li>Delivered, awaiting acceptance</li>
+<li>Accepted</li>
+<li>Live</li>
+<li>Measured outcome</li>
+</ul>
+<p>The Frame Shop, Efe Organics and Dhope Connect materials may demonstrate thinking and capability internally. Their current status and publication permissions must be re-verified before public use.</p>
+<hr>
+<h2>11. Technical launch gates</h2>
+<p>Before promising any connected production workflow, verify the relevant gates.</p>
+<h3>Website and enquiry</h3>
+<ul>
+<li>Current source is deployed</li>
+<li>Public access works without an owner account</li>
+<li>Mobile layout is tested on a real phone width</li>
+<li>Forms enforce validation and rate limits</li>
+<li>Founder notification arrives</li>
+<li>Visitor acknowledgement arrives where promised</li>
+<li>Failed delivery is recoverable</li>
+<li>Privacy information matches data collection</li>
+</ul>
+<h3>Paystack</h3>
+<ul>
+<li>Correct live or test mode is known</li>
+<li>Reference is verified server-side</li>
+<li>Status, amount in minor units and currency are verified</li>
+<li>Gateway and expected transaction context are checked</li>
+<li>Webhook signature is verified from the raw body</li>
+<li>Fulfilment is atomic and idempotent</li>
+<li>A screenshot or customer message never confirms payment</li>
+<li>Test checkout and webhook behaviour are recorded</li>
+</ul>
+<h3>WhatsApp</h3>
+<ul>
+<li>The selected route is named and supported</li>
+<li>Ownership of the number is clear</li>
+<li>Template and message costs are understood</li>
+<li>Customer consent and messaging rules are followed</li>
+<li>Human handover works</li>
+<li>Price, payment and promises remain controlled by a person</li>
+<li>Timeouts and uncertain provider states do not trigger blind repeated actions</li>
+</ul>
+<h3>AI</h3>
+<ul>
+<li>Provider is configured</li>
+<li>Failure behaviour is safe</li>
+<li>Unsupported facts are not presented as known</li>
+<li>AI prepares or recommends, while a person approves consequential actions</li>
+<li>Model and usage costs are visible</li>
+<li>Client information is handled according to written policy</li>
+</ul>
+<hr>
+<h2>12. Weekly operating rhythm</h2>
+<p>Every working day should contain:</p>
+<ul>
+<li><strong>SELL:</strong> one action involving a real owner, prospect, quotation or invoice</li>
+<li><strong>BUILD:</strong> only work tied to an agreed offer, delivery or active sales blockage</li>
+<li><strong>COMPOUND:</strong> documentation, templates or reusable learning from real work</li>
+</ul>
+<p>SELL comes first.</p>
+<h3>Weekly review</h3>
+<p>Record:</p>
+<ul>
+<li>Owner conversations</li>
+<li>Business Checks completed</li>
+<li>Quotations sent</li>
+<li>Total invoiced</li>
+<li>Total collected</li>
+<li>Active builds</li>
+<li>Delivery hours by project</li>
+<li>Care revenue</li>
+<li>Follow-ups due</li>
+<li>Why each open deal has not moved</li>
+</ul>
+<h3>Primary scoreboard</h3>
+<p>The two original Aksen numbers remain important:</p>
+<ol>
+<li>Conversations with owners this week</li>
+<li>Money invoiced this month</li>
+</ol>
+<p>For the Ibadan cash phase, add:</p>
+<ol>
+<li>Money collected this month</li>
+<li>Accepted client implementations</li>
+<li>Monthly recurring care revenue</li>
+</ol>
+<p>If conversations are zero, stop building and speak to owners. If quotations are zero despite conversations, improve discovery and qualification. If collections are zero despite quotations, diagnose the commercial objection directly.</p>
+<hr>
+<h2>13. Relocation money rules</h2>
+<p>Keep personal relocation safety separate from optimistic business forecasts.</p>
+<ul>
+<li>Do not use an unsigned proposal to justify rent.</li>
+<li>Do not count an invoice as cash until payment clears.</li>
+<li>Do not rely on a product without paying users to cover essential expenses.</li>
+<li>Keep a personal emergency reserve outside business operating cash.</li>
+<li>Separate project deposits from personal spending needed to deliver the project.</li>
+<li>Reserve third-party and fulfilment costs immediately after collection.</li>
+<li>Do not promise a delivery schedule that the move itself will disrupt.</li>
+</ul>
+<p>Before committing to major housing costs, aim for either:</p>
+<ul>
+<li>Essential living costs covered by a personal reserve, plus one paid project, or</li>
+<li>Recurring income that covers essential monthly costs, plus a delivery reserve.</li>
+</ul>
+<p>The exact threshold must be calculated from the real Ibadan housing and living plan, not guessed here.</p>
+<hr>
+<h2>14. The Aksen Lean System</h2>
+<p>The Lean Startup method treats progress under uncertainty as validated learning, not simply output. For Aksen, that means a new feature, polished demonstration or completed internal tool is not progress unless it reduces an important uncertainty about the customer, offer, delivery model or growth mechanism.</p>
+<p>The Aksen version is:</p>
+<blockquote>Build only enough to test. Measure behaviour and money. Learn what changes the next decision.</blockquote>
+<h3>Vision, strategy and product</h3>
+<p>Keep these at different levels:</p>
+<ul>
+<li><strong>Vision:</strong> Help African businesses prosper through effective technology.</li>
+<li><strong>Strategy:</strong> Begin with owner-led businesses whose WhatsApp enquiries, quotations or orders are poorly organised.</li>
+<li><strong>Products and offers:</strong> Business Check, Get Found, Enquiry Desk, Connected Business System and Care.</li>
+</ul>
+<p>The vision should be durable. Strategy is a set of hypotheses and can pivot. Products and features can change frequently. Do not interpret a change to a package or customer category as abandoning the mission.</p>
+<h3>The two leap-of-faith assumptions</h3>
+<p>Every active offer must state two assumptions before work begins.</p>
+<p><strong>Value hypothesis:</strong> Why will this change make a meaningful difference to the customer?</p>
+<p>For the Enquiry Desk:</p>
+<blockquote>Owner-led businesses with active WhatsApp demand lose valuable enquiries because details and follow-up depend on memory. A shared capture and follow-up system will improve completeness, response or conversion enough to justify paying for it.</blockquote>
+<p><strong>Growth hypothesis:</strong> How will Aksen repeatedly find the next suitable customer?</p>
+<p>Initial version:</p>
+<blockquote>Warm introductions and direct local observation can produce qualified owner conversations at a sustainable cost, and successful delivery will create care revenue and referrals.</blockquote>
+<p>If either hypothesis is false, building more of the same system will not rescue the business.</p>
+<h3>Aksen assumption map</h3>
+<table><thead><tr><th>Assumption</th><th>Current confidence</th><th>Cheapest useful test</th><th>Evidence that raises confidence</th></tr></thead><tbody>
+<tr><td>Owners are losing worthwhile enquiries in WhatsApp</td><td>Low until interviews</td><td>20 owner conversations using actual recent examples</td><td>Repeated owner language plus visible missed or incomplete follow-up</td></tr>
+<tr><td>The problem is costly enough to pay to solve</td><td>Low</td><td>Quantify one month with the owner</td><td>Owner estimates value and accepts a written quotation</td></tr>
+<tr><td>A free Business Check earns the right to quote</td><td>Medium as a process, unproven commercially</td><td>Offer it to 10 qualified owners</td><td>Checks completed and quotations requested or accepted</td></tr>
+<tr><td>A bounded package is easier to buy than open-ended transformation</td><td>Medium</td><td>Quote a fixed scope beside a custom option</td><td>Higher decision rate and fewer scope objections</td></tr>
+<tr><td>Aksen can deliver within its hour cap</td><td>Low until delivery is timed</td><td>One paid bounded implementation</td><td>Acceptance, logged hours and contribution above the floor</td></tr>
+<tr><td>Clients will pay for ongoing care</td><td>Low</td><td>Offer care at handover with explicit inclusions</td><td>Care payment clears for at least three consecutive months</td></tr>
+<tr><td>Referrals can become a repeatable channel</td><td>Low</td><td>Ask accepted clients for two introductions</td><td>Introductions produce qualified conversations, not only names</td></tr>
+<tr><td>Ibadan is a strong first local market</td><td>Unknown</td><td>One category, 20 conversations, no ad spend</td><td>Sufficient pain, authority, budget and urgency in a coherent segment</td></tr>
+</tbody></table>
+<p>Update confidence from evidence, not enthusiasm.</p>
+<h3>Build, Measure, Learn for Aksen</h3>
+<p>Start from what must be learned, then work backwards.</p>
+<ol>
+<li><strong>Learn:</strong> Identify the decision that uncertainty is blocking.</li>
+<li><strong>Measure:</strong> Decide what observable behaviour would change that decision.</li>
+<li><strong>Build:</strong> Create the smallest ethical test capable of producing that observation.</li>
+<li><strong>Run:</strong> Put the test in front of the intended customer.</li>
+<li><strong>Record:</strong> Capture behaviour, money, time, objections and surprises.</li>
+<li><strong>Decide:</strong> Persevere, modify the test or make a defined pivot.</li>
+</ol>
+<p>Example:</p>
+<ul>
+<li><strong>Decision:</strong> Should Aksen lead in Ibadan with the Enquiry Desk?</li>
+<li><strong>Measure:</strong> Of 10 qualified Business Checks, how many reveal documented enquiry loss, request a proposal and pay a deposit?</li>
+<li><strong>Build:</strong> A conversation guide, a one-page diagnosis, one fictional demonstration and one fixed-scope quotation.</li>
+<li><strong>Do not build yet:</strong> A general multi-tenant WhatsApp SaaS platform.</li>
+</ul>
+<h3>The Aksen minimum viable product</h3>
+<p>An MVP is the smallest version that tests the important assumption with real customer behaviour. It is not permission to deliver careless work.</p>
+<p>For the Ibadan offer, the first MVP can be a <strong>concierge workflow</strong>:</p>
+<ul>
+<li>The owner completes a Business Check.</li>
+<li>Aksen manually maps the enquiry flow.</li>
+<li>Aksen configures WhatsApp Business features, a structured form and a shared tracker.</li>
+<li>Staff use it for a short pilot.</li>
+<li>Aksen observes what they actually use and where they bypass it.</li>
+</ul>
+<p>Only automate a step after the manual pilot shows that the step is frequent, valuable and stable enough to automate. Manual learning is cheaper than building the wrong automation.</p>
+<h3>Innovation accounting</h3>
+<p>Normal business accounting remains necessary, but it does not explain whether the startup model is improving. Use three stages.</p>
+<p><strong>1. Establish the baseline</strong></p>
+<p>Measure the current funnel before major improvement:</p>
+<table><thead><tr><th>Stage</th><th>Baseline question</th></tr></thead><tbody>
+<tr><td>Contacted</td><td>How many suitable owners received a direct approach?</td></tr>
+<tr><td>Conversation</td><td>How many spoke honestly about their current process?</td></tr>
+<tr><td>Business Check</td><td>How many completed the diagnosis?</td></tr>
+<tr><td>Qualified problem</td><td>How many had pain, authority, value and urgency?</td></tr>
+<tr><td>Quotation</td><td>How many received a written bounded offer?</td></tr>
+<tr><td>Deposit</td><td>How many paid to begin?</td></tr>
+<tr><td>Acceptance</td><td>How many accepted the delivered work?</td></tr>
+<tr><td>Care</td><td>How many paid for ongoing operation?</td></tr>
+<tr><td>Referral</td><td>How many introduced another qualified owner?</td></tr>
+</tbody></table>
+<p><strong>2. Tune one driver at a time</strong></p>
+<p>Examples:</p>
+<ul>
+<li>Change the initial category, but keep the offer and outreach method stable.</li>
+<li>Change the opening message, but keep the target list stable.</li>
+<li>Change scope presentation, but keep the price stable.</li>
+<li>Change payment structure, but keep scope stable.</li>
+</ul>
+<p>Do not change the audience, message, offer and price together. If everything changes, nothing is learned.</p>
+<p><strong>3. Pivot or persevere</strong></p>
+<p>Review the evidence after a pre-agreed batch, not according to mood. A useful early rhythm is every 10 completed owner conversations, with a deeper decision after 20.</p>
+<h3>Actionable metrics, not vanity metrics</h3>
+<p>Vanity metrics can rise without improving the business:</p>
+<ul>
+<li>Website visits</li>
+<li>Social impressions</li>
+<li>Number of features</li>
+<li>Number of generated leads without verification</li>
+<li>Video views without qualified enquiries</li>
+<li>Total people who tried a free tool</li>
+</ul>
+<p>Actionable metrics connect a specific change to customer behaviour:</p>
+<ul>
+<li>Qualified-conversation rate by source</li>
+<li>Business Check completion rate</li>
+<li>Quotation rate from qualified checks</li>
+<li>Deposit rate from quotations</li>
+<li>Time from first contact to deposit</li>
+<li>Delivery hours versus estimate</li>
+<li>Acceptance without unpriced rework</li>
+<li>Contribution margin by offer</li>
+<li>Care conversion and three-month retention</li>
+<li>Qualified referrals per accepted client</li>
+</ul>
+<p>Prefer small cohorts. Compare the first 10 Ibadan owners with the next 10 after one deliberate change. Do not mix them into a lifetime total that hides whether the change helped.</p>
+<h3>Aksen experiment card</h3>
+<p>No experiment starts without this record:</p>
+<pre><code>Experiment ID:
+Decision this informs:
+Customer segment:
+Leap-of-faith assumption:
+What we believe:
+Why we believe it:
+Test:
+Smallest batch:
+Start and end date:
+Primary measure:
+Guardrail measure:
+Success threshold set in advance:
+Actual result:
+What surprised us:
+Decision: persevere / modify / pivot / stop
+Next action and owner:</code></pre>
+<p>The <strong>guardrail measure</strong> prevents a local win from damaging the wider business. For example, a cheaper package may increase deposits while destroying contribution or increasing support. Deposit rate is the primary measure; contribution and delivery hours are guardrails.</p>
+<h3>First experiment portfolio</h3>
+<p>Run no more than two active commercial experiments at once.</p>
+<p><strong>Experiment A: Problem and segment</strong></p>
+<ul>
+<li><strong>Belief:</strong> Made-to-order home, decor and event businesses in Ibadan lose valuable enquiries because WhatsApp follow-up is informal.</li>
+<li><strong>Test:</strong> 10 owner conversations with recent enquiry examples.</li>
+<li><strong>Signal:</strong> At least 6 describe the problem without being led, at least 4 can estimate a consequence, and at least 3 accept a Business Check.</li>
+<li><strong>Failure meaning:</strong> Change the segment or problem framing before changing the product.</li>
+</ul>
+<p><strong>Experiment B: Value and willingness to pay</strong></p>
+<ul>
+<li><strong>Belief:</strong> A bounded Enquiry Desk is valuable enough for qualified owners to fund.</li>
+<li><strong>Test:</strong> Complete up to 5 Business Checks and send a written proposal whenever the evidence supports a build.</li>
+<li><strong>Signal:</strong> At least 2 deposits from 5 qualified proposals, with no unapproved discounting.</li>
+<li><strong>Failure meaning:</strong> Review value, proof, urgency, scope and price separately.</li>
+</ul>
+<p>The thresholds are founder decisions for an early test, not universal market facts. Set them before the results arrive so they cannot be rewritten to protect a preferred idea.</p>
+<h3>Pivot menu for Aksen</h3>
+<p>A pivot is a deliberate strategy change grounded in what was learned. It is not jumping to another interesting project.</p>
+<ul>
+<li><strong>Customer-segment pivot:</strong> The problem is real, but another type of owner experiences it more intensely.</li>
+<li><strong>Problem pivot:</strong> The segment is right, but discovery shows quotation turnaround, stock truth or payment confirmation matters more than missed WhatsApp replies.</li>
+<li><strong>Zoom-in pivot:</strong> One part of the Enquiry Desk, such as follow-up tracking, becomes the whole first offer.</li>
+<li><strong>Zoom-out pivot:</strong> The Enquiry Desk is only useful when bundled with a storefront or booking journey.</li>
+<li><strong>Channel pivot:</strong> Direct visits outperform friends' reposts, or referrals outperform cold outreach.</li>
+<li><strong>Value-capture pivot:</strong> The build-plus-care structure fails, but a different setup, milestone or recurring structure works better.</li>
+<li><strong>Growth-engine pivot:</strong> Referrals do not repeat, so Aksen tests a focused partner or paid channel after unit economics are known.</li>
+</ul>
+<p>Every pivot must preserve a stated learning from the previous test. If no learning carries forward, it is a restart, not a pivot.</p>
+<h3>Engine of growth</h3>
+<p>Do not optimise three engines at once.</p>
+<p><strong>Primary engine: sticky</strong></p>
+<p>Aksen's desired engine is accepted delivery followed by useful care. Measure care conversion, retention, support load and margin.</p>
+<p><strong>Secondary engine: referral or viral</strong></p>
+<p>An accepted client introduces other qualified owners. Measure introductions per client and how many become conversations and deposits. Do not confuse a social repost with a qualified referral.</p>
+<p><strong>Paid engine: later</strong></p>
+<p>Do not buy ads until the value path and unit economics are credible. Paid acquisition requires known gross contribution, conversion and acquisition cost.</p>
+<h3>Small batches</h3>
+<p>Reduce the distance between work and feedback:</p>
+<ul>
+<li>5 owner names, not a database of 500</li>
+<li>1 conversation guide used today, not a perfect research manual</li>
+<li>1 Business Check summary, not a new assessment platform</li>
+<li>1 paid workflow, not a universal operations suite</li>
+<li>1 acceptance criterion tested early, not a large reveal at handover</li>
+<li>1 sector for the first batch, not nine sector campaigns</li>
+</ul>
+<p>Small batches make errors cheaper and surface assumptions before dependent work accumulates.</p>
+<h3>Five Whys and proportional correction</h3>
+<p>Use Five Whys after a specific failure, not as an abstract meeting. Examples:</p>
+<ul>
+<li>A promised summary was delivered late.</li>
+<li>A prospect disappeared after receiving a proposal.</li>
+<li>A test payment did not produce the expected state.</li>
+<li>Delivery exceeded the estimate by 60 percent.</li>
+<li>A client ignored the system and returned to WhatsApp memory.</li>
+</ul>
+<p>Ask why until the process cause is visible, then make a proportional correction at each useful level. Do not answer every small failure with a platform rewrite.</p>
+<h3>Lean review meeting</h3>
+<p>Hold a 30-minute review every week and a pivot-or-persevere review after every 20 owner conversations or completed paid experiment.</p>
+<p>Agenda:</p>
+<ol>
+<li>Which assumptions were tested?</li>
+<li>What did customers do, not merely say?</li>
+<li>What money changed state?</li>
+<li>What did delivery time reveal?</li>
+<li>Which evidence contradicted the plan?</li>
+<li>Which single driver will be tuned next?</li>
+<li>Are we persevering, modifying, pivoting or stopping?</li>
+<li>What will not be built during the next experiment?</li>
+</ol>
+<p>The output is one decision and one next experiment, not another strategy document.</p>
+<h3>Lean safeguards for Aksen</h3>
+<p>Speed does not remove responsibility.</p>
+<ul>
+<li>Do not test payments without clear test-mode handling and consent.</li>
+<li>Do not contact or publish on a client's behalf without approval.</li>
+<li>Do not use client data in public demonstrations.</li>
+<li>Do not call a manual concierge service automated.</li>
+<li>Do not hide uncertainty to improve conversion.</li>
+<li>Do not turn an owner's vulnerability into pressure to buy.</li>
+<li>Do not let AI make prices, promises, payment decisions or publication decisions.</li>
+</ul>
+<p>The experiment must be small in cost and risk, not small in honesty.</p>
+<h3>Lean Startup references used</h3>
+<ul>
+<li>Official methodology and five principles: <a href="https://theleanstartup.com/principles?level=1">https://theleanstartup.com/principles?level=1</a></li>
+<li>Eric Ries on small batches: <a href="https://www.startuplessonslearned.com/2009/02/work-in-small-batches.html">https://www.startuplessonslearned.com/2009/02/work-in-small-batches.html</a></li>
+<li>Eric Ries on Five Whys: <a href="https://www.startuplessonslearned.com/2009/07/how-to-conduct-five-whys-root-cause.html">https://www.startuplessonslearned.com/2009/07/how-to-conduct-five-whys-root-cause.html</a></li>
+<li>Eric Ries on evidence-grounded pivots: <a href="https://www.startuplessonslearned.com/2009/06/pivot-dont-jump-to-new-vision.html">https://www.startuplessonslearned.com/2009/06/pivot-dont-jump-to-new-vision.html</a></li>
+</ul>
+<hr>
+<h2>15. Thirty, sixty and ninety days</h2>
+<h3>Day 0 to 30: evidence</h3>
+<ul>
+<li>Verify the enquiry loop</li>
+<li>Consolidate Nigerian pricing</li>
+<li>Select one initial category</li>
+<li>Log 20 owner conversations</li>
+<li>Complete 10 Business Checks</li>
+<li>Send 5 quotations</li>
+<li>Collect 2 deposits</li>
+</ul>
+<h3>Day 31 to 60: delivery</h3>
+<ul>
+<li>Complete the first bounded build</li>
+<li>Log all delivery hours</li>
+<li>Obtain written acceptance</li>
+<li>Calculate actual contribution</li>
+<li>Move one client to care if justified</li>
+<li>Record baseline and post-delivery numbers</li>
+</ul>
+<h3>Day 61 to 90: repeatability</h3>
+<ul>
+<li>Sell the same core offer again</li>
+<li>Remove scope that caused unprofitable work</li>
+<li>Adjust pricing using actual hours</li>
+<li>Publish one case study only with permission and verified facts</li>
+<li>Reach at least two care clients or document why care is not being purchased</li>
+<li>Decide whether the chosen category is showing repeatable demand</li>
+</ul>
+<p>Do not expand because one project was enjoyable. Expand when evidence shows the offer is sellable, deliverable and profitable.</p>
+<hr>
+<h2>16. Decision rules when stuck</h2>
+<h3>"Should I build this new feature?"</h3>
+<p>Only if one of these is true:</p>
+<ul>
+<li>A paying client requires it within an agreed scope</li>
+<li>It is the smallest fix blocking a live enquiry or payment</li>
+<li>Repeated delivery evidence shows it will reduce cost or errors</li>
+</ul>
+<p>Otherwise add it to the queue and return to selling.</p>
+<h3>"Should I lower the price?"</h3>
+<p>First ask:</p>
+<ul>
+<li>Is the buyer qualified?</li>
+<li>Is the business value clear in the buyer's numbers?</li>
+<li>Can scope be reduced?</li>
+<li>Is the payment structure the actual objection?</li>
+<li>Is proof missing?</li>
+</ul>
+<p>Do not cut price simply to escape an uncomfortable sales conversation.</p>
+<h3>"Should I create another package?"</h3>
+<p>Not until current owner conversations show a repeated buying pattern that the existing offers cannot serve.</p>
+<h3>"Should I automate this?"</h3>
+<p>First perform the workflow manually enough times to understand its states, exceptions, risk and value. Consequential decisions remain under human approval.</p>
+<h3>"Should I enter another sector?"</h3>
+<p>Only after the initial sector has enough conversations to show that the problem is weak, or after the offer has been delivered repeatedly and can safely expand.</p>
+<hr>
+<h2>17. The next-action page</h2>
+<p>Complete this block every time work resumes after more than seven days away.</p>
+<p><strong>Date:</strong> <strong>Current location:</strong> <strong>Cash runway:</strong> <strong>Essential monthly personal cost:</strong> <strong>Business cash available:</strong></p>
+<p><strong>Owner conversations this week:</strong> <strong>Quotations open:</strong> <strong>Invoices unpaid:</strong> <strong>Cash collected this month:</strong> <strong>Care MRR:</strong></p>
+<p><strong>People awaiting a reply:</strong></p>
+<ol>
+<li> </li>
+<li> </li>
+<li> </li>
+</ol>
+<p><strong>Closest revenue event:</strong> <strong>What is blocking it:</strong> <strong>The next human action:</strong> <strong>Deadline:</strong></p>
+<p><strong>One SELL action today:</strong> <strong>One BUILD action tied to revenue:</strong> <strong>One COMPOUND action from real work:</strong></p>
+<hr>
+<h2>18. Final instruction to future Bishop</h2>
+<p>The platform proves that you can build. More code will not prove that people will pay.</p>
+<p>Return to the owner, the problem, the quotation, the deposit and the accepted result. Use Ibadan to learn from real businesses. Keep the wider Aksen capability in reserve, then bring forward only the part a client needs.</p>
+<p>The immediate sequence is:</p>
+<blockquote>Conversation -&gt; Business Check -&gt; written scope -&gt; deposit -&gt; bounded delivery -&gt; acceptance -&gt; measured result -&gt; care -&gt; repeat.</blockquote>
+<p>If the next task does not strengthen one of those transitions, question why it is being done now.</p></article>
+</section>
+</main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+"use strict";
+var KEY="aksen-ibadan-living-guide-v2",MODE=KEY+"-mode";
+var doc=document.getElementById("document"),toc=document.getElementById("toc"),status=document.getElementById("status"),search=document.getElementById("search"),sidebar=document.getElementById("sidebar"),initial=doc.innerHTML,timer,toastTimer;
+function slug(t,used){var b=t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"section",s=b,n=2;while(used[s])s=b+"-"+n++;used[s]=1;return s}
+function rebuild(){
+var used={};toc.innerHTML="";
+doc.querySelectorAll("h2").forEach(function(h){h.id=slug(h.textContent,used);var a=document.createElement("a");a.href="#"+h.id;a.textContent=h.textContent;a.onclick=function(){sidebar.classList.remove("open")};toc.appendChild(a)});
+var words=(doc.innerText.trim().match(/\S+/g)||[]).length;document.getElementById("wordCount").textContent=words.toLocaleString()+" words"
+}
+function save(){localStorage.setItem(KEY,doc.innerHTML);status.textContent="Saved in this browser at "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}
+function queue(){status.textContent="Saving...";clearTimeout(timer);timer=setTimeout(save,400);rebuild()}
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove("show")},2400)}
+function mode(edit){document.body.classList.toggle("editing",edit);doc.contentEditable=String(edit);document.getElementById("readBtn").classList.toggle("active",!edit);document.getElementById("editBtn").classList.toggle("active",edit);document.getElementById("modeLabel").textContent=edit?"Editing mode: click anywhere below":"Reading mode";localStorage.setItem(MODE,edit?"edit":"read");if(edit)doc.focus()}
+function clearMarks(){doc.querySelectorAll("mark").forEach(function(m){m.replaceWith(document.createTextNode(m.textContent))});doc.normalize()}
+function find(){clearMarks();var q=search.value.trim().toLowerCase();if(q.length<2)return;var w=document.createTreeWalker(doc,NodeFilter.SHOW_TEXT),nodes=[];while(w.nextNode())if(w.currentNode.parentElement&&!["CODE","SCRIPT","STYLE"].includes(w.currentNode.parentElement.tagName))nodes.push(w.currentNode);nodes.forEach(function(n){var tx=n.nodeValue,lo=tx.toLowerCase(),ix=lo.indexOf(q);if(ix<0)return;var f=document.createDocumentFragment(),c=0;while(ix>=0){f.appendChild(document.createTextNode(tx.slice(c,ix)));var m=document.createElement("mark");m.textContent=tx.slice(ix,ix+q.length);f.appendChild(m);c=ix+q.length;ix=lo.indexOf(q,c)}f.appendChild(document.createTextNode(tx.slice(c)));n.replaceWith(f)});var first=doc.querySelector("mark");if(first)first.scrollIntoView({behavior:"smooth",block:"center"})}
+doc.addEventListener("input",queue);search.addEventListener("input",find);
+document.getElementById("readBtn").onclick=function(){mode(false)};
+document.getElementById("editBtn").onclick=function(){mode(true)};
+document.getElementById("printBtn").onclick=function(){window.print()};
+document.getElementById("menu").onclick=function(){sidebar.classList.toggle("open")};
+document.querySelectorAll("[data-cmd]").forEach(function(b){b.onclick=function(){doc.focus();document.execCommand(b.dataset.cmd,false,null);queue()}});
+document.querySelectorAll("[data-block]").forEach(function(b){b.onclick=function(){doc.focus();document.execCommand("formatBlock",false,b.dataset.block);queue()}});
+document.getElementById("addCheck").onclick=function(){doc.focus();document.execCommand("insertHTML",false,'<p>☐ New action</p>');queue()};
+document.getElementById("resetBtn").onclick=function(){if(!confirm("Reset browser edits and restore the original guide? Download first if you want to keep them."))return;localStorage.removeItem(KEY);doc.innerHTML=initial;save();rebuild();toast("Original guide restored")};
+document.getElementById("downloadBtn").onclick=function(){clearMarks();save();var clone=document.documentElement.cloneNode(true);clone.querySelector("#document").innerHTML=doc.innerHTML;clone.querySelector("#document").contentEditable="false";clone.querySelector("#sidebar").classList.remove("open");clone.querySelector("body").classList.remove("editing");var out="<!doctype html>\n"+clone.outerHTML,blob=new Blob([out],{type:"text/html;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Aksen-Ibadan-Living-Guide-"+new Date().toISOString().slice(0,10)+".html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000);toast("Updated standalone HTML downloaded")};
+var saved=localStorage.getItem(KEY);if(saved)doc.innerHTML=saved;rebuild();mode(localStorage.getItem(MODE)==="edit");save();
+})();
+</script>
+</body>
+</html>

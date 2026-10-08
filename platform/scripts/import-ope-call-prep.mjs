@@ -9,8 +9,10 @@ import { neon } from '@neondatabase/serverless';
 process.loadEnvFile('.env');
 const q = neon(process.env.DATABASE_URL);
 
-const file = 'call-prep-2026-09-29.md';
-const title = 'Call prep, 29 September 2026';
+const file = 'call-prep-2026-10-01.md';
+// Each call gets its own document; changing only `file` would overwrite the
+// previous call's prep, because the update below matches on title.
+const title = 'Call prep, 1 October 2026';
 const content = readFileSync(`../clients/opes-tfs/${file}`, 'utf8');
 
 // Matched loosely: the workspace was created in the UI and its name carries a

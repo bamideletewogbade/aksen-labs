@@ -10,6 +10,7 @@ import './page-openings.css';
 import './product-refinement.css';
 import './pricing.css';
 import './immersive-hero.css';
+import './product-theatre.css';
 import './response-text.css';
 import './agent-workbench.css';
 import './site-interactions.css';

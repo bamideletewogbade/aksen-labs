@@ -5,9 +5,9 @@ import { Reveal } from '@/components/agency-motion';
 import { HeroShowcase } from '@/components/hero-animations';
 import { HomeFlow } from '@/components/home-flow';
 import { MessageVolume } from '@/components/home-story';
+import { ProductTheatre } from '@/components/product-theatre';
 import { ServiceList } from '@/components/agency-sections';
 import { WhatsAppLink } from '@/components/whatsapp-link';
-import { freeTools } from '@/lib/product-catalog';
 
 /**
  * The homepage is one argument told in order, not a set of panels.
@@ -176,22 +176,9 @@ export default function Home() {
                 you can judge us before we have spoken.
               </p>
             </Reveal>
-            <div className="refresh-open-grid">
-              {freeTools.map((tool, index) => (
-                <Reveal key={tool.slug} delay={index * 50}>
-                  <Link href={tool.href} className="refresh-open-card">
-                    <span className={`refresh-open-kind is-${tool.kind}`}>
-                      {tool.status}
-                    </span>
-                    <h3>{tool.name}</h3>
-                    <p>{tool.description}</p>
-                    <span className="refresh-open-action">
-                      {tool.action} <ArrowUpRight size={17} />
-                    </span>
-                  </Link>
-                </Reveal>
-              ))}
-            </div>
+            <Reveal delay={60} direction="none">
+              <ProductTheatre />
+            </Reveal>
           </div>
         </section>
 
