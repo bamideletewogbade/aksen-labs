@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { OperationsDesk } from '@/components/operations-desk';
 export const metadata = { title: 'Document templates | Aksen Workspace' };
 export default async function Page({
@@ -13,16 +11,12 @@ export default async function Page({
     <section className="admin-main">
       <header className="admin-header">
         <div>
-          <small>CLIENT WORK & AGENCY OPERATIONS</small>
-          <h1>Document templates studio</h1>
+          <small>CLIENT WORK</small>
+          <h1>Templates</h1>
           <p>
-            Standard operating documents for discovery, agreement, delivery, launch and
-            ongoing care. Grounded in clear client scope and high-conviction delivery.
-          </p>
-          <p className="admin-header-aside">
-            <Link href="/admin/operations">
-              Prepare client drafts with AI <ArrowUpRight size={15} />
-            </Link>
+            Standard documents for discovery, agreement, delivery, launch and
+            care. Fill in the client details, check every bracket, then save it
+            to the client.
           </p>
         </div>
       </header>

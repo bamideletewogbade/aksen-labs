@@ -227,7 +227,7 @@ export function HeroShowcase() {
                 names the work instead; the category belongs in the copy a
                 buyer reads after they know what we make. */}
             <p className="agency-eyebrow">
-              WEBSITES, BUSINESS SYSTEMS AND AI · BUILT IN GHANA
+              WEBSITES, BUSINESS SYSTEMS AND AI
             </p>
           </Reveal>
           <Reveal delay={70}>

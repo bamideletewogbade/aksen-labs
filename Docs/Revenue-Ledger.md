@@ -2,7 +2,7 @@
 
 Every way this business could actually make money, as a pipeline. Stages and rules are in `Docs/Business-OS.md`.
 
-**Standing rule: at most two items in Testing at once.** Currently **1**.
+**Standing rule: at most two items in Testing at once.** The September mechanism review had **1**. The table below preserves that review; current reported cash collections appear in the dated section that follows.
 
 | Stage | Count |
 | --- | --- |
@@ -18,6 +18,16 @@ Every way this business could actually make money, as a pipeline. Stages and rul
 **The pricing principle, since it now applies to more than one item.** Price the entry low enough that nobody needs a meeting to say yes, and put the margin in what costs us nothing to repeat. A first cut at GHS 450 and a recut at GHS 150 is not a discount ladder; it is charging for the thing that is genuinely expensive once, then charging again for a command. Any mechanism where the second unit costs us the same as the first should be priced the normal way instead.
 
 ---
+
+## Reported client collections · 10 October 2026
+
+| Engagement | Cash received | Settlement | Evidence |
+| --- | --- | --- | --- |
+| Seth / Dinero-Yard | GHS 600 | Full payment for the reported build; GHS 0 balance | Founder report, evening of 10 October |
+| notjustlines website | GHS 1,500 | Total fee and balance unconfirmed | Founder report on 10 October; currency interpreted as GHS |
+| **Total reported** | **GHS 2,100** | Collections only, not recurring revenue or profit | Linked internal receipts; no invented invoice |
+
+These new engagements do not prove that the three named prospects in R-006 paid, or validate any old price hypothesis. The older mechanism counts and tests below are historical until reviewed. Seth's strongest stated interest is Susu savings, not the WhatsApp AI feature set. Education through learnwithbishop and vertical products sit under Aksen Labs alongside client services.
 
 ## Testing
 

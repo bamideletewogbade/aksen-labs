@@ -115,13 +115,24 @@ try {
   });
   console.log(`server:   ${base}\n`);
 
-  const code = await new Promise((resolve) => {
-    const smoke = spawn(process.execPath, ['tests/e2e/admin-smoke.mjs'], {
-      env: { ...process.env, BASE_URL: base, ADMIN_TOKEN: token },
-      stdio: 'inherit',
+  const testFiles = process.argv.includes('--ux-review')
+    ? ['tests/e2e/admin-ux-review.mjs']
+    : process.argv.includes('--workspace-review')
+    ? ['tests/e2e/workspace-flow-review.mjs']
+    : process.argv.includes('--daily-checks')
+      ? ['tests/e2e/admin-smoke.mjs', 'tests/e2e/daily-record-links.mjs']
+      : ['tests/e2e/admin-smoke.mjs'];
+  let code = 0;
+  for (const testFile of testFiles) {
+    code = await new Promise((resolve) => {
+      const smoke = spawn(process.execPath, [testFile], {
+        env: { ...process.env, BASE_URL: base, ADMIN_TOKEN: token },
+        stdio: 'inherit',
+      });
+      smoke.on('close', resolve);
     });
-    smoke.on('close', resolve);
-  });
+    if (code !== 0) break;
+  }
 
   await cleanup();
   process.exit(code);

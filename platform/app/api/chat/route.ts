@@ -1,6 +1,7 @@
 import { cleanAiText } from '@/lib/ai-text';
 import { withRequestLog } from '@/lib/request-log';
 import { chatComplete, type ChatMessage } from '@/lib/openrouter';
+import { aiConfigured } from '@/lib/ai-routing';
 import { logAgentRun } from '@/lib/agent-runs';
 import { saveConversationTurn } from '@/lib/conversations';
 import { getDb } from '@/db';
@@ -122,8 +123,7 @@ async function POSTHandler(request: Request) {
       answer =
         'I can help with general Aksen questions, but I cannot access private accounts, orders or project records here. Please use the enquiry form to give the team your contact details and a short description, or use your agreed project support channel. Do not share passwords or payment credentials in this chat.';
     } else {
-      if (!process.env.OPENROUTER_API_KEY)
-        throw new Error('Provider not configured');
+      if (!aiConfigured()) throw new Error('Provider not configured');
       // Persistent shared cost guard, independent of user-supplied identities.
       const bucket = `support-${new Date().toISOString().slice(0, 13)}`;
       const quota = await getDb().execute(
@@ -166,7 +166,7 @@ APPROVED KNOWLEDGE (${knowledgeVersion}):\n${knowledge}`,
         throw new Error('Invalid support output');
       answer = cleanAiText(parsed.answer);
       handoff = forcedHandoff || parsed.needsHuman;
-      source = 'openrouter';
+      source = result.telemetry.provider;
       telemetry = result.telemetry;
       costMicros = result.costMicros;
     }

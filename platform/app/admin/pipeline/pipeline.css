@@ -122,9 +122,11 @@
 .admin-refresh .pl-head,
 .admin-refresh .pl-row {
   display: grid;
+  /* The actions hold two buttons, about 116px. A wider fixed column left a
+     gap beside them while the lead's company and email were cut off. */
   grid-template-columns:
-    minmax(180px, 1.3fr) 138px minmax(180px, 2fr)
-    146px 196px;
+    minmax(220px, 1.6fr) 138px minmax(180px, 2fr)
+    146px 120px;
   align-items: center;
   gap: 12px;
   padding-inline: 16px;

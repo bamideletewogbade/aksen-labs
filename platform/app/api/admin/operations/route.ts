@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { workspaceUser } from '@/lib/workspace-access';
 import { chatComplete } from '@/lib/openrouter';
+import { aiConfigured, gatewayMapperWriterModels } from '@/lib/ai-routing';
 import { logAgentRun } from '@/lib/agent-runs';
 import {
   getOperationTask,
@@ -89,7 +90,7 @@ async function GETHandler() {
         projects: projects.rows,
         businesses: businesses.rows,
         drafts: drafts.rows,
-        aiConfigured: !!process.env.OPENROUTER_API_KEY,
+        aiConfigured: aiConfigured(),
       },
       { headers: { 'Cache-Control': 'private, no-store' } },
     );
@@ -205,7 +206,9 @@ async function POSTHandler(request: Request) {
       // A prospect reads the demo, so it gets the stronger writer. On the cheap
       // routed tier it told a customer a phone was in stock and ignored "I
       // close from work at 5" (scripts/probe-demos.mjs, 28 Sep 2026).
-      ...(demo ? { models: demoModels() } : {}),
+      ...(demo
+        ? { models: demoModels(), gatewayModels: gatewayMapperWriterModels() }
+        : {}),
       profile: demo ? 'conversation' : 'drafting',
       maxTokens: demo ? 700 : 1600,
       // Not json mode: asked for a multi-line weekly review, the model returns

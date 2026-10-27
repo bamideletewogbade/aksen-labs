@@ -25,13 +25,17 @@ It exists so that the founder and any AI agent working on this business start fr
 | | |
 | --- | --- |
 | **Name** | Aksen Labs |
-| **Category** | Digital transformation agency |
+| **Category** | Parent company for client services, education and vertical products; digital transformation is the client-services capability |
 | **Mission** | Help African businesses prosper through the effective use of technology |
 | **Public promise** | Technology that helps your business grow |
 | **Base** | Ghana. Open to Nigeria, the rest of Africa and beyond, subject to actual delivery ability |
 | **Run by** | Bishop (founder, and currently the entire delivery team) |
-| **Revenue to date** | None |
-| **Paying customers** | None |
+| **Cash collected, reported 10 October 2026** | GHS 2,100 across two client engagements; not an invoiced-revenue or profit calculation |
+| **Paying client engagements reported** | Seth / Dinero-Yard and notjustlines |
+
+**Company structure, confirmed by the founder on 10 October 2026.** Aksen Labs is the mother company. Client services deliver websites and business systems; **learnwithbishop** is the education branch; vertical products and AI solutions address specific operating jobs, including Dinero-Yard and Aksen Careers. Sales, finance, marketing/media and reusable technology support the branches. This is an operating structure, not a claim of separate incorporated subsidiaries, employees or product revenue.
+
+**Current customer signal.** Seth values Susu savings more than WhatsApp/LLM functionality. Prioritize that workflow in his delivery and handover. Do not generalize one client's preference into a market claim.
 
 **What we sell.** Four capability areas, defined in `platform/lib/agency-content.ts` and rendered on the homepage and `/solutions`:
 
@@ -52,7 +56,8 @@ These are not style preferences. Each one exists because breaking it costs money
 
 ### Claims
 
-- **Never claim a customer outcome we do not have.** We have none. Not "trusted by", not "businesses like yours", not a logo wall, not a testimonial, not a percentage.
+- **Never claim a customer outcome we do not have.** Paid client work is now founder-reported, but no measured outcome or publication permission was supplied. No logo wall, testimonial or percentage without evidence and permission.
+
 - **Never use The Frame Shop (TFS) as public proof.** No signed scope, no approved price, no verified payment, no client acceptance. It is a proposal with implementation started ahead of alignment. It becomes a case study only with written permission and confirmed facts.
 - **Banned absolutes:** never misses an order, replaces your staff, guaranteed growth, leading across Africa, any fixed revenue multiplier. Prefer "helps organise" over "sorts every".
 - **Describe products by their actual maturity.** CV Forge is built and has no public address. The free tools work. The demonstrations are demonstrations and say so.
@@ -68,7 +73,9 @@ These are not style preferences. Each one exists because breaking it costs money
 This is the argument the company turns on, so it has to be true inside our own product as well as in the pitch:
 
 - It does not set a price, take a payment, or promise a date.
-- It does not confirm a payment, sign an agreement, publish content, contact a prospect, or make a promise on the founder's behalf.
+
+- It does not independently confirm a payment, sign an agreement, publish content, contact a prospect, or make a promise on the founder's behalf. A direct founder instruction to record money already collected authorizes an internal, attributed record; it is not provider verification.
+
 - In the feedback board, triage reads and recommends. It cannot publish, cannot move a status, cannot write a changelog entry.
 - Enforced by the system, not by instructions. If a new feature would let an agent cross one of these lines, that is a design bug.
 
@@ -99,7 +106,9 @@ This is the argument the company turns on, so it has to be true inside our own p
 
 | Who | State |
 | --- | --- |
-| The Frame Shop (TFS) | Only live project. Marked *In delivery* because implementation started. Awaiting client reply on WhatsApp. No signed scope, price, date, payment or acceptance. |
+| Seth / Dinero-Yard | Founder reports build completed and GHS 600 cash paid in full on 10 October 2026. Susu is the priority; formal handover and acceptance still to record. |
+| notjustlines | Existing website project awaiting feedback. GHS 1,500 cash collection reported 10 October; total fee and balance unconfirmed. |
+| The Frame Shop (TFS) | Existing project. Marked *In delivery* because implementation started. Awaiting client reply on WhatsApp. No signed scope, price, date, payment or acceptance. |
 | Efe Organics | Founder brief written 6 September. Alberta's cosmetics brand, sells through a reseller, no owned channel. |
 | Ope's TFS group | Three Lagos decor brands, one WhatsApp number, no website. |
 
@@ -107,20 +116,21 @@ This is the argument the company turns on, so it has to be true inside our own p
 
 ## 4. Where the business actually stands
 
-*As at 22 September 2026. The two numbers were re-checked on that date and had not moved.*
+*As at 10 October 2026. Founder report and read-only database/source review.*
 
-- **The founder is now full-time on Aksen.** The role at AIC ended. This is the largest change since this brief was written, and section 5 has been updated for it. It removes the capacity ceiling and removes the last external excuse for the two numbers below.
-- **Seven days passed between the daily operating system being set up and this check, with no entries in `Docs/Daily-Log.md`.** In the same period the Media Studio shipped with six supporting documents, plus avatar, voice and distribution work, and a further session went into admin test tooling. The log's own last line on 15 September reads "Tomorrow starts with S-01, a message to an actual client, before anything else gets built." That did not happen.
-- **An external strategic review arrived 22 September**, written by Kevin from the platform and the public material without access to this brief. It reached the same four conclusions as section 7: human in the loop is the strongest asset, the company is pre-proof, internal tool building must stop, and one narrow offer should lead. It proposes a different wedge from the one in section 1. The comparison, the market data behind it and the open decisions are in the Business Alignment doc.
+- **Cash collections: GHS 2,100 reported.** Seth / Dinero-Yard: GHS 600 in full; notjustlines: GHS 1,500 collected, balance not yet known. These are service collections, not recurring revenue, profit or an invoice total.
 
-- **Cedis invoiced: 0. Cedis collected: 0. Paying customers: 0.**
-- **Sales pipeline: empty.** The admin pipeline screen reads "Nothing in the pipeline yet."
-- **Live projects: 1**, stalled on a client reply.
-- **Recorded owner conversations: none.** There is no file in this repo containing what a business owner said about their own problem in their own words.
-- **Hosted release: behind local.** The registered Sites project was at version 2, last updated 3 September, owner-restricted. Local work runs well ahead of it.
-- **The enquiry loop is built and switched off.** The 12 September review found it missing; it was built afterwards and the code is now complete: founder notification, visitor acknowledgement, rate limits, body cap, idempotent capture, a durable outbox with retries, a privacy page, and one intake path shared by the enquiry form and the free tools. Nothing can leave, because `RESEND_API_KEY` and `RESEND_FROM_EMAIL` are not set. Every message queues and waits, which is recoverable in full the moment they are. `cd platform && node scripts/check-intake.mjs` reports the state.
+- **Delivery:** Seth's build is finished per the founder; operator handover and acceptance are separate. notjustlines remains awaiting feedback. The older TFS project is retained without asserting a new client update.
 
-**The honest summary:** the platform is strong and the business has not started. Everything built so far is capability. None of it is evidence.
+- **Before this reconciliation the database had no financial records and no Seth project.** It had two projects, two opportunities, two Guide conversations and zero waitlist signups. This exposed a record-keeping gap, not an absence of paid work.
+
+- **Lead Scout:** the latest three persisted runs failed. No research, outreach or paid provider probe was triggered by this review.
+
+- **Company:** Aksen Labs holds client services, education and vertical products. Supporting modules should follow the work rather than expose every tool as a top-level destination.
+
+- **Verification boundary:** source and internal records are being updated. Payment evidence is the founder's direct report. Public availability, provider delivery, client acceptance and measured customer outcomes need their own evidence.
+
+Detailed client records: `clients/seth-dinero-yard/README.md` and `clients/notjustlines/README.md`. Module review: `Docs/Workspace-Flow-Review-2026-10-10.md`.
 
 ---
 
@@ -150,7 +160,7 @@ At 50%: a 36-hour build costs GHS 4,320, so the floor is about **GHS 9,240**.
 
 That role ended. Aksen Labs is now the founder's main work with no fixed hour ceiling, so the working case is arithmetically reachable and the cautious case is no longer the only honest plan.
 
-**This is a smaller change than it looks.** Hours were never the scarce thing. The scarce things are conversations with owners and cedis invoiced, and both are still zero. More available hours spent building makes that imbalance worse, not better. Read the new capacity as permission to sell harder, never as permission to build more. Still write down the hours actually available per week and check any plan against them; the number has changed, the discipline has not.
+**This is a smaller change than it looks.** Hours were never the scarce thing. The scarce things are conversations with owners and cedis invoiced, and the September snapshot recorded both as zero; use section 4 for the current position. More available hours spent building makes that imbalance worse, not better. Read the new capacity as permission to sell harder, never as permission to build more. Still write down the hours actually available per week and check any plan against them; the number has changed, the discipline has not.
 
 **Ghana comparators** (4 September, vendor offers not willingness to pay): Coriable website chatbots GHS 8,000–18,000, WhatsApp assistants GHS 15,000–40,000, workflow automation GHS 20,000–120,000. AutomateGhana's Kasabot GHS 800–1,500/mo, no setup fee. BVM Digital audit GHS 1,500, full-stack GHS 12,000–25,000.
 
@@ -167,15 +177,25 @@ Nothing else matters while a stranger cannot reach you and get an answer. Every 
 The code is done as of 15 September. What remains is configuration, a button and a deployment.
 
 - [x] Founder notification on every enquiry, and an acknowledgement to the sender
+
 - [x] Rate limit, body-size limit and idempotent capture on the public enquiry endpoint
+
 - [x] Privacy notice, and the footer separator
+
 - [x] A durable outbox so a provider outage delays a message rather than losing it
+
 - [x] One intake path for every lead source, tagged by `source`
+
 - [ ] Set `RESEND_API_KEY` and `RESEND_FROM_EMAIL`, and verify a sending domain
+
 - [ ] Set `AUTOMATION_TICK_URL` and `AUTOMATION_SECRET` so the heartbeat drains the queue
+
 - [ ] Add the "send this to yourself" control after a business agent's draft
+
 - [ ] Direct contact first: name, reply address, one free-text box. The guided mapper becomes optional help, not the gate
+
 - [ ] Identify the intended hosted release; deploy the current build to it
+
 - [ ] Verify access as an unauthenticated visitor on mobile data, not on the dev machine
 
 **Exit test:** submit a test enquiry from a phone, on mobile data, as a stranger. A notification arrives. A reply is sent. Both are visible in the pipeline.
@@ -185,8 +205,11 @@ The code is done as of 15 September. What remains is configuration, a button and
 The goal is evidence, not a sale.
 
 - [ ] Build a list of 40 owner-led retail and made-to-order businesses in Accra that sell over WhatsApp and have no order system. Lead Scout exists for exactly this
+
 - [ ] Hold **20 conversations**. Ask before explaining, using the Friend's Guide questions: *In your own words, what does Aksen do? Which part feels most useful? What feels confusing? What would make you get in touch? What would you need to see before trusting us with real work?*
+
 - [ ] Log every one in the pipeline. The pipeline being empty is the single clearest sign the business has not started
+
 - [ ] Record the pain in the owner's own words, verbatim, in `Docs/Owner-Conversations.md`
 
 **Exit test:** 20 logged conversations, and you can quote the three sentences owners actually used to describe the problem. If those sentences do not match the homepage, the homepage changes.
@@ -194,7 +217,9 @@ The goal is evidence, not a sale.
 ### Phase 2: Turn free assessments into quotes (weeks 3–8, overlaps Phase 1)
 
 - [ ] Offer the free assessment to every owner with a real problem
+
 - [ ] For each: estimate their current quoting and rework effort, the value of avoidable errors, implementation cost, recurring care and provider usage. Separate time saved from cash saved
+
 - [ ] A written quotation to every assessment that finds a fix worth building
 
 **Exit test:** not yet set. The old test was GHS 7,500 from three paid assessments, which stopped applying on 28 September 2026 when the assessment became free. The first cedis now arrive with the first build in Phase 3. The founder sets the new number; until then, count quotations sent.
@@ -202,8 +227,11 @@ The goal is evidence, not a sale.
 ### Phase 3: Deliver one build (weeks 6–14)
 
 - [ ] One bounded build, priced at or above the floor, quoted only after the assessment
+
 - [ ] Review rounds and the change process written into the proposal before work starts
+
 - [ ] Third-party costs (model, WhatsApp, voice, storage, hosting) outside the fee or inside an approved allowance with alerts
+
 - [ ] **Log every delivery hour from hour one.** Without this the GHS 120/hour stays a guess and every future quote stays a guess
 
 **Exit test:** client acceptance against written criteria, invoice paid, hours logged, actual contribution calculated and compared to the estimate.
@@ -211,7 +239,9 @@ The goal is evidence, not a sale.
 ### Phase 4: Earn one case study (weeks 12–18)
 
 - [ ] Baseline measured before the work, result measured after, both from the client's numbers
+
 - [ ] Written permission to use their name and figures
+
 - [ ] Published with scope, status and outcome stated accurately
 
 **Exit test:** one public case study that a sceptical reader could verify by calling the client.
@@ -219,7 +249,9 @@ The goal is evidence, not a sale.
 ### Phase 5: Repeat, then productise (months 4–9)
 
 - [ ] Five more of the same offer, same sector. Resist the new sector and the interesting exception
+
 - [ ] At least one client on managed operations at GHS 4,000+/mo
+
 - [ ] Day-90 decision from the pricing guide: expand only if outcomes were accepted, contribution held after logged hours, and at least one buyer pays for ongoing care
 
 **Exit test:** exit MRR above GHS 8,000, contribution above 45% on logged hours, and the delivery playbook written down well enough for someone else to follow.
@@ -235,15 +267,24 @@ The admin workspace as a sellable product. The observations file already notes i
 Written down so it has to be argued with rather than drifted past:
 
 - No new admin modules
+
 - No new AI agents
+
 - No new free tools or demonstrations
+
 - No new sectors, no Nigeria expansion
+
 - No CV Forge marketing (give it a URL, because it is built and parking it costs nothing, then leave it alone)
+
 - No editorial agent, no new social tooling, no further video work beyond using what is rendered
 
 ---
 
-## 7. If I were running this
+## 7. Historical advice from September 2026
+
+This section preserves the original diagnosis. Its zero-customer and zero-cash claims are superseded by the 10 October update in section 4. The founder has also confirmed the parent-company structure and requested the current workspace consolidation.
+
+### If I were running this
 
 Asked for directly, so this is a straight answer rather than a balanced one.
 
@@ -332,3 +373,20 @@ Worth reading now and again. The item was right that the plan had to match the h
 **Section 7, item 7. Written 16 September, overruled by the founder 28 September**, when the assessment became free:
 
 > **7. Charge for the pilot, even if it feels early.** The GHS 2,500 assessment exists. Free work produces a case study nobody respects, a client who does not turn up to meetings, and no information about willingness to pay, which is the one thing that is still unknown.
+
+### 10 October 2026: superseded 22 September business snapshot
+
+*As at 22 September 2026. The two numbers were re-checked on that date and had not moved.*
+
+- **The founder is now full-time on Aksen.** The role at AIC ended. This is the largest change since this brief was written, and section 5 has been updated for it. It removes the capacity ceiling and removes the last external excuse for the two numbers below.
+- **Seven days passed between the daily operating system being set up and this check, with no entries in `Docs/Daily-Log.md`.** In the same period the Media Studio shipped with six supporting documents, plus avatar, voice and distribution work, and a further session went into admin test tooling. The log's own last line on 15 September reads "Tomorrow starts with S-01, a message to an actual client, before anything else gets built." That did not happen.
+- **An external strategic review arrived 22 September**, written by Kevin from the platform and the public material without access to this brief. It reached the same four conclusions as section 7: human in the loop is the strongest asset, the company is pre-proof, internal tool building must stop, and one narrow offer should lead. It proposes a different wedge from the one in section 1. The comparison, the market data behind it and the open decisions are in the Business Alignment doc.
+
+- **Cedis invoiced: 0. Cedis collected: 0. Paying customers: 0.**
+- **Sales pipeline: empty.** The admin pipeline screen reads "Nothing in the pipeline yet."
+- **Live projects: 1**, stalled on a client reply.
+- **Recorded owner conversations: none.** There is no file in this repo containing what a business owner said about their own problem in their own words.
+- **Hosted release: behind local.** The registered Sites project was at version 2, last updated 3 September, owner-restricted. Local work runs well ahead of it.
+- **The enquiry loop is built and switched off.** The 12 September review found it missing; it was built afterwards and the code is now complete: founder notification, visitor acknowledgement, rate limits, body cap, idempotent capture, a durable outbox with retries, a privacy page, and one intake path shared by the enquiry form and the free tools. Nothing can leave, because `RESEND_API_KEY` and `RESEND_FROM_EMAIL` are not set. Every message queues and waits, which is recoverable in full the moment they are. `cd platform && node scripts/check-intake.mjs` reports the state.
+
+**The honest summary:** the platform is strong and the business has not started. Everything built so far is capability. None of it is evidence.

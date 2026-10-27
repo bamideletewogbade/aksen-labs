@@ -1,0 +1,514 @@
+/* Daily work stays compact; full records remain on their own screens. */
+.admin-main-links {
+  display: grid;
+  gap: 6px;
+  padding-block: 4px 16px;
+}
+.admin-refresh .admin-sidebar .admin-main-links a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+}
+.admin-main-links svg {
+  flex: none;
+}
+.daily-home,
+.money-overview {
+  max-width: 1200px;
+}
+.daily-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+/* Each tile leads with its number, the one thing worth reading at a glance.
+   The sentence around it was all one weight, so 0 and 3 looked the same. */
+.daily-shortcuts a {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'top top'
+    'count label'
+    'detail detail';
+  align-items: baseline;
+  column-gap: 8px;
+  row-gap: 4px;
+  min-width: 0;
+  padding: 18px 20px 20px;
+  border: 1px solid #d6dfd5;
+  border-radius: 12px;
+  background: #fff;
+  color: #254b35;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+.daily-shortcuts a:hover {
+  border-color: #6c916b;
+  background: #f8fcf6;
+}
+.daily-stat-top {
+  grid-area: top;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #5d7165;
+}
+.daily-shortcuts a:hover .daily-stat-top svg:last-child {
+  color: #254b35;
+}
+.daily-shortcuts strong {
+  grid-area: label;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.daily-stat-count {
+  grid-area: count;
+  font-size: 30px;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #14402b;
+  font-variant-numeric: tabular-nums;
+}
+.daily-shortcuts small {
+  grid-area: detail;
+  display: block;
+  color: #526158;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+/* Nothing due is good news, not a headline. */
+.daily-shortcuts a[data-quiet] .daily-stat-count {
+  color: #8a9a8f;
+}
+.daily-shortcuts a[data-quiet] strong {
+  font-weight: 500;
+  color: #46584d;
+}
+.daily-priorities {
+  background: #fff;
+  border: 1px solid #d6dfd5;
+  border-radius: 14px;
+  padding: 24px 26px 20px;
+}
+.daily-section-head h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.025em;
+}
+.daily-section-head p,
+.daily-note {
+  color: #526158;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.daily-section-head p {
+  margin: 4px 0 16px;
+}
+/* One segmented control rather than four loose buttons, each carrying its
+   count so an empty filter is known before it is pressed. */
+.daily-filters {
+  border: 1px solid #d6dfd5;
+  border-radius: 10px;
+  padding: 3px;
+  min-width: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0 0 6px;
+  background: #f6f9f4;
+}
+.daily-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #46584d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 550;
+  cursor: pointer;
+}
+.daily-filters button:hover {
+  color: #14402b;
+}
+.daily-filters button[aria-pressed='true'] {
+  color: #fff;
+  background: #254b35;
+}
+.daily-filter-count {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #e6ede2;
+  color: #46584d;
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.daily-filters button[aria-pressed='true'] .daily-filter-count {
+  background: rgb(255 255 255 / 0.18);
+  color: #fff;
+}
+.daily-show-more,
+.record-focus button {
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid #d6dfd5;
+  background: #fff;
+  border-radius: 8px;
+  color: #254b35;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.daily-actions,
+.money-invoices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+/* Rows sit flush with the card's text edge and grow a soft hover surface into
+   the padding, so the list reads as a list and each row as one target. */
+.daily-actions {
+  margin-inline: -12px;
+}
+.daily-actions li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 12px;
+  border-radius: 10px;
+  transition: background-color 150ms ease;
+}
+.daily-actions li + li {
+  border-top: 1px solid #e6ebe3;
+}
+.daily-actions li:hover {
+  background: #f6f9f4;
+}
+.daily-actions li:hover + li,
+.daily-actions li:has(+ li:hover) + li {
+  border-top-color: transparent;
+}
+.daily-actions li[data-urgent='true']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 3px;
+  background: #c4643a;
+}
+.money-invoices li:last-child {
+  border-bottom: 0;
+}
+.daily-actions li > div {
+  flex: 1;
+  min-width: 0;
+}
+.daily-actions .daily-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 0 0 6px;
+}
+.daily-area {
+  font-size: 11px;
+  font-weight: 650;
+  padding: 3px 8px;
+  border-radius: 5px;
+  color: #365740;
+  background: #eef3e9;
+  display: inline-block;
+}
+.daily-reason {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #5d7165;
+}
+.daily-actions li[data-urgent='true'] .daily-reason {
+  color: #9b401d;
+  font-weight: 600;
+}
+.daily-actions h3 {
+  margin: 0 0 2px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #14402b;
+  overflow-wrap: anywhere;
+}
+.daily-actions p {
+  margin: 0;
+  color: #526158;
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.daily-actions a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.daily-actions li:hover a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.daily-actions a,
+.money-invoices a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #245334;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  flex: none;
+}
+.daily-show-more {
+  margin-top: 12px;
+}
+.daily-note {
+  margin-block: 14px 24px;
+}
+.money-totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+.money-totals section {
+  background: #fff;
+  border: 1px solid #d6dfd5;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 0;
+}
+.money-totals h2 {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  margin: 0 0 16px;
+  color: #526158;
+}
+.money-totals dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px 36px;
+  margin: 0;
+}
+.money-totals dt {
+  color: #526158;
+  font-size: 13px;
+}
+.money-totals dd {
+  margin: 8px 0 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+.money-invoices li {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 20px 0;
+  border-bottom: 1px solid #e6ebe3;
+}
+.money-invoices li > div {
+  flex: 1;
+  min-width: 0;
+}
+.money-invoices strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.money-invoices span {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #526158;
+  overflow-wrap: anywhere;
+}
+.record-focus {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 13px;
+  color: #526158;
+}
+.daily-home :is(a, button):focus-visible,
+.money-overview :is(a, button):focus-visible,
+.record-focus button:focus-visible {
+  outline: 2px solid #245334;
+  outline-offset: 3px;
+}
+/* app/admin/loading.tsx: the outline of a page, not a spinner, so the arrival
+   of the real one does not jump. */
+.admin-loading-head,
+.admin-loading-body {
+  display: grid;
+  gap: 12px;
+}
+.admin-loading-head {
+  padding-bottom: 22px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid #e0e8db;
+}
+.admin-loading span {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e6ece2 0%, #f1f5ee 50%, #e6ece2 100%) 0 0
+    / 200% 100%;
+  animation: admin-loading-shimmer 1.4s ease-in-out infinite;
+}
+.admin-loading-head span:nth-child(1) {
+  width: 120px;
+  height: 12px;
+}
+.admin-loading-head span:nth-child(2) {
+  width: min(280px, 70%);
+  height: 34px;
+}
+.admin-loading-head span:nth-child(3) {
+  width: min(520px, 90%);
+  height: 14px;
+}
+.admin-loading-body {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.admin-loading-body span {
+  height: 92px;
+}
+@keyframes admin-loading-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-loading span {
+    animation: none;
+  }
+}
+@media (max-width: 800px) {
+  .admin-loading-body {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1101px) {
+  :root[data-rail='collapsed']
+    .admin-refresh
+    .admin-sidebar:not(:hover, :has(:focus-visible))
+    .admin-main-links
+    a {
+    justify-content: center;
+    padding-inline: 0;
+  }
+}
+@media (max-width: 800px) {
+  .daily-shortcuts {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  /* Three tall tiles filled a phone's first screen. Here each is one row:
+     the number, what it counts, and the arrow. */
+  .daily-shortcuts a {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'count label arrow'
+      'count detail arrow';
+    align-items: center;
+    row-gap: 0;
+    padding: 12px 16px;
+  }
+  .daily-stat-top {
+    display: contents;
+  }
+  .daily-stat-top svg:first-child {
+    display: none;
+  }
+  .daily-stat-top svg:last-child {
+    grid-area: arrow;
+  }
+  .daily-stat-count {
+    font-size: 26px;
+  }
+}
+@media (max-width: 600px) {
+  .daily-home .admin-header,
+  .money-overview .admin-header,
+  #support .admin-header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  /* Guide answers left the Sales tabs for this header link, so on a phone the
+     link is the only way there and cannot be hidden like other header links. */
+  .daily-home .admin-header > a,
+  .money-overview .admin-header > a,
+  #support .admin-header > a {
+    display: inline-flex;
+  }
+  .daily-priorities {
+    padding: 18px;
+  }
+  .daily-actions li {
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .daily-actions li > div {
+    flex-basis: 100%;
+  }
+  /* The whole row is the target on a phone, so the word can go; the arrow
+     stays as the cue. */
+  .daily-actions li {
+    padding-right: 44px;
+  }
+  .daily-actions a {
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    min-height: 0;
+    font-size: 0;
+  }
+  .daily-filters {
+    display: flex;
+  }
+  .daily-filters button {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+    padding-inline: 8px;
+  }
+  .money-invoices li {
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+  .money-invoices li > div {
+    flex-basis: 100%;
+  }
+  .money-invoices a {
+    margin-left: auto;
+  }
+}

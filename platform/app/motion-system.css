@@ -221,6 +221,21 @@
     opacity: 0.5;
   }
 }
+/* The pale bar above is drawn for the dark public site. On the admin's pale
+   green canvas it disappeared, so a click looked like nothing had happened. */
+.admin-refresh .route-progress {
+  height: 3px;
+}
+.admin-refresh .route-progress::after {
+  background: linear-gradient(90deg, transparent, #2f7a3e, transparent);
+}
+/* Delayed so a quick navigation never flickers; a slow one dims the old page
+   so it is clear it is on its way out. filter, not opacity: route-in fills
+   both ways and would hold opacity at 1 over any rule here. */
+.route-fade[data-navigating] {
+  filter: opacity(0.55);
+  transition: filter 200ms ease 150ms;
+}
 
 /* ---------- status note ---------- */
 

@@ -1019,6 +1019,36 @@
   .admin-refresh .project-list footer small {
     color: #56685c;
   }
+  /* The footer links inherited a heading-sized font from an older sheet and
+     read louder than the project name. They are the way onward, not a title. */
+  .admin-refresh .project-list footer small {
+    white-space: nowrap;
+  }
+  .admin-refresh .project-list footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: #185438;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  /* globals.css sizes these links as 28px icon squares (the article delete
+     control); a worded link like "Add as enquiry" collapsed to a column. */
+  .admin-refresh .content-actions a.content-link {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    min-height: 36px;
+    padding: 7px 12px;
+    border: 1px solid #dde7d8;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #185438;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+  }
   .admin-refresh .project-items > summary {
     color: #1d4a33;
   }
@@ -1396,5 +1426,334 @@
     margin: 0;
     border: 0;
     min-width: 0;
+  }
+}
+
+/* Secondary screens travel with their workflow, including on a phone. */
+
+.admin-module-nav {
+  padding: 20px 32px 0;
+  min-width: 0;
+}
+
+.admin-module-nav > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #647069;
+  font-size: 12px;
+}
+
+.admin-module-nav > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid #dce2dd;
+  padding-bottom: 10px;
+}
+
+.admin-module-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: #47574c;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.admin-module-nav a[aria-current='page'] {
+  background: #e4eee7;
+  color: #16462e;
+  font-weight: 650;
+}
+
+.admin-module-nav a:hover {
+  background: #edf2ee;
+}
+
+.admin-module-nav a:focus-visible,
+.portfolio-branch a:focus-visible {
+  outline: 2px solid #216542;
+  outline-offset: 3px;
+}
+
+.portfolio-intro {
+  margin: 0 0 24px;
+  max-width: 760px;
+  color: #526158;
+  line-height: 1.65;
+}
+
+.portfolio-branches {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.portfolio-branch {
+  padding: 24px;
+  border: 1px solid #dce2dd;
+  background: #fff;
+  border-radius: 14px;
+  min-width: 0;
+}
+
+.portfolio-branch small {
+  color: #526b59;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.portfolio-branch h2 {
+  margin: 12px 0;
+  font-size: 21px;
+}
+
+.portfolio-branch p {
+  color: #526158;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.portfolio-branch ul {
+  margin: 16px 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.portfolio-branch a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #185438;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.scout-workflow-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 18px;
+}
+
+.scout-workflow-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: #185438;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .portfolio-branches {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-module-nav {
+    padding: 16px 16px 0;
+  }
+  /* The strip scrolled sideways with its scrollbar hidden, so on a phone the
+     last tab (Lead Scout's history, Studio's second desk) was simply not
+     there as far as anyone could tell. Wrapping shows every tab. */
+  .admin-refresh .admin-tabs-strip {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .portfolio-branch {
+    padding: 20px;
+  }
+}
+@media (max-width: 1100px) {
+  .admin-refresh .admin-sidebar .admin-links.is-open a .admin-nav-label {
+    display: inline;
+    opacity: 1;
+    visibility: visible;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: inherit;
+  }
+}
+
+@media print {
+  .admin-module-nav {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   The consistency pass
+
+   Measured, not eyeballed: video/scripts-style capture of all twenty-four
+   screens found 59 button styles, 37 field styles, 18 label styles and ten
+   sizes of h2. Most of it had one cause. The public site's body size is
+   17px, and anything in the workspace that did not set its own size
+   inherited it: empty states, the Refresh and Filter buttons, half the
+   labels. The rest was per-screen stylesheets each choosing a near miss
+   (13, 13.12, 13.44, 13.76px) for the same job.
+
+   Scoped through #admin-content because the per-screen sheets load after
+   this one and would otherwise win every tie. Only sizes, weights and the
+   few colours that were plainly wrong are set here; layout stays with the
+   screen that owns it.
+   ---------------------------------------------------------------------- */
+
+@media screen {
+  /* The workspace's body size. Everything that inherits now inherits this. */
+  .admin-refresh .admin-content {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ---- headings ----
+     h2 titles a panel or a section, h3 titles a record or an item inside one.
+     Two sizes, one job each. Money's currency heading is a label, not a
+     title, and keeps its own. */
+  #admin-content h2:not(.money-totals h2) {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: #14402b;
+  }
+  #admin-content h3 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---- fields ----
+     One size to type in. Heights stay with each screen, because a field in a
+     table row and a field in a form are different shapes on purpose. */
+  #admin-content
+    :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+    font-size: 14px;
+  }
+
+  /* A field's label is the small bold line above it. A label wrapping a
+     radio or a checkbox is the option itself, so it reads at body size. */
+  #admin-content label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-transform: none;
+    color: #2b3d32;
+  }
+  #admin-content label:has(> input[type='radio'], > input[type='checkbox']) {
+    font-size: 14px;
+    font-weight: 400;
+    color: #11241a;
+  }
+
+  /* ---- buttons ----
+     The ordinary button is 13px semibold on an 8px radius, which is what the
+     shared .pending-button and most screens already were. Buttons that are
+     really cards (a template, a demo business, a document in the register)
+     carry a title and a line under it, so they are recognised by that shape
+     rather than listed by name, and keep their own type. */
+  #admin-content
+    button:not(
+      :has(small, strong, b, h3, h4, p),
+      .knowledge-entry-head,
+      [role='tab'],
+      .admin-tab
+    ) {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* Tabs inside a screen: one control, everywhere. Lead Scout drew them a
+     size up and the client record drew them in browser type. */
+  #admin-content :is(.admin-tab, [role='tab']) {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* What is typed reads at body weight. Several screens set their fields to
+     600, so a name in a form looked like a heading. */
+  #admin-content
+    :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+    font-weight: 400;
+  }
+
+  /* Settings and Guide answers stacked panels with nothing between them, so
+     three cards read as one. On Settings the AI panel also had no panel head
+     or inner padding, so its text sat on the card edge. */
+  .admin-refresh .admin-main > .admin-panel + .admin-panel {
+    margin-top: 20px;
+  }
+  /* Guide answers: the same missing inner padding, and a filter field that
+     drew the shared field border inside its own pill. */
+  .admin-refresh
+    .admin-panel
+    > :is(
+      .knowledge-intro,
+      .knowledge-ask,
+      .knowledge-verdict,
+      .knowledge-list
+    ) {
+    margin-inline: 22px;
+  }
+  .admin-refresh
+    .admin-panel
+    > :is(.knowledge-ask, .knowledge-verdict, .knowledge-list):last-child {
+    margin-bottom: 22px;
+  }
+  .admin-refresh .knowledge-search input[type] {
+    border: 0;
+    background: transparent;
+  }
+  .admin-refresh .settings-ai > :not(.panel-head) {
+    margin-inline: 22px;
+  }
+  .admin-refresh .settings-ai > :last-child {
+    margin-bottom: 22px;
+  }
+
+  /* A create form's submit is the screen's primary action, so it wears the
+     primary skin. It was still the dark theme's lime, which on white reads as
+     disabled: Generate image looked switched off before anything was typed. */
+  .admin-refresh .admin-create-form button.create-submit {
+    border: 1px solid #175b3b;
+    background: #175b3b;
+    color: #ffffff;
+  }
+  .admin-refresh .admin-create-form button.create-submit:hover:not(:disabled) {
+    border-color: #12472e;
+    background: #12472e;
+  }
+  .admin-refresh .admin-create-form button.create-submit:disabled {
+    border-color: #9fb6a6;
+    background: #9fb6a6;
+    color: #ffffff;
+    opacity: 1;
+  }
+
+  /* Left over from the dark admin: near-black fills with grey text. On the
+     white workspace they read as the loudest thing on the screen while being
+     an ordinary action. */
+  .admin-refresh :is(.content-actions, .approval-card) button {
+    border: 1px solid #cddcc5;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1d4a33;
+  }
+  .admin-refresh
+    :is(.content-actions, .approval-card)
+    button:hover:not(:disabled) {
+    background: #f2f7ed;
+    border-color: #175b3b;
   }
 }

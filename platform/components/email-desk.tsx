@@ -124,6 +124,9 @@ export function EmailDesk() {
     fetchDesk(controller.signal)
       .then((json) => {
         setData(json);
+        const batch = new URLSearchParams(window.location.search).get('batch');
+        if (batch && json.items.some((item) => item.batch_key === batch))
+          setReviewKey(batch);
         // Read here rather than as initial state: the server has no
         // localStorage, and an input that differs between the two is a
         // hydration mismatch.

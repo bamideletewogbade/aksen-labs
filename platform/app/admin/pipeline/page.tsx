@@ -36,9 +36,10 @@ const columns = {
 export default async function AdminPipelinePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; leadId?: string }>;
 }) {
-  const { q } = await searchParams;
+  const { q, leadId } = await searchParams;
+  const initialLeadId = typeof leadId === 'string' ? leadId.slice(0, 160) : '';
   const user = await getChatGPTUser();
   const owner = user?.userId ?? '';
   const initialQuery = typeof q === 'string' ? q.slice(0, 160) : '';
@@ -87,8 +88,8 @@ export default async function AdminPipelinePage({
     <section className="admin-main" id="pipeline">
       <header className="admin-header">
         <div>
-          <small>SALES & SCOPING</small>
-          <h1>Sales pipeline</h1>
+          <small>ENQUIRIES & FOLLOW-UP</small>
+          <h1>Sales</h1>
           <p>
             Every open enquiry, most urgent first. Set the stage, the next
             action and when to follow up.
@@ -117,7 +118,9 @@ export default async function AdminPipelinePage({
                   </div>
                 ) : leads.length ? (
                   <AdminPipelineList
+                    key={`${initialLeadId}:${initialQuery}`}
                     initialLeads={leads}
+                    initialLeadId={initialLeadId}
                     today={today}
                     initialQuery={initialQuery}
                   />

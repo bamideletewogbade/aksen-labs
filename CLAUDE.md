@@ -18,7 +18,8 @@
 
 Full detail in section 2 of the operating brief. The short version:
 
-1. **No customer claims.** Aksen has no paying customers and no delivered results. Not "trusted by", not a testimonial, not a percentage, not a logo.
+1. **Evidence before customer claims.** The founder reported two paid engagements on 10 October 2026; see the operating brief and client records. No measured customer outcome or permission to publish has been supplied. Not "trusted by", not a testimonial, not a percentage, not a logo.
+
 2. **The Frame Shop is not public proof.** No signed scope, price, payment or acceptance. It is a proposal.
 3. **Client records never reach public assets.** If a screen with real records is wanted publicly, seed fictional data and capture that.
 4. **AI prepares; a person decides.** It does not set a price, take a payment, promise a date, publish, sign, or contact anyone. This is enforced by the system, not by instructions. A feature that lets an agent cross one of those lines is a bug.
@@ -55,7 +56,6 @@ Add `--admin` for the workspace screens; it opens a browser window for you to si
 | `/done` | Records what actually happened |
 | `/weekly` | Refills the queue, updates the scoreboard, moves the money |
 | `/money` | Adds or reviews a revenue mechanism |
-
 | File | Holds |
 | --- | --- |
 | `Docs/Business-OS.md` | The rules, the lanes, the scoreboard, the ledger stages |
@@ -67,4 +67,4 @@ The scoreboard is two numbers: **conversations with owners this week** and **ced
 
 ## Current focus
 
-Phase 0 of the roadmap: close the enquiry loop so a stranger can reach the business and get a reply. Everything else waits. See section 6 of the operating brief, and section 7 for why.
+As of 10 October 2026: operate Aksen Labs as the parent company, consolidate the workspace, record paid client delivery and prioritize Seth’s Susu handover. The enquiry loop still needs its own live verification. See section 6 of the operating brief, and section 7 for why.

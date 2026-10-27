@@ -1,5 +1,6 @@
+import Link from 'next/link';
 import { desc } from 'drizzle-orm';
-import { MessageSquareText } from 'lucide-react';
+import { ArrowUpRight, MessageSquareText } from 'lucide-react';
 import { getDb } from '@/db';
 import { conversations } from '@/db/schema';
 import {
@@ -23,31 +24,30 @@ export default async function AdminSupportPage() {
   } catch {
     loadFailed = true;
   }
-  const openCount = threads.filter(
-    (thread) => thread.status !== 'resolved',
-  ).length;
-
   return (
     <section className="admin-main" id="support">
       <header className="admin-header">
         <div>
-          <small>SUPPORT INBOX</small>
-          <h1>Messages</h1>
+          <small>CONVERSATIONS</small>
+          <h1>Guide conversations</h1>
           <p>
             Saved summaries from Aksen Guide. This is not a full message history
             or a connected reply inbox.
           </p>
         </div>
+        {/* Guide answers had its own tab in Sales. It is what shapes these
+            conversations, so it lives one link away from them instead. */}
+        <Link href="/admin/support/knowledge" prefetch={false}>
+          Edit Guide answers <ArrowUpRight size={16} />
+        </Link>
       </header>
       <section className="admin-panel content-panel full-panel">
         <div className="panel-head">
           <div>
             <small>LATEST 30 THREADS</small>
-            <h2>
-              {loadFailed
-                ? 'Records unavailable'
-                : `${openCount} open of ${threads.length}`}
-            </h2>
+            {/* The live count is the list's own, which changes as threads are
+                resolved; this heading only names the panel. */}
+            <h2>{loadFailed ? 'Records unavailable' : 'Visitor handoffs'}</h2>
           </div>
           <MessageSquareText />
         </div>

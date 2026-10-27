@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireAdminUser, chatGPTSignOutPath } from '@/app/chatgpt-auth';
 import { AdminNav } from '@/components/admin-nav';
+import { AdminModuleNav } from '@/components/admin-module-nav';
 import { AdminRailToggle } from '@/components/admin-rail-toggle';
 import { RouteTransition } from '@/components/route-transition';
 import { greetingName, workspaceProfile } from '@/lib/workspace-settings';
@@ -15,6 +16,7 @@ import './knowledge.css';
 // stylesheets above are rewritten wholesale by scripts/relight-admin when the
 // palette changes; this one is written by hand and survives that.
 import './admin-light.css';
+import './daily-work.css';
 export const metadata = {
   title: 'Aksen Workspace',
   robots: { index: false, follow: false },
@@ -66,6 +68,7 @@ export default async function AdminLayout({
         </div>
       </aside>
       <main id="admin-content" className="admin-content">
+        <AdminModuleNav />
         <RouteTransition>{children}</RouteTransition>
       </main>
     </div>

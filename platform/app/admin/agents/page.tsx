@@ -1,4 +1,9 @@
-import { routingConfig, AI_PROFILES } from '@/lib/ai-routing';
+import {
+  routingConfig,
+  AI_PROFILES,
+  gatewayEnabled,
+  gatewayModels,
+} from '@/lib/ai-routing';
 import { AiConnectionCheck } from '@/components/ai-connection-check';
 import { desc, sql } from 'drizzle-orm';
 import Link from 'next/link';
@@ -101,6 +106,8 @@ export default async function AdminAgentsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const config = routingConfig();
+  const gateway = gatewayEnabled();
+  const openrouter = !!process.env.OPENROUTER_API_KEY?.trim();
   let runs: RunView[] = [];
   let totalMicros = 0;
   let totalRuns = 0;
@@ -292,40 +299,57 @@ export default async function AdminAgentsPage({
               <section className="admin-panel ai-routing-panel">
                 <div className="panel-head">
                   <div>
-                    <small>OPENROUTER CONFIGURATION</small>
+                    <small>MODEL ROUTE</small>
                     <h2>
-                      {config.mode === 'auto'
-                        ? 'Automatic model routing'
-                        : 'Default model routing'}
+                      {gateway
+                        ? 'Vercel AI Gateway, OpenRouter behind it'
+                        : config.mode === 'auto'
+                          ? 'OpenRouter, automatic routing'
+                          : 'OpenRouter, default routing'}
                     </h2>
                   </div>
                   <span>
-                    {process.env.OPENROUTER_API_KEY
-                      ? 'Key configured'
-                      : 'Key missing'}
+                    {gateway
+                      ? 'Gateway key set'
+                      : openrouter
+                        ? 'OpenRouter key set'
+                        : 'No key set'}
                   </span>
                 </div>
-                {/* Two facts answer almost every visit to this panel: which model runs
-            by default, and what it falls back to. They are shown; everything
-            else is reference and is a click away. Model identifiers are set in
-            monospace because they are identifiers to be compared character by
-            character, not prose to be read. */}
+                {/* Two facts answer almost every visit to this panel: which models
+            a request tries, and in what order. The gateway takes every call
+            when its key is set, web search included; OpenRouter only sees a
+            call the gateway refused. Model identifiers are set in monospace
+            because they are compared character by character. */}
                 <dl className="ai-routing-facts">
+                  {gateway && (
+                    <div>
+                      <dt>Gateway order</dt>
+                      <dd className="ai-routing-chain">
+                        {gatewayModels().map((model, index) => (
+                          <span key={model}>
+                            {index > 0 && <i aria-hidden="true">→</i>}
+                            <code>{model}</code>
+                          </span>
+                        ))}
+                      </dd>
+                    </div>
+                  )}
                   <div>
-                    <dt>Default model</dt>
-                    <dd>
-                      <code>{config.defaultModel}</code>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Request order</dt>
+                    <dt>
+                      {gateway ? 'If the gateway refuses' : 'Request order'}
+                    </dt>
                     <dd className="ai-routing-chain">
-                      {config.models.map((model, index) => (
-                        <span key={model}>
-                          {index > 0 && <i aria-hidden="true">→</i>}
-                          <code>{model}</code>
-                        </span>
-                      ))}
+                      {openrouter ? (
+                        config.models.map((model, index) => (
+                          <span key={model}>
+                            {index > 0 && <i aria-hidden="true">→</i>}
+                            <code>{model}</code>
+                          </span>
+                        ))
+                      ) : (
+                        <span>No OpenRouter key, so the call fails</span>
+                      )}
                     </dd>
                   </div>
                 </dl>

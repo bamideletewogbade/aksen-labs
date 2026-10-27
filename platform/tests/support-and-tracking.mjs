@@ -208,7 +208,7 @@ const routeOverrides = {
     'export const getDb=()=>({execute:async()=>({rows:[{requests:1}]})});',
   ),
   'lib/openrouter.ts': uri(
-    'export async function chatComplete(options){globalThis.aiOptions=options;return {content:JSON.stringify(globalThis.supportResult),telemetry:{model:"mock"}};}',
+    'export async function chatComplete(options){globalThis.aiOptions=options;return {content:JSON.stringify(globalThis.supportResult),telemetry:{model:"mock",provider:"openrouter"}};}',
   ),
   'lib/agent-runs.ts': uri('export async function logAgentRun(){}'),
   'lib/conversations.ts': uri(

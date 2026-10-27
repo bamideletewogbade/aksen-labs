@@ -11,13 +11,17 @@ import { Reveal } from './agency-motion';
 // listed, and "Industries" led to a single explorer that answers the same
 // question as Services from the other end. Both now live where they belong,
 // which cost the nav nothing and gave each page a reason to exist.
+//
+// 18 Oct 2026: Agents leads, because it is the answer to "what do you do that
+// software does not". Blog moved to the footer to keep the bar at six; it is
+// read by people who already found us, not by people deciding whether to.
 const navItems = [
+  { href: '/agents', label: 'Agents' },
   { href: '/solutions', label: 'Services' },
   { href: '/products', label: 'Products & tools' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/how-it-works', label: 'Approach' },
   { href: '/about', label: 'About' },
-  { href: '/blog', label: 'Blog' },
 ];
 function Wordmark() {
   return (
@@ -208,6 +212,9 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               six on purpose. This group is the "things you can do" list, and
               asking for something is one of them. */}
           <div>
+            <Link href="/agents#try-it">
+              Talk to a front desk agent <ArrowUpRight size={15} />
+            </Link>
             <Link href="/business-agents">
               Try business agents <ArrowUpRight size={15} />
             </Link>
@@ -233,6 +240,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
                 {item.label}
               </Link>
             ))}
+            <Link href="/blog">Blog</Link>
             <Link href="/privacy">Privacy</Link>
           </nav>
         </div>

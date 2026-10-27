@@ -6,7 +6,7 @@ import { HeroShowcase } from '@/components/hero-animations';
 import { HomeFlow } from '@/components/home-flow';
 import { MessageVolume } from '@/components/home-story';
 import { ProductTheatre } from '@/components/product-theatre';
-import { ServiceList } from '@/components/agency-sections';
+import { AgentDeskGrid } from '@/components/agent-desk-grid';
 import { WhatsAppLink } from '@/components/whatsapp-link';
 
 /**
@@ -15,7 +15,7 @@ import { WhatsAppLink } from '@/components/whatsapp-link';
  *   the evening        a problem the reader had this week
  *   what happens       one enquiry followed end to end
  *   where the line is  the thing this company actually turns on
- *   what we do         the four service areas
+ *   every desk         the other jobs an agent takes, services one link on
  *   open now           free tools, no account, no conversation
  *   start here         the free assessment, and how to ask for it
  *
@@ -140,23 +140,38 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. The rest of what we build, for the reader whose problem is not the
-            WhatsApp backlog. */}
+        {/* 4. The rest of what we do, for the reader whose problem is not the
+            WhatsApp backlog. Since 18 Oct 2026 this leads with the other desks
+            an agent can take, not the four service areas: the question the
+            section above raises is "what else can it do", and the answer is
+            more jobs, not more software. The services are one link away. */}
         <section id="what-we-do" className="agency-container refresh-section">
           <Reveal className="refresh-section-heading">
             <div>
-              <p className="agency-eyebrow">WHAT AKSEN DOES</p>
+              <p className="agency-eyebrow">AN AGENT FOR EVERY DESK</p>
               <h2>
-                Four kinds of work. Start with the one that costs you most.
+                The WhatsApp desk is one.
+                <br />
+                <em>Here are the others.</em>
               </h2>
             </div>
             <p>
-              The WhatsApp agent is one of them. From Ghana, we build websites
-              and shops, the systems behind them, simple reporting, and new
-              digital products for businesses across Africa.
+              Each agent takes one job off your week, works inside your rules
+              and passes you what needs a person. We build it, run it and report
+              on it every month.
             </p>
           </Reveal>
-          <ServiceList />
+          <Reveal delay={60} direction="none">
+            <AgentDeskGrid compact />
+          </Reveal>
+          <Reveal delay={60} className="home-desks-foot">
+            <Link className="agency-text-link" href="/agents">
+              See how the agents work <ArrowUpRight size={18} />
+            </Link>
+            <Link className="agency-text-link" href="/solutions">
+              Websites, shops and systems we build <ArrowUpRight size={18} />
+            </Link>
+          </Reveal>
         </section>
 
         {/* 5. The cheapest next step, offered before any conversation. */}

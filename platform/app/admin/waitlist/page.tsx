@@ -12,15 +12,14 @@ import { products } from '@/lib/product-catalog';
 import './waitlist.css';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Product waitlist | Aksen Workspace' };
+
+export const metadata = { title: 'Product interest | Aksen Workspace' };
 
 /**
  * Who is waiting on a product that has not opened yet.
  *
- * Read-only on purpose. There is nothing to decide about a signup: the person
- * either gets an email when the product opens or they do not, and that happens
- * once, from here, by hand. Anyone who turns into a real conversation belongs
- * in the sales pipeline, which is where the work of following up already lives.
+ * These records express product interest. They do not track notification
+ * delivery or establish a qualified opportunity; follow-up needs review.
  */
 
 type Signup = {
@@ -87,9 +86,8 @@ export default async function AdminWaitlistPage() {
   }
 
   const waiting = products.filter((product) => !product.href);
-  // Every product has opened, so nobody new can join and everyone already on
-  // the list is owed the email. That is a different page from one still
-  // collecting addresses, and it should not read like the same one.
+  // Listed addresses close the public signup forms. They do not establish
+  // availability or whether a previous signup was already contacted.
   const allOpen = waiting.length === 0;
   const opened = products.filter((product) => product.href);
 
@@ -98,10 +96,10 @@ export default async function AdminWaitlistPage() {
       <header className="admin-header">
         <div>
           <small>DEMAND BEFORE LAUNCH</small>
-          <h1>Product waitlist</h1>
+          <h1>Product interest</h1>
           <p>
             {allOpen
-              ? 'People who asked to be told when a product opens, newest first. Everything on the list has opened, so these are addresses to write to once, by hand. Nothing is sent automatically.'
+              ? 'Past launch-interest signups, newest first. Products now have listed addresses. Review each request before deciding whether to follow up.'
               : 'People who asked to be told when a product opens, newest first. The products page captures these; nothing is sent to them automatically.'}
           </p>
         </div>
@@ -113,7 +111,7 @@ export default async function AdminWaitlistPage() {
       <div className="metric-grid arrive-stagger">
         <article style={{ '--i': 0 } as React.CSSProperties}>
           <span>
-            <Users /> {allOpen ? 'Owed an email' : 'Waiting'}
+            <Users /> {allOpen ? 'Recorded interest' : 'Waiting'}
           </span>
           <strong>{loadFailed ? '—' : totals.total}</strong>
           <small>
@@ -122,11 +120,11 @@ export default async function AdminWaitlistPage() {
             ) : allOpen ? (
               opened.length === 1 ? (
                 <>
-                  <b>{opened[0]?.name}</b> has opened, list closed
+                  <b>{opened[0]?.name}</b> has a listed address
                 </>
               ) : (
                 <>
-                  <b>{opened.length} products</b> have opened, list closed
+                  <b>{opened.length} products</b> have listed addresses
                 </>
               )
             ) : (
@@ -214,19 +212,16 @@ export default async function AdminWaitlistPage() {
         <strong>What happens next</strong>
         {allOpen ? (
           <p>
-            Nothing, until you send it. There is no scheduled email behind this
-            list. The product now has a public address in
-            lib/product-catalog.ts, so the form is gone from the site and no new
-            signup can arrive. Everyone above asked to be told, and has not
-            been. Write to them once, then this page is a record rather than a
-            queue.
+            This is product interest, not a qualified sales opportunity. Review
+            what the person asked for and use the Email desk for a deliberate
+            follow-up. This list does not track notification delivery, so it
+            cannot tell you who has already been contacted.
           </p>
         ) : (
           <p>
-            Nothing, until you send it. There is no scheduled email behind this
-            list. When a product opens, write to these addresses once, then give
-            the product a public address in lib/product-catalog.ts, which
-            removes the form from the site and closes the list.
+            Review the request before following up. A signup is permission for
+            the requested product update, not a general marketing subscription.
+            Follow-up is manual; this list does not track delivery status.
           </p>
         )}
       </aside>

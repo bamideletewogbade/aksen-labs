@@ -1,5 +1,6 @@
 import { adminEmailAllowed } from '@/lib/admin-policy';
 import { headers } from 'next/headers';
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { adminSessionUser } from '@/lib/admin-session';
 
@@ -20,38 +21,45 @@ const SIGN_IN_PATH = '/signin-with-chatgpt';
 const SIGN_OUT_PATH = '/signout-with-chatgpt';
 const CALLBACK_PATH = '/callback';
 
-export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
-  const requestHeaders = await headers();
-  if (process.env.ADMIN_PASSWORD_HASH)
-    return adminSessionUser(requestHeaders.get('cookie'));
-  const userId = requestHeaders.get(USER_ID_HEADER);
-  const email = requestHeaders.get(USER_EMAIL_HEADER);
-  if (!userId || !email) return null;
+// Once per request. The admin layout and the page under it both ask who is
+// signed in, and each answer was a separate round trip to Neon, which from
+// Accra is anywhere from a third of a second to several. Layout and page now
+// share one lookup. Outside a server render, cache() simply calls through.
+export const getChatGPTUser = cache(
+  async function getChatGPTUser(): Promise<ChatGPTUser | null> {
+    const requestHeaders = await headers();
+    if (process.env.ADMIN_PASSWORD_HASH)
+      return adminSessionUser(requestHeaders.get('cookie'));
+    const userId = requestHeaders.get(USER_ID_HEADER);
+    const email = requestHeaders.get(USER_EMAIL_HEADER);
+    if (!userId || !email) return null;
 
-  const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get(USER_FULL_NAME_ENCODING_HEADER) === PERCENT_ENCODED_UTF8
-      ? safeDecodeURIComponent(encodedFullName)
-      : null;
+    const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
+    const fullName =
+      encodedFullName &&
+      requestHeaders.get(USER_FULL_NAME_ENCODING_HEADER) ===
+        PERCENT_ENCODED_UTF8
+        ? safeDecodeURIComponent(encodedFullName)
+        : null;
 
-  return {
-    // One person runs this workspace and can arrive two ways: ChatGPT sign-in,
-    // which issues its own identifier, or the password fallback, whose session
-    // stores ADMIN_OWNER_ID. Those produce different values, and every admin
-    // query filters on owner_id, so records created under one route became
-    // invisible under the other. When ADMIN_OWNER_ID is set it names the
-    // workspace the data belongs to, however its owner signed in.
-    //
-    // This is a deliberate single-workspace choice. Who may enter is unchanged
-    // and still decided by adminEmailAllowed; a second administrator added to
-    // that allowlist would share this workspace rather than get their own.
-    userId: workspaceOwnerId() || userId,
-    displayName: fullName ?? email,
-    email,
-    fullName,
-  };
-}
+    return {
+      // One person runs this workspace and can arrive two ways: ChatGPT sign-in,
+      // which issues its own identifier, or the password fallback, whose session
+      // stores ADMIN_OWNER_ID. Those produce different values, and every admin
+      // query filters on owner_id, so records created under one route became
+      // invisible under the other. When ADMIN_OWNER_ID is set it names the
+      // workspace the data belongs to, however its owner signed in.
+      //
+      // This is a deliberate single-workspace choice. Who may enter is unchanged
+      // and still decided by adminEmailAllowed; a second administrator added to
+      // that allowlist would share this workspace rather than get their own.
+      userId: workspaceOwnerId() || userId,
+      displayName: fullName ?? email,
+      email,
+      fullName,
+    };
+  },
+);
 
 /** The workspace records belong to, independent of how its owner signed in. */
 export function workspaceOwnerId(): string {

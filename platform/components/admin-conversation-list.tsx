@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
 
@@ -10,6 +11,7 @@ export type ConversationView = {
   urgency: string;
   summary: string | null;
   handoffReason: string | null;
+  opportunityId: string | null;
 };
 
 export function AdminConversationList({
@@ -71,6 +73,28 @@ export function AdminConversationList({
               {thread.status}
             </b>
             <div className="content-actions">
+              {/* A summary is not a lead. When the visitor became one it opens
+                  their enquiry; otherwise the founder decides whether to add
+                  one, from what they know beyond this summary. */}
+              {thread.opportunityId ? (
+                <Link
+                  className="content-link"
+                  prefetch={false}
+                  href={`/admin/pipeline?leadId=${encodeURIComponent(thread.opportunityId)}`}
+                >
+                  Open enquiry
+                </Link>
+              ) : (
+                thread.status !== 'resolved' && (
+                  <Link
+                    className="content-link"
+                    prefetch={false}
+                    href="/admin/pipeline#add"
+                  >
+                    Add as enquiry
+                  </Link>
+                )
+              )}
               <button
                 type="button"
                 onClick={() => toggleStatus(thread)}

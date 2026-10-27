@@ -1,6 +1,7 @@
 import { withRequestLog } from '@/lib/request-log';
 import { NextResponse } from 'next/server';
 import { chatComplete, type ChatMessage } from '@/lib/openrouter';
+import { aiConfigured, gatewayMapperWriterModels } from '@/lib/ai-routing';
 import { askJev } from '@/lib/jev';
 import { logAgentRun } from '@/lib/agent-runs';
 import { getDb } from '@/db';
@@ -199,7 +200,7 @@ async function POSTHandler(request: Request) {
       reason,
     });
 
-  if (!process.env.OPENROUTER_API_KEY) return rules('no-key');
+  if (!aiConfigured()) return rules('no-key');
   try {
     const db = getDb();
     const hour = currentHour();
@@ -228,6 +229,8 @@ async function POSTHandler(request: Request) {
       // On the cheap structured tier the router picked a different flash model
       // each run and every report came back generic. See writerModels.
       models: writerModels(),
+      // OpenRouter's writer is not on the gateway's free tier; see ai-routing.
+      gatewayModels: gatewayMapperWriterModels(),
       profile: 'drafting',
       json: true,
       temperature: 0.3,

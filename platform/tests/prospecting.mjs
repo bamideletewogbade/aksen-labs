@@ -93,6 +93,10 @@ const prospectingSource = compile(fs.readFileSync('lib/prospecting.ts', 'utf8'))
     "from './scout-limits'",
     `from '${uri(compile(fs.readFileSync('lib/scout-limits.ts', 'utf8')))}'`,
   )
+  .replace(
+    "from './ai-routing'",
+    `from '${uri(compile(fs.readFileSync('lib/ai-routing.ts', 'utf8')))}'`,
+  )
   .replace("from 'drizzle-orm'", `from '${uri('export const sql=()=>[]')}'`);
 const { parseProspectCandidates } = await import(uri(prospectingSource));
 assert.deepEqual(
@@ -133,6 +137,10 @@ const mods = {
   // the cadence the test invented is the cadence the test accepts.
   '@/lib/automation-schedule': uri(
     compile(fs.readFileSync('lib/automation-schedule.ts', 'utf8')),
+  ),
+  // Real too: the screen's "AI configured" flag follows either provider key.
+  '@/lib/ai-routing': uri(
+    compile(fs.readFileSync('lib/ai-routing.ts', 'utf8')),
   ),
 };
 const code = compile(

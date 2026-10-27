@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 import { ResponseText } from '@/components/response-text';
 import { SkeletonRows } from '@/components/ui/activity';
@@ -84,8 +85,12 @@ async function request(body: Record<string, unknown>) {
 
 export function BusinessWorkspace({
   initialTab = 'finance',
+  initialBusinessId,
+  initialFinancialId,
 }: {
   initialTab?: string;
+  initialBusinessId?: string;
+  initialFinancialId?: string;
 } = {}) {
   const [businesses, setBusinesses] = useState<Business[]>([]),
     [businessId, setBusinessId] = useState('');
@@ -142,11 +147,19 @@ export function BusinessWorkspace({
   useEffect(() => {
     loadBusinesses()
       .then((list) => {
-        if (list.length) setBusinessId(list[0].id);
+        if (initialBusinessId) {
+          const match = list.find((item) => item.id === initialBusinessId);
+          if (match) setBusinessId(match.id);
+          else
+            setError(
+              'That client record is not available. Choose a business from the list.',
+            );
+        } else if (list.length) setBusinessId(list[0].id);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [initialBusinessId]);
+
   useEffect(() => {
     fileReadId.current++;
     setData(null);
@@ -173,6 +186,16 @@ export function BusinessWorkspace({
         const d = (await r.json()) as Data & { error?: string };
         if (!r.ok) throw new Error(d.error);
         setData(d);
+        if (businessId === initialBusinessId && initialFinancialId) {
+          const selectedFinancial = d.financials.find(
+            (item) => item.id === initialFinancialId,
+          );
+          setFinancial(selectedFinancial ?? null);
+          if (!selectedFinancial)
+            setError(
+              'That financial record is not available in this client file.',
+            );
+        }
       })
       .catch((e) => {
         if (!controller.signal.aborted) setError(e.message);
@@ -181,7 +204,7 @@ export function BusinessWorkspace({
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [businessId]);
+  }, [businessId, initialBusinessId, initialFinancialId]);
   useEffect(() => {
     if (showFinancialForm && tab === 'finance') {
       financialFormRef.current?.scrollIntoView({
@@ -238,15 +261,17 @@ export function BusinessWorkspace({
         <header className="admin-header ws-header">
           <div>
             <small>CLIENT RECORDS</small>
-            <h1>Clients &amp; invoices</h1>
+            {/* "& money" made this read as a second Money screen. Money is the
+                view across clients; this is one client at a time. */}
+            <h1>Clients</h1>
             <p>
               Keep each client&apos;s source documents, reviewed proposals,
               invoices and payments together.
             </p>
           </div>
-          <a className="ws-demo-link" href="/workspace-demo">
-            View example <ArrowRight size={16} />
-          </a>
+          <Link className="ws-demo-link" href="/admin/money" prefetch={false}>
+            All client balances <ArrowRight size={16} />
+          </Link>
         </header>
         <div className="ws-toolbar">
           <label>
@@ -341,7 +366,7 @@ export function BusinessWorkspace({
           </form>
         )}
         {loading && <SkeletonRows rows={4} label="Loading your records" />}
-        {!loading && !businessId && !create && (
+        {!loading && !businessId && !create && !error && (
           <div className="ws-empty">
             <FolderOpen size={32} />
             <h2>Start with a business, even before a project exists.</h2>

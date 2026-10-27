@@ -17,6 +17,54 @@ const load = (file) =>
 
 const items = await load('lib/project-items.ts');
 const history = await load('lib/lead-interactions.ts');
+const { projectBilling } = await load('lib/project-stages.ts');
+// Cash collected before an invoice must not imply a settled unknown contract.
+assert.equal(
+  projectBilling({
+    invoiced: false,
+    outstanding: 0,
+    received: 150000,
+    settled: false,
+  }),
+  'received',
+);
+assert.equal(
+  projectBilling({
+    invoiced: false,
+    outstanding: 0,
+    received: 60000,
+    settled: true,
+  }),
+  'paid',
+);
+assert.equal(
+  projectBilling({
+    invoiced: false,
+    outstanding: 0,
+    received: 0,
+    settled: true,
+  }),
+  'none',
+);
+// An outstanding invoice overrides a receipt's settlement note.
+assert.equal(
+  projectBilling({
+    invoiced: true,
+    outstanding: 20000,
+    received: 60000,
+    settled: true,
+  }),
+  'awaiting',
+);
+assert.equal(
+  projectBilling({
+    invoiced: true,
+    outstanding: 0,
+    received: 60000,
+    settled: false,
+  }),
+  'paid',
+);
 
 // Only the four kinds and three statuses the interface offers are accepted, so
 // a crafted request cannot invent a state the rest of the app cannot render.
