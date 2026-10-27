@@ -3,6 +3,7 @@ import { getDb } from '@/db';
 import { workspaceUser } from '@/lib/workspace-access';
 import { withRequestLog } from '@/lib/request-log';
 import { boundedJson } from '@/lib/bounded-json';
+import { aiConfigured } from '@/lib/ai-routing';
 import {
   runProspecting,
   promoteProspectQuery,
@@ -116,7 +117,7 @@ async function get() {
         leads: leads.rows,
         runs: runs.rows,
         events: events.rows,
-        aiConfigured: !!process.env.OPENROUTER_API_KEY,
+        aiConfigured: aiConfigured(),
         // null means uncapped, which the interface reports as words rather than
         // as a number that would otherwise read as zero runs left.
         remainingRuns: remainingResearchRuns(
@@ -280,12 +281,20 @@ async function post(request: Request) {
           ? item.contacts
               .filter((c: unknown) => c && typeof c === 'object')
               .map((c: Record<string, unknown>) => ({
-                kind: ['email', 'phone', 'linkedin', 'x'].includes(String(c.kind))
+                kind: ['email', 'phone', 'linkedin', 'x'].includes(
+                  String(c.kind),
+                )
                   ? String(c.kind)
                   : 'email',
-                value: String(c.value || '').trim().slice(0, 200),
-                source: String(c.source || website).trim().slice(0, 500),
-                excerpt: String(c.excerpt || c.value || '').trim().slice(0, 300),
+                value: String(c.value || '')
+                  .trim()
+                  .slice(0, 200),
+                source: String(c.source || website)
+                  .trim()
+                  .slice(0, 500),
+                excerpt: String(c.excerpt || c.value || '')
+                  .trim()
+                  .slice(0, 300),
               }))
               .filter((c: { value: string }) => c.value)
           : [];
@@ -295,14 +304,20 @@ async function post(request: Request) {
               .filter((s: unknown) => s && typeof s === 'object')
               .map((s: Record<string, unknown>) => ({
                 url: safeUrl(String(s.url || website)) || website,
-                title: String(s.title || company).trim().slice(0, 200),
-                content: String(s.content || item.description || '').trim().slice(0, 1500),
+                title: String(s.title || company)
+                  .trim()
+                  .slice(0, 200),
+                content: String(s.content || item.description || '')
+                  .trim()
+                  .slice(0, 1500),
               }))
           : [
               {
                 url: website,
                 title: `${company} Official Website`,
-                content: String(item.description || '').trim().slice(0, 1500),
+                content: String(item.description || '')
+                  .trim()
+                  .slice(0, 1500),
               },
             ];
 

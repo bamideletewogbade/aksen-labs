@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { chatComplete } from './openrouter';
+import { gatewayScoutModels } from './ai-routing';
 import { logBackendEvent } from './backend-events';
 import { publicUrl, validateProspects } from './prospect-evidence';
 import { dailyResearchRuns } from './scout-limits';
@@ -147,6 +148,7 @@ export async function runProspecting(
         profile: 'structured',
         json: true,
         webSearch: true,
+        gatewayModels: gatewayScoutModels(),
         maxTokens: 1600,
         timeoutMs: 60000,
         temperature: 0.1,
@@ -203,6 +205,7 @@ export async function runProspecting(
       profile: 'drafting',
       json: true,
       webSearch: true,
+      gatewayModels: gatewayScoutModels(),
       maxTokens: 3000,
       timeoutMs: 60000,
       temperature: 0.1,

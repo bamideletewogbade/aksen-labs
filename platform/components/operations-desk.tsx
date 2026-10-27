@@ -18,8 +18,6 @@ import {
   Zap,
   RefreshCw,
   Columns2,
-  FilePenLine,
-  ScrollText,
 } from 'lucide-react';
 
 type RecordOption = { id: string; name: string; company?: string };
@@ -358,15 +356,6 @@ export function OperationsDesk({
               </p>
             )}
           </div>
-
-          <div className="template-catalog-footer">
-            <Link href="/admin/operations" className="template-footer-link">
-              <FilePenLine size={14} /> Open AI draft creator
-            </Link>
-            <Link href="/admin/workspaces" className="template-footer-link">
-              <ScrollText size={14} /> View client workspaces
-            </Link>
-          </div>
         </section>
 
         {/* Right Column: Template Studio Workspace */}
@@ -435,9 +424,9 @@ export function OperationsDesk({
           {/* Client Quick-Fill Variables Bar */}
           <details className="template-fill-panel" open>
             <summary className="template-fill-summary">
-              <Zap size={14} /> Client Quick-Fill Variables
+              <Zap size={14} /> Client details
               <small>
-                Auto-populate [client], [project], [owner], [date] and [fee]
+                Fills [client], [project], [owner], [date] and [fee]
               </small>
             </summary>
             <div className="template-var-grid">
@@ -477,7 +466,7 @@ export function OperationsDesk({
                 Budget / Retainer
                 <input
                   value={feeVar}
-                  placeholder="e.g. $297/mo (GHS 3,500/mo)"
+                  placeholder="The agreed fee, as written in the scope"
                   onChange={(e) => setFeeVar(e.target.value)}
                 />
               </label>
@@ -648,11 +637,11 @@ export function OperationsDesk({
           >
             Prepare AI draft
           </PendingButton>
-          <Link href="/admin/email">Review and send service emails →</Link>
         </>
         {data && !data.aiConfigured && (
           <p role="alert">
-            AI needs OPENROUTER_API_KEY in the server environment.
+            AI needs AI_GATEWAY_API_KEY or OPENROUTER_API_KEY in the server
+            environment.
           </p>
         )}
         {!data && <button onClick={() => void load()}>Reload records</button>}
@@ -742,7 +731,7 @@ export function OperationsDesk({
               <div className="preview-scroll">
                 <ResponseText
                   text={
-                    content || '_No draft content yet. Click Prepare AI draft._'
+                    content || 'No draft yet. Choose a record and prepare one.'
                   }
                 />
               </div>

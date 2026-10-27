@@ -6,6 +6,8 @@ Active and pipeline client engagements managed and engineered by Aksen Labs.
 
 ## Client Directory
 
+**Prospect preparation added 19 October 2026:** [Academy Suites](./academy-suites/README.md), Old Ife Road, Ibadan. Pre-discovery; private website concept exists. Buyer, budget, scope and payment unconfirmed. See [prospect index](./prospects/academy-suites.md). This entry does not establish a paying engagement.
+
 | Client | Market & Industry | Stage | Engagement Value | Key Technologies | Portfolio Link |
 |---|---|---|---|---|---|
 | **Efe Organics** | Accra, Ghana<br>Organic Skincare & Haircare | **In-Flight / Phase 1 Live** | **GH₵48,000** (~$3,100) | Next.js 16, React 19, Neon Postgres, Drizzle, Paystack MoMo, OpenRouter AI, Vercel | [`efe-organics/`](./efe-organics/README.md) |

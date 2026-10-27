@@ -60,6 +60,7 @@ const KEYS = [
 // workspace that signs in but cannot draft or send is only half deployed.
 const OPTIONAL_KEYS = [
   'OPENROUTER_API_KEY',
+  'AI_GATEWAY_API_KEY',
   'AUTOMATION_SECRET',
   'RESEND_API_KEY',
   'RESEND_FROM_EMAIL',

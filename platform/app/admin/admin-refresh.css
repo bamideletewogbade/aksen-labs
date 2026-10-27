@@ -1641,6 +1641,26 @@
   justify-content: space-between;
   gap: 12px;
   min-height: 32px;
+  justify-content: flex-start;
+}
+/* display:flex drops the browser's disclosure triangle, which left the row
+   reading as a label rather than something that opens. */
+.admin-refresh .project-items > summary::-webkit-details-marker {
+  display: none;
+}
+.admin-refresh .project-items > summary::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  margin: 0 4px 3px auto;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s;
+}
+.admin-refresh .project-items[open] > summary::after {
+  margin-bottom: -3px;
+  transform: rotate(-135deg);
 }
 .admin-refresh .project-items-count {
   font-size: 12px;
@@ -2650,7 +2670,10 @@
     margin-top: 12px;
   }
 
+  /* Grid items default to min-width:auto, so each input's intrinsic width
+     held its column open and the row ran past the panel at desktop widths. */
   .admin-refresh .template-var-grid label {
+    min-width: 0;
     display: grid;
     gap: 4px;
     font-size: 11px;
@@ -2661,6 +2684,8 @@
   }
 
   .admin-refresh .template-var-grid input {
+    width: 100%;
+    min-width: 0;
     min-height: 36px !important;
     padding: 6px 10px !important;
     font-size: 13px !important;

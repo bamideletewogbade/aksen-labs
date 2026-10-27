@@ -11,22 +11,11 @@ import { getDb } from '@/db';
 import { freeTools, isExternal, products } from '@/lib/product-catalog';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Public site | Aksen Workspace' };
 
-/**
- * What the public can see, and what it has brought in.
- *
- * This page used to render the products array into a two-column grid. There is
- * one product, so it was a single card beside an empty column, under a note
- * saying nothing here changes anything. Half a screen of nothing, describing
- * a fifth of what is actually public.
- *
- * The site has five public things: one product and four free tools. They are
- * one list now, because a visitor does not care which array they came from,
- * and neither does anyone checking what is live. The numbers on top are real
- * reads, so the page says something different tomorrow than it does today,
- * which is the difference between a dashboard and a diagram.
- */
+export const metadata = { title: 'Branches & products | Aksen Workspace' };
+
+// The parent company's branches are broader than its public catalogue.
+// Keep the catalogue below the operating structure, with demos labelled.
 
 type Entry = {
   slug: string;
@@ -104,22 +93,79 @@ export default async function AdminPublicSitePage() {
     <section className="admin-main">
       <header className="admin-header">
         <div>
-          <small>MARKETING</small>
-          <h1>Public site</h1>
+          <small>AKSEN LABS · THE PARENT COMPANY</small>
+          <h1>Branches & products</h1>
           <p>
-            Everything a visitor can see or use, and what it has brought in over
-            the last month.
+            One company, several ways to help people and businesses. Client
+            work, education and focused products share the same operating home.
           </p>
         </div>
         <Link href="/products" prefetch={false}>
-          Open the live page <ArrowUpRight size={16} />
+          View public catalogue <ArrowUpRight size={16} />
         </Link>
       </header>
 
+      <div className="portfolio-branches">
+        <article className="portfolio-branch">
+          <small>CLIENT SERVICES</small>
+          <h2>Build for a business</h2>
+          <p>
+            Websites, commerce and practical operating systems, from the first
+            conversation through delivery and care.
+          </p>
+          <ul>
+            <li>notjustlines: architecture website</li>
+            <li>Client discovery, delivery and handover</li>
+            <li>Support and improvements after delivery</li>
+          </ul>
+          <Link href="/admin/projects" prefetch={false}>
+            Open client work <ArrowUpRight size={15} />
+          </Link>
+        </article>
+        <article className="portfolio-branch">
+          <small>EDUCATION</small>
+          <h2>learnwithbishop</h2>
+          <p>
+            The education branch: practical learning, a resource library and
+            exercises that help people apply what they learn.
+          </p>
+          <ul>
+            <li>Learning content and the Library</li>
+            <li>Hands-on exercises and demonstrations</li>
+            <li>Paid learning offers when ready</li>
+          </ul>
+          <p>
+            Managed in its own platform. Learner and course records stay there.
+          </p>
+        </article>
+        <article className="portfolio-branch">
+          <small>VERTICAL PRODUCTS & AI SOLUTIONS</small>
+          <h2>Solve a specific job</h2>
+          <p>
+            Turn useful operating knowledge into focused products. AI supports
+            the workflow where it helps.
+          </p>
+          <ul>
+            <li>Dinero-Yard: Susu savings is the client priority</li>
+            <li>Aksen Careers: career tools</li>
+            <li>New product ideas need a real problem and evidence</li>
+          </ul>
+          <Link href="/admin/feedback" prefetch={false}>
+            Review product feedback <ArrowUpRight size={15} />
+          </Link>
+        </article>
+      </div>
+      <p className="portfolio-intro">
+        Marketing and media, finance, sales research and reusable technology
+        support all three branches. A client implementation can inform a
+        product, but one paid build does not establish a repeatable product
+        business.
+      </p>
+      <h2>Public catalogue</h2>
       <div className="metric-grid arrive-stagger">
         <article style={{ '--i': 0 } as React.CSSProperties}>
           <span>
-            <Sparkles /> Usable today
+            <Sparkles /> Linked experiences
           </span>
           <strong>{live}</strong>
           {/* These three have to add up to the number above them, so products
@@ -233,9 +279,10 @@ export default async function AdminPublicSitePage() {
       <aside className="admin-info-note">
         <strong>Where this comes from</strong>
         <p>
-          Names, descriptions and availability live in the site source
-          (lib/product-catalog.ts) and change on deploy. The counts above are
-          read live. Articles are the part you edit here, under Articles.
+          This catalogue describes the public site, not every branch of Aksen
+          Labs. A listed address is not a live availability check. Product
+          interest and feedback are available above; article drafts live under
+          Marketing.
         </p>
       </aside>
     </section>

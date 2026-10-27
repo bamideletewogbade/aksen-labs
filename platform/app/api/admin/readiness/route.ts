@@ -38,6 +38,7 @@ async function get() {
       database,
       missingTables: required.filter((t) => !tables.includes(t)),
       openrouter: !!process.env.OPENROUTER_API_KEY,
+      aiGateway: !!process.env.AI_GATEWAY_API_KEY,
       resend: !!process.env.RESEND_API_KEY && !!process.env.RESEND_FROM_EMAIL,
       adminAllowlist: !!process.env.ADMIN_EMAILS?.trim(),
       notes: [

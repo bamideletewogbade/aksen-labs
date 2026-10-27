@@ -13,12 +13,14 @@ export const STAGE_LABEL: Record<string, string> = {
   closed: 'Closed',
 };
 
-export type Billing = 'none' | 'awaiting' | 'paid';
+export type Billing = 'none' | 'awaiting' | 'paid' | 'received';
 
 export const BILLING_LABEL: Record<Billing, string> = {
   none: 'Not invoiced',
   awaiting: 'Awaiting payment',
   paid: 'Paid',
+
+  received: 'Payment recorded',
 };
 
 /**
@@ -27,4 +29,24 @@ export const BILLING_LABEL: Record<Billing, string> = {
  */
 export function needsInvoicing(stage: string, billing: Billing): boolean {
   return (stage === 'accepted' || stage === 'closed') && billing === 'none';
+}
+
+/** Receipts can precede invoicing. An unknown contract total is not a zero balance. */
+
+export function projectBilling({
+  invoiced,
+  outstanding,
+  received,
+  settled,
+}: {
+  invoiced: boolean;
+  outstanding: number;
+  received: number;
+  settled: boolean;
+}): Billing {
+  if (invoiced) return outstanding > 0 ? 'awaiting' : 'paid';
+
+  if (received > 0) return settled ? 'paid' : 'received';
+
+  return 'none';
 }

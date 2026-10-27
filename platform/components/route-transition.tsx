@@ -51,10 +51,11 @@ export function RouteTransition({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   // A navigation that fails, or one the router refuses, must not leave the bar
-  // running for ever.
+  // running for ever. Generous, because a slow admin page from Accra was
+  // measured at 15s, and the bar vanishing at 8s made a slow page look hung.
   useEffect(() => {
     if (!navigating) return;
-    const timer = setTimeout(() => setNavigating(false), 8000);
+    const timer = setTimeout(() => setNavigating(false), 30000);
     return () => clearTimeout(timer);
   }, [navigating]);
 
@@ -65,7 +66,14 @@ export function RouteTransition({ children }: { children: ReactNode }) {
           <span className="sr-only">Loading page</span>
         </output>
       )}
-      <div key={pathname} className="route-fade">
+      {/* The old page stays readable but visibly steps back, so the click
+          has an answer on screen even while the server is still working. */}
+      <div
+        key={pathname}
+        className="route-fade"
+        data-navigating={navigating || undefined}
+        aria-busy={navigating || undefined}
+      >
         {children}
       </div>
     </>

@@ -84,19 +84,25 @@ export function AdminPipelineList({
   initialLeads,
   today,
   initialQuery = '',
+  initialLeadId = '',
 }: {
   initialLeads: Lead[];
   today: string;
   initialQuery?: string;
+  initialLeadId?: string;
 }) {
   const [query, setQuery] = useState(initialQuery);
+  const [focusedId, setFocusedId] = useState(initialLeadId);
+  const [shownCount, setShownCount] = useState(10);
   const [filter, setFilter] = useState<Filter>('all');
   const [leads, setLeads] = useState(initialLeads);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [failedId, setFailedId] = useState<string | null>(null);
   const [erasingId, setErasingId] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(
+    initialLeadId || null,
+  );
   const [menuId, setMenuId] = useState<string | null>(null);
   const [closedOpen, setClosedOpen] = useState(false);
   const [destroyNote, setDestroyNote] = useState<{
@@ -194,7 +200,14 @@ export function AdminPipelineList({
         { method: 'POST' },
       );
       if (!response.ok) throw Error('Project creation failed');
-      window.location.assign('/admin/projects');
+      // Straight to the project just made (or the one that already existed),
+      // not the top of a list where it may be third.
+      const { id } = (await response.json()) as { id?: string };
+      window.location.assign(
+        id
+          ? `/admin/projects?projectId=${encodeURIComponent(id)}`
+          : '/admin/projects',
+      );
     } catch {
       setFailedId(lead.id);
     } finally {
@@ -270,13 +283,22 @@ export function AdminPipelineList({
   ];
 
   const visibleOpen = openLeads.filter(
-    (lead) => filterTest[filter](lead) && matchesQuery(lead),
+    (lead) =>
+      (!focusedId || lead.id === focusedId) &&
+      filterTest[filter](lead) &&
+      matchesQuery(lead),
   );
   // Closed leads are reference, so they only appear under the unfiltered view.
   // A search that finds one opens the section, or the match would be hidden.
   const visibleClosed =
-    filter === 'all' ? closedLeads.filter(matchesQuery) : [];
-  const showClosed = closedOpen || (needle !== '' && visibleClosed.length > 0);
+    filter === 'all'
+      ? closedLeads.filter(
+          (lead) => (!focusedId || lead.id === focusedId) && matchesQuery(lead),
+        )
+      : [];
+  const showClosed =
+    closedOpen ||
+    ((needle !== '' || focusedId !== '') && visibleClosed.length > 0);
   const won = closedLeads.filter((lead) => lead.status === 'won').length;
   const lost = closedLeads.length - won;
 
@@ -544,6 +566,21 @@ export function AdminPipelineList({
           {chip(attentionChips[2])}
         </fieldset>
       </div>
+      {focusedId && (
+        <div className="record-focus">
+          <span>Showing the selected enquiry.</span>
+          <button
+            type="button"
+            onClick={() => {
+              setFocusedId('');
+              setQuery('');
+              setFilter('all');
+            }}
+          >
+            Show all enquiries
+          </button>
+        </div>
+      )}
       <p className="sr-only" aria-live="polite">
         {visibleOpen.length} open{' '}
         {visibleOpen.length === 1 ? 'enquiry' : 'enquiries'} shown
@@ -558,7 +595,18 @@ export function AdminPipelineList({
             <span>Follow up</span>
             <span />
           </div>
-          <ul className="pl-list">{visibleOpen.map(row)}</ul>
+          <ul className="pl-list">
+            {visibleOpen.slice(0, shownCount).map(row)}
+          </ul>
+          {visibleOpen.length > shownCount && (
+            <button
+              className="daily-show-more"
+              type="button"
+              onClick={() => setShownCount((count) => count + 10)}
+            >
+              Show more enquiries ({visibleOpen.length - shownCount} remaining)
+            </button>
+          )}
         </>
       ) : (
         <div className="empty-admin">
@@ -567,11 +615,12 @@ export function AdminPipelineList({
               ? 'No open enquiries match.'
               : 'No open enquiries. Everything is won or lost.'}
           </strong>
-          {(needle || filter !== 'all') && (
+          {(needle || focusedId || filter !== 'all') && (
             <button
               type="button"
               onClick={() => {
                 setQuery('');
+                setFocusedId('');
                 setFilter('all');
               }}
             >

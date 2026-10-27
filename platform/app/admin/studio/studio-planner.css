@@ -80,9 +80,10 @@
   transition: all 0.15s ease;
 }
 
+/* Solid green, as the selected tab is on every other screen. */
 .studio-mode-toggle button.active {
-  background: #d2f7a4;
-  color: #142411;
+  background: #175b3b;
+  color: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -102,8 +103,23 @@
 
 .media-studio-form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   padding: 0;
+}
+/* At 320px the two settings columns, the reference picker and the long
+   generate label each held the form wider than the screen. */
+.media-studio-form > *,
+.studio-settings-grid > * {
+  min-width: 0;
+}
+.media-studio-form .studio-generate-btn {
+  white-space: normal;
+}
+@media (max-width: 420px) {
+  .studio-settings-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .studio-field-card {
@@ -1441,7 +1457,7 @@
 }
 
 .episode-voice-box select,
-.episode-voice-box input[type="file"] {
+.episode-voice-box input[type='file'] {
   border: 1px solid #cfdad0;
   border-radius: 6px;
   padding: 0.4rem;
@@ -1637,7 +1653,7 @@
   color: #2c6b2f;
 }
 
-.episode-inspiration-inputs label:nth-child(n+3) {
+.episode-inspiration-inputs label:nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
@@ -1979,7 +1995,7 @@
     grid-template-columns: 1fr;
   }
 
-  .episode-inspiration-inputs label:nth-child(n+3),
+  .episode-inspiration-inputs label:nth-child(n + 3),
   .episode-jev-note {
     grid-column: auto;
   }

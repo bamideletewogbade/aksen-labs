@@ -26,7 +26,12 @@ const dependencies = {
   './backend-events': uri(
     'export async function logBackendEvent(){return true;}',
   ),
+  // The real module loads the AI SDK; the stub records what it was asked.
+  './gateway-search': uri(
+    'export async function gatewaySearch(o){globalThis.searchCalls.push(o);return globalThis.searchResult;}',
+  ),
 };
+globalThis.searchCalls = [];
 let gatewaySource = compile(fs.readFileSync('lib/openrouter.ts', 'utf8'));
 for (const [name, url] of Object.entries(dependencies))
   gatewaySource = gatewaySource
@@ -185,6 +190,121 @@ globalThis.fetch = async () => {
 };
 await assert.rejects(gateway.chatComplete({ messages: [] }));
 assert.equal(calls, 1);
+// Vercel AI Gateway goes first when its key is set, with its own model ids and
+// no OpenRouter-only fields, and OpenRouter catches a gateway failure.
+process.env.AI_GATEWAY_API_KEY = 'synthetic-gateway';
+assert.equal(policy.gatewayEnabled(), true);
+assert.equal(policy.aiConfigured(), true);
+assert.equal(policy.gatewayModels()[0], policy.GATEWAY_DEFAULT_MODEL);
+const urls = [];
+const bodies = [];
+globalThis.fetch = async (url, opts) => {
+  urls.push(String(url));
+  bodies.push(JSON.parse(opts.body));
+  return new Response(
+    JSON.stringify({
+      id: 'gateway-request',
+      model: 'served/model',
+      choices: [{ finish_reason: 'stop', message: { content: '{"ok":true}' } }],
+    }),
+  );
+};
+const routed = await gateway.chatComplete({
+  json: true,
+  messages: [{ role: 'user', content: 'JSON please' }],
+});
+assert.equal(urls[0], 'https://ai-gateway.vercel.sh/v1/chat/completions');
+assert.equal(bodies[0].model, policy.GATEWAY_DEFAULT_MODEL);
+// Fallbacks live in providerOptions.gateway; a top-level models array is
+// OpenRouter's spelling and the gateway ignores it.
+assert.equal(bodies[0].models, undefined);
+assert.ok(Array.isArray(bodies[0].providerOptions.gateway.models));
+assert.equal(bodies[0].plugins, undefined);
+assert.equal(bodies[0].provider, undefined);
+assert.equal(routed.telemetry.provider, 'gateway');
+// Web search goes to the gateway's Exa search with the gateway's model ids,
+// and its pages come back as citations the evidence gate can read.
+urls.length = 0;
+globalThis.searchResult = {
+  model: 'served/model',
+  content: '{"leads":[]}',
+  finishReason: 'stop',
+  costDollars: 0.002,
+  citations: [
+    { url: 'https://example.com/', title: 'Example', content: 'Page text' },
+  ],
+};
+const gatewaySearched = await gateway.chatComplete({
+  webSearch: true,
+  json: true,
+  messages: [{ role: 'user', content: 'Find' }],
+});
+assert.equal(urls.length, 0);
+assert.equal(globalThis.searchCalls.length, 1);
+assert.equal(globalThis.searchCalls[0].models[0], policy.GATEWAY_DEFAULT_MODEL);
+assert.equal(globalThis.searchCalls[0].apiKey, 'synthetic-gateway');
+assert.equal(gatewaySearched.telemetry.provider, 'gateway');
+assert.equal(gatewaySearched.citations[0].content, 'Page text');
+assert.equal(gatewaySearched.costMicros, 2000);
+// A call's own gateway models (Lead Scout's free-tier list) replace the
+// gateway defaults there and never reach OpenRouter.
+await gateway.chatComplete({
+  webSearch: true,
+  json: true,
+  gatewayModels: policy.gatewayScoutModels(),
+  messages: [],
+});
+assert.deepEqual(
+  globalThis.searchCalls.at(-1).models,
+  policy.GATEWAY_SCOUT_MODELS.split(','),
+);
+// A failed gateway search falls back to OpenRouter's search.
+globalThis.searchResult = { content: '', citations: [] };
+await gateway.chatComplete({
+  webSearch: true,
+  json: true,
+  gatewayModels: policy.gatewayScoutModels(),
+  messages: [],
+});
+assert.ok(urls[0].startsWith('https://openrouter.ai/'));
+assert.ok(!policy.GATEWAY_SCOUT_MODELS.includes(bodies.at(-1).model));
+assert.equal(bodies.at(-1).tools[0].type, 'openrouter:web_search');
+urls.length = 0;
+bodies.length = 0;
+await gateway.chatComplete({
+  models: ['example/model', 'second/model'],
+  messages: [],
+});
+assert.ok(urls[0].startsWith('https://ai-gateway.vercel.sh/'));
+assert.equal(bodies[0].model, 'example/model');
+assert.deepEqual(bodies[0].providerOptions.gateway.models, ['second/model']);
+// A refused gateway call is retried once on OpenRouter.
+urls.length = 0;
+globalThis.fetch = async (url) => {
+  urls.push(String(url));
+  if (String(url).includes('ai-gateway'))
+    return new Response('', { status: 402 });
+  return new Response(
+    JSON.stringify({
+      model: 'fallback/model',
+      choices: [{ finish_reason: 'stop', message: { content: 'Fine' } }],
+    }),
+  );
+};
+const rescued = await gateway.chatComplete({ messages: [] });
+assert.equal(urls.length, 2);
+assert.equal(rescued.telemetry.provider, 'openrouter');
+// Without OpenRouter, a gateway failure is the caller's error, tried once.
+delete process.env.OPENROUTER_API_KEY;
+urls.length = 0;
+await assert.rejects(gateway.chatComplete({ messages: [] }));
+assert.equal(urls.length, 1);
+process.env.AI_PROVIDER = 'openrouter';
+assert.equal(policy.gatewayEnabled(), false);
+delete process.env.AI_PROVIDER;
+delete process.env.AI_GATEWAY_API_KEY;
+assert.equal(policy.aiConfigured(), false);
+process.env.OPENROUTER_API_KEY = 'synthetic';
 assert.equal(gateway.toCostMicros(Number.NaN), undefined);
 assert.equal(gateway.toCostMicros(-1), undefined);
 console.log(

@@ -17,6 +17,7 @@ import './site-interactions.css';
 import './motion-system.css';
 import './currency.css';
 import './feedback-board.css';
+import './agents.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

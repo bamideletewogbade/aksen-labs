@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { OperationsDesk } from '@/components/operations-desk';
 export const metadata = { title: 'Client drafts | Aksen Workspace' };
 export default async function Page({
@@ -17,13 +15,8 @@ export default async function Page({
           <small>CLIENT WORK</small>
           <h1>Prepare client drafts</h1>
           <p>
-            Prepare enquiry audits, proposals and delivery drafts from your records.
-            Review outputs before acting.
-          </p>
-          <p className="admin-header-aside">
-            <Link href="/admin/templates">
-              Document templates studio <ArrowUpRight size={15} />
-            </Link>
+            Prepare enquiry audits, proposals and delivery drafts from your
+            records. Review outputs before acting.
           </p>
         </div>
       </header>

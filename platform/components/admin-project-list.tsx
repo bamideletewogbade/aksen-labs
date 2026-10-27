@@ -21,14 +21,26 @@ export type Project = {
   progress: number;
   nextGate: string;
   billing: Billing;
+  businessId?: string;
+  /** The enquiry this project was won from, when it came through Sales. */
+  opportunityId?: string;
 };
+
+const clientRecordHref = (project: Project) =>
+  project.businessId
+    ? `/admin/workspaces?businessId=${encodeURIComponent(project.businessId)}`
+    : '/admin/workspaces';
 
 export function AdminProjectList({
   initialProjects,
+  initialProjectId = '',
 }: {
   initialProjects: Project[];
+  initialProjectId?: string;
 }) {
   const [query, setQuery] = useState('');
+  const [focusedId, setFocusedId] = useState(initialProjectId);
+  const [shownCount, setShownCount] = useState(8);
   const [stageFilter, setStageFilter] = useState('all');
   const [items, setItems] = useState(initialProjects);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -76,6 +88,7 @@ export function AdminProjectList({
 
   const visible = items.filter(
     (project) =>
+      (!focusedId || project.id === focusedId) &&
       (stageFilter === 'all' || project.stage === stageFilter) &&
       [project.name, project.clientName, project.nextGate]
         .join(' ')
@@ -110,8 +123,24 @@ export function AdminProjectList({
           </select>
         </label>
       </div>
+      {focusedId && (
+        <div className="record-focus">
+          <span>Showing the selected project.</span>
+          <button
+            type="button"
+            onClick={() => {
+              setFocusedId('');
+              setQuery('');
+              setStageFilter('all');
+            }}
+          >
+            Show all projects
+          </button>
+        </div>
+      )}
       <output className="admin-filter-count">
-        {visible.length} matching projects
+        Showing {Math.min(shownCount, visible.length)} of {visible.length}{' '}
+        matching projects
       </output>
       {visible.length === 0 && (
         <div className="empty-admin">
@@ -120,6 +149,7 @@ export function AdminProjectList({
             type="button"
             onClick={() => {
               setQuery('');
+              setFocusedId('');
               setStageFilter('all');
             }}
           >
@@ -128,13 +158,12 @@ export function AdminProjectList({
         </div>
       )}
       <p className="content-count">
-        {items.length} project{items.length === 1 ? '' : 's'}
         {unbilled > 0 && (
           <b className="tag-overdue">{unbilled} accepted, not invoiced</b>
         )}
       </p>
       <div className="project-list">
-        {visible.map((project) => (
+        {visible.slice(0, shownCount).map((project) => (
           <article
             key={project.id}
             className={
@@ -209,17 +238,43 @@ export function AdminProjectList({
                 <Link
                   prefetch={false}
                   className="invoice-prompt"
-                  href="/admin/workspaces"
+                  href={clientRecordHref(project)}
                 >
                   Raise an invoice →
                 </Link>
               ) : (
-                <small>{project.progress}% complete</small>
+                <>
+                  <small>{project.progress}% build complete</small>
+                  {/* Always a way through: the client's own record when one
+                      is linked, otherwise the list to pick or create it. */}
+                  <Link prefetch={false} href={clientRecordHref(project)}>
+                    {project.businessId
+                      ? 'Client record'
+                      : 'Find client record'}
+                  </Link>
+                </>
+              )}
+              {project.opportunityId && (
+                <Link
+                  prefetch={false}
+                  href={`/admin/pipeline?leadId=${encodeURIComponent(project.opportunityId)}`}
+                >
+                  Original enquiry
+                </Link>
               )}
             </footer>
           </article>
         ))}
       </div>
+      {visible.length > shownCount && (
+        <button
+          className="daily-show-more"
+          type="button"
+          onClick={() => setShownCount((count) => count + 8)}
+        >
+          Show more projects
+        </button>
+      )}
     </>
   );
 }
